@@ -4,6 +4,18 @@ const SUPABASE_URL = process.env.SUPABASE_URL;
 const SERVICE_KEY = process.env.SUPABASE_SERVICE_KEY;
 const SECRET = 'mN4!pQs6JrYwV9';
 
+function sbHeaders(extra = {}) {
+  const h = {
+    apikey: SERVICE_KEY,
+    'Content-Type': 'application/json',
+    ...extra
+  };
+  if (SERVICE_KEY && !SERVICE_KEY.startsWith('sb_')) {
+    h.Authorization = `Bearer ${SERVICE_KEY}`;
+  }
+  return h;
+}
+
 async function fetchPlayer(fid) {
   const time = Date.now();
   const raw = `fid=${fid}&time=${time}${SECRET}`;
@@ -18,10 +30,18 @@ async function fetchPlayer(fid) {
 }
 
 async function run() {
+  if (!SUPABASE_URL || !SERVICE_KEY) {
+    throw new Error('Missing SUPABASE_URL or SUPABASE_SERVICE_KEY secret!');
+  }
+
   const listRes = await fetch(`${SUPABASE_URL}/rest/v1/players?select=fid`, {
-    headers: { apikey: SERVICE_KEY, Authorization: `Bearer ${SERVICE_KEY}` }
+    headers: sbHeaders()
   });
   const players = await listRes.json();
+
+  if (!Array.isArray(players)) {
+    throw new Error('Supabase response error: ' + JSON.stringify(players));
+  }
   console.log('Target players:', players.length);
 
   for (const p of players) {
@@ -30,11 +50,7 @@ async function run() {
     if (info) {
       await fetch(`${SUPABASE_URL}/rest/v1/players?fid=eq.${p.fid}`, {
         method: 'PATCH',
-        headers: {
-          apikey: SERVICE_KEY,
-          Authorization: `Bearer ${SERVICE_KEY}`,
-          'Content-Type': 'application/json'
-        },
+        headers: sbHeaders(),
         body: JSON.stringify({
           nickname: info.nickname,
           kid: info.kid,
@@ -47,4 +63,8 @@ async function run() {
     await new Promise(r => setTimeout(r, 800));
   }
 }
-run();
+
+run().catch(err => {
+  console.error(err);
+  process.exit(1);
+});
