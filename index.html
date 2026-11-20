@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
-<title>KINGSHOT HUB v0.5.1 | Tactical Command & Alliance Sync</title>
+<title>KINGSHOT HUB v0.5.2 | Tactical Command & Alliance Sync</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=Orbitron:wght@700;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet"/>
@@ -62,7 +62,7 @@
       <button type="button" onclick="goTab('home')" class="flex items-baseline gap-1.5 text-left group">
         <span class="font-display font-black text-xl sm:text-2xl tracking-tight text-white">KINGSHOT</span>
         <span class="font-display font-bold text-base sm:text-lg text-sky-400">hub</span>
-        <span class="ml-1 text-[10px] font-mono-code font-bold px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-300 border border-amber-500/35">v0.5.1</span>
+        <span class="ml-1 text-[10px] font-mono-code font-bold px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-300 border border-amber-500/35">v0.5.2</span>
       </button>
 
       <div class="flex items-center gap-2">
@@ -82,7 +82,7 @@
         <!-- Bell / DevNotes & Alerts -->
         <button type="button" onclick="goTab('notes')" class="relative p-2 rounded-xl bg-[#151c28] border border-slate-800 text-slate-200 hover:border-slate-600" title="Updates & Alerts">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
-          <span id="bellBadge" class="absolute -top-1 -right-1 px-1.5 py-0.2 rounded-full bg-rose-500 text-white font-mono-code font-bold text-[9px]">5.1</span>
+          <span id="bellBadge" class="absolute -top-1 -right-1 px-1.5 py-0.2 rounded-full bg-rose-500 text-white font-mono-code font-bold text-[9px]">5.2</span>
         </button>
 
         <!-- All Tabs Drawer Trigger -->
@@ -159,7 +159,7 @@
       <div id="drawerLinks" class="grid grid-cols-1 gap-1.5 text-xs"></div>
     </div>
     <div class="pt-3 border-t border-slate-800 text-[11px] text-slate-400 flex justify-between items-center">
-      <span>Kingshot Tactical Hub v0.5.1</span>
+      <span>Kingshot Tactical Hub v0.5.2</span>
       <span id="dbStatusBadge" class="text-emerald-400 font-bold">● DB Synced</span>
     </div>
   </div>
@@ -287,7 +287,7 @@ const MENU_ITEMS = [
   ['mys', '✨ 신비한 시련 & 바이킹', '✨ Mystic Trial & Viking'],
   ['mac', '📢 연맹 공지 (3종 복사)', '📢 Alliance Macros'],
   ['ai', '🤖 전술 AI 어시스턴트', '🤖 Tactical AI'],
-  ['notes', '📋 개발자 노트 (v0.5.1)', '📋 Dev Notes (v0.5.1)']
+  ['notes', '📋 개발자 노트 (v0.5.2)', '📋 Dev Notes (v0.5.2)']
 ];
 
 function toggleDrawer(open){
@@ -509,7 +509,7 @@ function renderHome(){
     <!-- Bottom Share Card Banner (Jeabslist Bottom Feature Card Style) -->
     <div class="tac-card rounded-2xl p-4 sm:p-5 space-y-2.5 border-sky-500/25">
       <div class="flex items-center gap-2">
-        <span class="px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 text-[10px] font-bold">v0.5.1 NEW</span>
+        <span class="px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 text-[10px] font-bold">v0.5.2 NEW</span>
         <span class="px-2 py-0.5 rounded-md bg-slate-800 text-slate-300 text-[10px] font-bold">${k?'연맹 공유 카드':'Alliance Share Card'}</span>
       </div>
       <h2 class="text-base sm:text-lg font-black text-white">${k?'연맹 전술 브리핑 & 내 프로필 카드 공유 준비 완료':'Alliance Tactical Card & Roster Ready to Share'}</h2>
@@ -529,12 +529,12 @@ function copyAllianceSummaryCard(){
   const total = playersDB.length;
   const tgList = playersDB.map(p=>`${p.nickname}(#${p.kingdom||'?'} / ${p.tc_level||'TC30'})`).join(', ') || (k?'등록된 인원 없음':'No members yet');
   const txt = k
-    ? `[👑 Kingshot Tactical Hub v0.5.1 연맹 현황]\n• 등록 연맹원: ${total}명 (평균 전투력: ${total?Math.round(playersDB.reduce((a,b)=>a+(Number(b.power)||0),0)/total).toLocaleString():0})\n• 명단: ${tgList}`
-    : `[👑 Kingshot Tactical Hub v0.5.1 Roster]\n• Registered: ${total} players\n• List: ${tgList}`;
+    ? `[👑 Kingshot Tactical Hub v0.5.2 연맹 현황]\n• 등록 연맹원: ${total}명 (평균 전투력: ${total?Math.round(playersDB.reduce((a,b)=>a+(Number(b.power)||0),0)/total).toLocaleString():0})\n• 명단: ${tgList}`
+    : `[👑 Kingshot Tactical Hub v0.5.2 Roster]\n• Registered: ${total} players\n• List: ${tgList}`;
   copyText(txt);
 }
 
-/* ==================== NEW v0.5.1: RALLY & GARRISON TROOP RATIO SIMULATOR ==================== */
+/* ==================== NEW v0.5.2: RALLY & GARRISON TROOP RATIO SIMULATOR ==================== */
 function renderSim(){
   const k = lang==='ko';
   const presets = [
@@ -550,7 +550,7 @@ function renderSim(){
     <div class="tac-card rounded-2xl p-4 space-y-3.5">
       <div class="flex items-center justify-between">
         <h2 class="text-base font-black text-white">${k?'🧮 랠리 & 수성 병력 비율 시뮬레이터':'🧮 Rally & Garrison Troop Simulator'}</h2>
-        <span class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 font-mono-code text-[10px]">v0.5.1</span>
+        <span class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 font-mono-code text-[10px]">v0.5.2</span>
       </div>
 
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
@@ -651,7 +651,7 @@ function renderRoster(){
         </div>
       </div>
 
-      <!-- Alliance TG Distribution Chart (NEW v0.5.1) -->
+      <!-- Alliance TG Distribution Chart (NEW v0.5.2) -->
       <div class="tac-card rounded-2xl p-4 space-y-2.5">
         <div class="flex items-center justify-between">
           <h3 class="text-sm font-black text-white">${k?'📊 연맹 도시센터 / TG 분포 차트':'📊 Alliance TC / TG Distribution'}</h3>
@@ -1113,19 +1113,164 @@ function renderMac(){
 }
 
 function renderNotes(){
-  const k=lang==='ko';
-  const logs=[
-    {v:'v0.5.1 (Current)',d:'2026-11-21',t:'Jeabslist-Inspired Tactical UI + New Simulators',ko:['다크 택티컬 대시보드 전면 개편: 상단 통합 검색 캡슐 + 라이브 KvK·연맹 리셋 카운트다운 배너 + 2열 사선 네온 퀵 그리드 + 모바일 하단 고정 독(Bottom Dock)','신규 킬러 기능 탑재: 랠리·수성 병력 비율 시뮬레이터(50:20:30 / 60:20:20 / 10:10:80) 및 연맹 TC/TG 분포 차트','플레이어 프로필 활성화(상단 우측 프로필 배지 연동), 왕국(#) 필터, 원클릭 연맹 통계 공유 카드 추가'],en:['Redesigned dark tactical dashboard with unified search capsule, live countdown banners, diagonal neon 2-col tiles & mobile bottom dock','Added Rally/Garrison Troop Ratio Simulator & Alliance TC/TG Distribution Chart','Added active profile switcher pill, #Kingdom filter & one-tap Alliance Share Card']},
-    {v:'v0.4.6',d:'2026-11-20',t:'Supabase DB & Gift Code Sync',ko:['Supabase players / gift_codes 실시간 동기화 및 선물 코드 일괄 발송기 통합'],en:['Integrated Supabase players & gift_codes sync with batch code sender']},
-    {v:'v0.4.2',d:'2026-11-19',t:'PC Hybrid & Dev Notes',ko:['PC 와이드 사이드바·전술 AI 도킹 및 개발자 노트 신설'],en:['Added PC sidebar, Tactical AI dock & Dev Notes']}
+  const k = lang==='ko';
+  const logs = [
+    {
+      v: 'v0.5.2 (Current)',
+      d: '2026-11-21',
+      badge: 'Full Changelog',
+      ko: [
+        '개발자 노트(Dev Notes)에 v0.1.0 초기 빌드부터 v0.5.2 현재 버전까지 모든 업데이트 이력 및 패치 내역 100% 투명 공개',
+        '버전별 주요 추가 기능, UI 개편 내역, DB·프록시 구조 개선 히스토리 통합 아카이브 구축'
+      ],
+      en: [
+        'Published 100% transparent full changelog from v0.1.0 initial build through v0.5.2',
+        'Added complete historical archive of feature releases, UI redesigns, and DB/proxy upgrades'
+      ]
+    },
+    {
+      v: 'v0.5.1',
+      d: '2026-11-21',
+      badge: 'DB Schema Sync',
+      ko: [
+        '기존 Supabase players 테이블(fid, nickname, kid, stove_lv, power_memo) 및 sync.js 자동 갱신 봇과 100% 직통 호환 연동',
+        '게임 API 조회 시 도시센터 등급(TC/TG) 및 왕국 번호(#) 자동 입력 지원'
+      ],
+      en: [
+        '100% schema sync with Supabase players (fid, kid, stove_lv, power_memo) & hourly sync.js bot',
+        'Auto-fills TC/TG tier and Kingdom # on player lookup'
+      ]
+    },
+    {
+      v: 'v0.5.0',
+      d: '2026-11-21',
+      badge: 'Major UI Overhaul',
+      ko: [
+        '다크 택티컬 대시보드 전면 개편: 상단 통합 검색 캡슐 + 라이브 KvK·연맹 리셋 카운트다운 배너 + 2열 사선 네온 퀵 그리드 + 모바일 하단 고정 독(Bottom Dock)',
+        '신규 킬러 기능 탑재: 랠리·수성 병력 비율 시뮬레이터(50:20:30 / 60:20:20 / 10:10:80 / 30:50:20) 및 연맹 TC/TG 분포 차트',
+        '상단 우측 활성 프로필 선택 배지 연동, 왕국(#) 필터, 원클릭 연맹 통계 공유 카드 추가'
+      ],
+      en: [
+        'Redesigned dark tactical dashboard with unified search capsule, live countdown banners, diagonal neon 2-col tiles & mobile bottom dock',
+        'Added Rally/Garrison Troop Ratio Simulator & Alliance TC/TG Distribution Chart',
+        'Added active profile switcher pill, #Kingdom filter & one-tap Alliance Share Card'
+      ]
+    },
+    {
+      v: 'v0.4.5 ~ v0.4.6',
+      d: '2026-11-20',
+      badge: 'Search-to-Register',
+      ko: [
+        '원스톱 통합 검색(Search-to-Register) 적용: 미등록 플레이어 ID 검색 시 즉시 DB 자동 등록 및 카드 내 닉네임·TC/TG 등급 인라인 수정',
+        '선물 코드(Gift Code) 공유 게시판(gift_codes DB) 및 등록된 연맹원 전체 일괄 자동 발송기 탑재',
+        'GitHub 자동 배포 파이프라인 및 Netlify 서버리스 프록시(ks-proxy.js) 연동'
+      ],
+      en: [
+        'Added Search-to-Register: searching an untracked Player ID auto-registers to DB with inline profile editing',
+        'Added shared Gift Code DB board & Alliance Bulk Auto-Redeemer',
+        'Connected GitHub auto-deploy pipeline & Netlify serverless proxy (ks-proxy.js)'
+      ]
+    },
+    {
+      v: 'v0.4.3 ~ v0.4.4',
+      d: '2026-11-19',
+      badge: 'Live Supabase DB',
+      ko: [
+        'Supabase 실시간 데이터베이스(players / kingdoms) 최초 연동 및 플레이어·#왕국 통합 트래커 출시',
+        '모바일 상단 헤더 겹침 문제 해결 및 글로벌 연맹원 피드백 반영(KvK 3연속 카운터 집결 계산기·10대 이벤트 버프표 100% 영문화)',
+        '공식 선물 코드 교환소(ks-giftcode.centurygame.com) 빠른 이동 배너 추가'
+      ],
+      en: [
+        'Connected Supabase Live DB (players / kingdoms) & launched Player/#Kingdom Tracker',
+        'Fixed mobile sticky header overlap & localized KvK Triple Counter-Rally and Buff Matrix to 100% English',
+        'Added quick link banner to official Gift Code portal'
+      ]
+    },
+    {
+      v: 'v0.4.0 ~ v0.4.2',
+      d: '2026-11-19',
+      badge: 'PC Hybrid & Engine Opt',
+      ko: [
+        'PC 데스크톱 와이드 레이아웃(좌측 고정 사이드바 + 우측 전술 AI 상시 도킹 패널) 및 개발자 노트 메뉴 최초 신설',
+        '온디맨드(On-Demand) 탭 렌더링 전환으로 코드 용량 50% 이상 경량화 및 모바일 사파리 메모리 최적화',
+        '시설 & 전초기지(Facilities & Outposts) 점령 규칙(깃발 75%·15분 연속 점령) 및 서버 오픈 일차별 해금 타임라인 추가'
+      ],
+      en: [
+        'Added PC desktop wide layout (fixed sidebar + docked Tactical AI panel) & initial Dev Notes tab',
+        'Switched to On-Demand tab rendering, reducing payload size by 50%+ for mobile Safari stability',
+        'Added Facilities & Outposts rules (75% banner, 15m hold) and State Age unlock timeline'
+      ]
+    },
+    {
+      v: 'v0.3.0 ~ v0.3.2',
+      d: '2026-11-18',
+      badge: 'Tactical Expansion',
+      ko: [
+        '신화 영웅 장비 강화 순서 직관화(숫자 대신 병종·부위별 1~3순위 시각 그리드) 및 신비한 시련 3부대 편성 프리셋(빛나는 첨탑·결투장) 반영',
+        '삼대연맹전(Tri-Alliance Clash 60분 전술 보드·3개 조 로스터), KvK 준비 단계 1~5일차 점수 계산기, 베어 헌트 복귀·재탑승 계산기 추가',
+        '연맹 공지 3종 언어별 개별 복사 버튼(통합 / 한국어만 / English) 및 전술 AI 어시스턴트 탑재, 모바일 터치·스크립트 무결성 수정(v0.3.1~0.3.2)'
+      ],
+      en: [
+        'Redesigned Mythic Gear priority into clear troop/slot tiers & updated Mystic Trial 3-squad presets (Radiant Spire & Coliseum)',
+        'Added Tri-Alliance Clash 60-min tactics, KvK Prep Days 1–5 points calculator & Bear Hunt rejoin timer',
+        'Added 3-mode announcement copy buttons (All / KR / EN), Tactical AI assistant & mobile touch fixes (v0.3.1–0.3.2)'
+      ]
+    },
+    {
+      v: 'v0.2.0',
+      d: '2026-11-17',
+      badge: 'Growth & Economy DB',
+      ko: [
+        '사이버 골드·네온 다크 커맨드 센터 UI로 첫 디자인 업그레이드',
+        '신규 탭 3종 추가: ① 순금 & 순정금 건물 업그레이드·주간 정제 계산기 ② Gen 1~10 영웅 도감·전용무기(275개)·신화 장비 가이드 ③ 무·소과금 11대 상점 효율표 & 10대 이벤트 버프 매트릭스'
+      ],
+      en: [
+        'Upgraded UI to dark command center aesthetic with gold/neon accents',
+        'Added 3 new modules: Truegold & Refine Calc, Gen 1–10 Hero & Exclusive Weapon DB, and 11-Shop Priority & 10-Event Buff Matrix'
+      ]
+    },
+    {
+      v: 'v0.1.0 (Initial)',
+      d: '2026-11-16',
+      badge: 'Genesis Release',
+      ko: [
+        'Kingshot Tactical Hub 최초 버전 출범: 베어 헌트 집결장·조이너 1번 슬롯 판별기, 최강 왕국(KvK) 카운터 랠리 계산기, 신비한 시련·바이킹 공략, 연맹 공지 생성기 탑재',
+        '한·영 원클릭 실시간 언어 전환(KO / EN) 엔진 및 성검 쟁탈전(Swordland Showdown 30vs30) Tank/DPS/Support 역할 배정표 도입'
+      ],
+      en: [
+        'Genesis release of Kingshot Tactical Hub: Bear Hunt Host/Joiner checker, KvK Counter-Rally calculator, Mystic Trial/Viking guides & Announcement generator',
+        'Introduced instant KO/EN language switcher & Swordland Showdown (30v30) Tank/DPS/Support roster builder'
+      ]
+    }
   ];
-  document.getElementById('appMain').innerHTML=`
+
+  document.getElementById('appMain').innerHTML = `
   <div class="max-w-3xl mx-auto space-y-3 text-xs">
-    <div class="tac-card rounded-2xl p-4 flex items-center justify-between border-sky-500/40">
-      <div><h2 class="text-base font-black text-white">${k?'📋 개발자 노트 & 업데이트 로드맵':'📋 Developer Notes & Roadmap'}</h2><p class="text-slate-400 mt-0.5">${k?'v0.5.1 ~ v0.5.99 패치 후 3일 뒤 v0.6.0 업데이트 예정':'v0.5.1–v0.5.99 patches leading to v0.6.0 in 3 days'}</p></div>
-      <span class="px-3 py-1 rounded-xl bg-sky-500/15 border border-sky-400/40 text-sky-300 font-mono-code font-bold">v0.5.1</span>
+    <div class="tac-card rounded-2xl p-4 flex flex-wrap items-center justify-between gap-2 border-sky-500/40">
+      <div>
+        <h2 class="text-base font-black text-white">${k?'📋 전체 업데이트 개발자 노트 (v0.1.0 ~ v0.5.2)':'📋 Full Transparent Changelog (v0.1.0 ~ v0.5.2)'}</h2>
+        <p class="text-slate-400 mt-0.5">${k?'초기 출범(v0.1.0)부터 현재까지의 모든 기능 추가·UI 개편·버그 수정 이력을 투명하게 기록합니다.':'Complete transparent history of every feature release, UI overhaul, and patch since v0.1.0.'}</p>
+      </div>
+      <div class="flex items-center gap-1.5">
+        <span class="px-2.5 py-1 rounded-xl bg-emerald-500/15 border border-emerald-400/40 text-emerald-300 font-mono-code font-bold">9 Milestones</span>
+        <span class="px-3 py-1 rounded-xl bg-sky-500/15 border border-sky-400/40 text-sky-300 font-mono-code font-bold">v0.5.2</span>
+      </div>
     </div>
-    ${logs.map(l=>`<div class="tac-card rounded-2xl p-4 space-y-2"><div class="flex justify-between items-center"><b class="font-display text-sm text-amber-400">${l.v}</b><span class="font-mono-code text-slate-400">${l.d}</span></div><ul class="space-y-1 text-slate-300">${(k?l.ko:l.en).map(x=>`<li>• ${x}</li>`).join('')}</ul></div>`).join('')}
+
+    ${logs.map((l, idx) => `
+      <div class="tac-card rounded-2xl p-4 space-y-2 ${idx===0 ? 'border-amber-500/45' : ''}">
+        <div class="flex flex-wrap justify-between items-center gap-2">
+          <div class="flex items-center gap-2">
+            <b class="font-display text-sm ${idx===0 ? 'text-amber-400' : 'text-sky-300'}">${l.v}</b>
+            <span class="px-2 py-0.5 rounded-md bg-slate-800 border border-slate-700 text-[10px] font-bold text-slate-300">${l.badge}</span>
+          </div>
+          <span class="font-mono-code text-[11px] text-slate-400">${l.d}</span>
+        </div>
+        <ul class="space-y-1.5 text-slate-300 leading-relaxed">
+          ${(k ? l.ko : l.en).map(x => `<li>• ${x}</li>`).join('')}
+        </ul>
+      </div>
+    `).join('')}
   </div>`;
 }
 
@@ -1144,7 +1289,7 @@ function renderAi(){
     </div>
     <div class="p-2 bg-slate-950/60 border-b border-slate-800 flex flex-wrap gap-1">${chips.map(c=>`<button type="button" onclick="askAi('${c}')" class="px-2.5 py-1 rounded-lg bg-[#151c28] hover:border-sky-400 text-slate-200 border border-slate-800 text-[11px]">${c}</button>`).join('')}</div>
     <div id="aiLog" class="p-3.5 space-y-2 min-h-[220px] max-h-[45vh] overflow-y-auto">
-      <div class="p-2.5 rounded-xl bg-slate-950 border border-slate-800 text-slate-200">${k?'안녕하세요! Kingshot Hub v0.5.1 전술 AI입니다. 질문을 선택하거나 입력해 주세요.':'Hello! Ask anything about Kingshot tactics.'}</div>
+      <div class="p-2.5 rounded-xl bg-slate-950 border border-slate-800 text-slate-200">${k?'안녕하세요! Kingshot Hub v0.5.2 전술 AI입니다. 질문을 선택하거나 입력해 주세요.':'Hello! Ask anything about Kingshot tactics.'}</div>
     </div>
     <div class="p-2.5 bg-slate-950 border-t border-slate-800 flex gap-1.5">
       <input id="aiIn" onkeydown="if(event.key==='Enter')askAi()" placeholder="${k?'전술 질문 입력...':'Ask AI...'}" class="flex-1 bg-[#151c28] border border-slate-700 rounded-xl px-3 py-2 text-white"/>
