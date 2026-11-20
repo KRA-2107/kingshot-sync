@@ -20,13 +20,36 @@ async function fetchPlayer(fid) {
   const time = Date.now();
   const raw = `fid=${fid}&time=${time}${SECRET}`;
   const sign = crypto.createHash('md5').update(raw).digest('hex');
+  const bodyParams = new URLSearchParams({
+    fid: String(fid),
+    time: String(time),
+    sign
+  });
+
   const res = await fetch('https://kingshot-giftcode.centurygame.com/api/player', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ fid: String(fid), time, sign })
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+      'Accept': 'application/json, text/plain, */*',
+      'Origin': 'https://kingshot-giftcode.centurygame.com',
+      'Referer': 'https://kingshot-giftcode.centurygame.com/',
+      'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1'
+    },
+    body: bodyParams.toString()
   });
-  const json = await res.json();
-  return json?.data || null;
+
+  const text = await res.text();
+  try {
+    const json = JSON.parse(text);
+    if (json?.code === 0 && json?.data) {
+      return json.data;
+    }
+    console.log(`API response for ${fid}:`, text.slice(0, 150));
+    return null;
+  } catch (e) {
+    console.log(`Non-JSON blocked for ${fid} (status ${res.status}):`, text.slice(0, 100));
+    return null;
+  }
 }
 
 async function run() {
@@ -46,7 +69,7 @@ async function run() {
 
   for (const p of players) {
     const info = await fetchPlayer(p.fid);
-    console.log('Fetched:', p.fid, info ? info.nickname : 'no data');
+    console.log('Result:', p.fid, info ? `${info.nickname} (Kid:${info.kid}, Lv:${info.stove_lv})` : 'skipped');
     if (info) {
       await fetch(`${SUPABASE_URL}/rest/v1/players?fid=eq.${p.fid}`, {
         method: 'PATCH',
@@ -60,7 +83,7 @@ async function run() {
         })
       });
     }
-    await new Promise(r => setTimeout(r, 800));
+    await new Promise(r => setTimeout(r, 1000));
   }
 }
 
