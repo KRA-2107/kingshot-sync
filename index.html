@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
-<title>KINGSHOT HUB v0.5.0 | Tactical Command & Alliance Sync</title>
+<title>KINGSHOT HUB v0.5.1 | Tactical Command & Alliance Sync</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=Orbitron:wght@700;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet"/>
@@ -62,7 +62,7 @@
       <button type="button" onclick="goTab('home')" class="flex items-baseline gap-1.5 text-left group">
         <span class="font-display font-black text-xl sm:text-2xl tracking-tight text-white">KINGSHOT</span>
         <span class="font-display font-bold text-base sm:text-lg text-sky-400">hub</span>
-        <span class="ml-1 text-[10px] font-mono-code font-bold px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-300 border border-amber-500/35">v0.5.0</span>
+        <span class="ml-1 text-[10px] font-mono-code font-bold px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-300 border border-amber-500/35">v0.5.1</span>
       </button>
 
       <div class="flex items-center gap-2">
@@ -82,7 +82,7 @@
         <!-- Bell / DevNotes & Alerts -->
         <button type="button" onclick="goTab('notes')" class="relative p-2 rounded-xl bg-[#151c28] border border-slate-800 text-slate-200 hover:border-slate-600" title="Updates & Alerts">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
-          <span id="bellBadge" class="absolute -top-1 -right-1 px-1.5 py-0.2 rounded-full bg-rose-500 text-white font-mono-code font-bold text-[9px]">5.0</span>
+          <span id="bellBadge" class="absolute -top-1 -right-1 px-1.5 py-0.2 rounded-full bg-rose-500 text-white font-mono-code font-bold text-[9px]">5.1</span>
         </button>
 
         <!-- All Tabs Drawer Trigger -->
@@ -159,7 +159,7 @@
       <div id="drawerLinks" class="grid grid-cols-1 gap-1.5 text-xs"></div>
     </div>
     <div class="pt-3 border-t border-slate-800 text-[11px] text-slate-400 flex justify-between items-center">
-      <span>Kingshot Tactical Hub v0.5.0</span>
+      <span>Kingshot Tactical Hub v0.5.1</span>
       <span id="dbStatusBadge" class="text-emerald-400 font-bold">● DB Synced</span>
     </div>
   </div>
@@ -171,9 +171,30 @@
 <script>
 /* ==================== SUPABASE & STATE ==================== */
 const SUPABASE_URL = 'https://soyodukrsykhgsufwtth.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNveW9kdWtyc3lraGdzdWZ3dHRoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkwMTg1MDUsImV4cCI6MjA5NDU5NDUwNX0.d07-G8b1p9hD9jX2o3K-x3n2d7G8b1p9hD9jX2o3K-x';
+const SUPABASE_KEY = 'sb_publishable_mHkDQ668sCfxQSJO61qAGA_vkbw_I94';
 let sb = null;
 try { if (window.supabase) sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY); } catch(e) {}
+
+function stoveToLabel(lv){
+  const n = parseInt(lv);
+  if(!n) return 'TC30';
+  return n <= 30 ? 'TC' + n : 'TG' + (n - 30);
+}
+function labelToStove(lbl){
+  const s = String(lbl||'TC30').toUpperCase();
+  if(s.startsWith('TG')) return 30 + (parseInt(s.replace(/\D/g,'')) || 1);
+  return parseInt(s.replace(/\D/g,'')) || 30;
+}
+function mapDbRowToUi(r){
+  return {
+    player_id: String(r.fid ?? r.player_id ?? ''),
+    nickname: r.nickname || ('Governor_' + (r.fid||'')),
+    kingdom: r.kid != null ? String(r.kid) : (r.kingdom || ''),
+    tc_level: r.stove_lv != null ? stoveToLabel(r.stove_lv) : (r.tc_level || 'TC30'),
+    power: parseInt(String(r.power_memo || r.power || '0').replace(/\D/g,'')) || 0,
+    updated_at: r.updated_at || ''
+  };
+}
 
 let lang = localStorage.getItem('ks_lang') || (navigator.language.startsWith('ko') ? 'ko' : 'en');
 let curTab = 'home';
@@ -219,11 +240,16 @@ setInterval(updateTimers, 1000);
 async function syncFromSupabase(){
   if(!sb) return;
   try {
-    const { data: pData } = await sb.from('players').select('*').order('created_at', { ascending: false });
-    if(pData && pData.length){
-      playersDB = pData;
+    const { data: pData } = await sb.from('players').select('*').order('updated_at', { ascending: false });
+    if(pData){
+      playersDB = pData.map(mapDbRowToUi);
       localStorage.setItem('ks_players_cache', JSON.stringify(playersDB));
-      if(!activePlayer && playersDB[0]) setActiveProfile(playersDB[0], false);
+      if(activePlayer){
+        const fresh = playersDB.find(x => x.player_id === activePlayer.player_id);
+        if(fresh) setActiveProfile(fresh, false);
+      } else if(playersDB[0]){
+        setActiveProfile(playersDB[0], false);
+      }
     }
     const { data: gData } = await sb.from('gift_codes').select('*').order('created_at', { ascending: false });
     if(gData){
@@ -261,7 +287,7 @@ const MENU_ITEMS = [
   ['mys', '✨ 신비한 시련 & 바이킹', '✨ Mystic Trial & Viking'],
   ['mac', '📢 연맹 공지 (3종 복사)', '📢 Alliance Macros'],
   ['ai', '🤖 전술 AI 어시스턴트', '🤖 Tactical AI'],
-  ['notes', '📋 개발자 노트 (v0.5.0)', '📋 Dev Notes (v0.5.0)']
+  ['notes', '📋 개발자 노트 (v0.5.1)', '📋 Dev Notes (v0.5.1)']
 ];
 
 function toggleDrawer(open){
@@ -483,7 +509,7 @@ function renderHome(){
     <!-- Bottom Share Card Banner (Jeabslist Bottom Feature Card Style) -->
     <div class="tac-card rounded-2xl p-4 sm:p-5 space-y-2.5 border-sky-500/25">
       <div class="flex items-center gap-2">
-        <span class="px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 text-[10px] font-bold">v0.5.0 NEW</span>
+        <span class="px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 text-[10px] font-bold">v0.5.1 NEW</span>
         <span class="px-2 py-0.5 rounded-md bg-slate-800 text-slate-300 text-[10px] font-bold">${k?'연맹 공유 카드':'Alliance Share Card'}</span>
       </div>
       <h2 class="text-base sm:text-lg font-black text-white">${k?'연맹 전술 브리핑 & 내 프로필 카드 공유 준비 완료':'Alliance Tactical Card & Roster Ready to Share'}</h2>
@@ -503,12 +529,12 @@ function copyAllianceSummaryCard(){
   const total = playersDB.length;
   const tgList = playersDB.map(p=>`${p.nickname}(#${p.kingdom||'?'} / ${p.tc_level||'TC30'})`).join(', ') || (k?'등록된 인원 없음':'No members yet');
   const txt = k
-    ? `[👑 Kingshot Tactical Hub v0.5.0 연맹 현황]\n• 등록 연맹원: ${total}명 (평균 전투력: ${total?Math.round(playersDB.reduce((a,b)=>a+(Number(b.power)||0),0)/total).toLocaleString():0})\n• 명단: ${tgList}`
-    : `[👑 Kingshot Tactical Hub v0.5.0 Roster]\n• Registered: ${total} players\n• List: ${tgList}`;
+    ? `[👑 Kingshot Tactical Hub v0.5.1 연맹 현황]\n• 등록 연맹원: ${total}명 (평균 전투력: ${total?Math.round(playersDB.reduce((a,b)=>a+(Number(b.power)||0),0)/total).toLocaleString():0})\n• 명단: ${tgList}`
+    : `[👑 Kingshot Tactical Hub v0.5.1 Roster]\n• Registered: ${total} players\n• List: ${tgList}`;
   copyText(txt);
 }
 
-/* ==================== NEW v0.5.0: RALLY & GARRISON TROOP RATIO SIMULATOR ==================== */
+/* ==================== NEW v0.5.1: RALLY & GARRISON TROOP RATIO SIMULATOR ==================== */
 function renderSim(){
   const k = lang==='ko';
   const presets = [
@@ -524,7 +550,7 @@ function renderSim(){
     <div class="tac-card rounded-2xl p-4 space-y-3.5">
       <div class="flex items-center justify-between">
         <h2 class="text-base font-black text-white">${k?'🧮 랠리 & 수성 병력 비율 시뮬레이터':'🧮 Rally & Garrison Troop Simulator'}</h2>
-        <span class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 font-mono-code text-[10px]">v0.5.0</span>
+        <span class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 font-mono-code text-[10px]">v0.5.1</span>
       </div>
 
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
@@ -625,7 +651,7 @@ function renderRoster(){
         </div>
       </div>
 
-      <!-- Alliance TG Distribution Chart (NEW v0.5.0) -->
+      <!-- Alliance TG Distribution Chart (NEW v0.5.1) -->
       <div class="tac-card rounded-2xl p-4 space-y-2.5">
         <div class="flex items-center justify-between">
           <h3 class="text-sm font-black text-white">${k?'📊 연맹 도시센터 / TG 분포 차트':'📊 Alliance TC / TG Distribution'}</h3>
@@ -697,7 +723,7 @@ async function searchOrLookupPlayer(){
       const d = await res.json();
       if(d && d.data && d.data.nickname){
         document.getElementById('regNick').value = d.data.nickname;
-        if(d.data.kid) document.getElementById('regKingdom').value = d.data.kid;
+        if(d.data.kid) document.getElementById('regKingdom').value = d.data.kid; if(d.data.stove_lv) document.getElementById('regTc').value = stoveToLabel(d.data.stove_lv);
         st.innerHTML = `<span class="text-emerald-400">🟢 공식 서버 연동 성공: ${d.data.nickname} (#${d.data.kid||''})</span>`;
       }
     }
@@ -712,14 +738,23 @@ async function savePlayerProfile(){
   const pwr = parseInt(document.getElementById('regPower').value) || 0;
   if(!pid || !nick){ showToast(lang==='ko'?'ID와 닉네임을 입력하세요':'Enter ID & Nickname'); return; }
 
-  const rec = { player_id: pid, nickname: nick, kingdom: kd, tc_level: tc, power: pwr };
+  const rec = { player_id: pid, nickname: nick, kingdom: kd, tc_level: tc, power: pwr, updated_at: new Date().toISOString() };
   playersDB = [rec, ...playersDB.filter(x=>String(x.player_id)!==pid)];
   localStorage.setItem('ks_players_cache', JSON.stringify(playersDB));
   setActiveProfile(rec, false);
-  showToast(lang==='ko'?'프로필 저장 완료!':'Profile Saved!');
+  showToast(lang==='ko'?'Supabase DB 저장 완료!':'Saved to Supabase DB!');
 
-  if(sb){
-    try { await sb.from('players').upsert(rec, { onConflict: 'player_id' }); } catch(e) {}
+  if(sb && /^\d+$/.test(pid)){
+    try {
+      await sb.from('players').upsert({
+        fid: Number(pid),
+        nickname: nick,
+        kid: kd ? Number(kd) : null,
+        stove_lv: labelToStove(tc),
+        power_memo: String(pwr),
+        updated_at: new Date().toISOString()
+      }, { onConflict: 'fid' });
+    } catch(e) {}
   }
   renderRoster();
 }
@@ -728,7 +763,7 @@ async function deletePlayer(pid){
   playersDB = playersDB.filter(x=>String(x.player_id)!==String(pid));
   localStorage.setItem('ks_players_cache', JSON.stringify(playersDB));
   if(activePlayer && String(activePlayer.player_id)===String(pid)) setActiveProfile(playersDB[0]||null, false);
-  if(sb){ try { await sb.from('players').delete().eq('player_id', pid); } catch(e) {} }
+  if(sb && /^\d+$/.test(String(pid))){ try { await sb.from('players').delete().eq('fid', Number(pid)); } catch(e) {} }
   showToast(lang==='ko'?'삭제되었습니다':'Deleted');
   renderRoster();
 }
@@ -1080,7 +1115,7 @@ function renderMac(){
 function renderNotes(){
   const k=lang==='ko';
   const logs=[
-    {v:'v0.5.0 (Current)',d:'2026-11-21',t:'Jeabslist-Inspired Tactical UI + New Simulators',ko:['다크 택티컬 대시보드 전면 개편: 상단 통합 검색 캡슐 + 라이브 KvK·연맹 리셋 카운트다운 배너 + 2열 사선 네온 퀵 그리드 + 모바일 하단 고정 독(Bottom Dock)','신규 킬러 기능 탑재: 랠리·수성 병력 비율 시뮬레이터(50:20:30 / 60:20:20 / 10:10:80) 및 연맹 TC/TG 분포 차트','플레이어 프로필 활성화(상단 우측 프로필 배지 연동), 왕국(#) 필터, 원클릭 연맹 통계 공유 카드 추가'],en:['Redesigned dark tactical dashboard with unified search capsule, live countdown banners, diagonal neon 2-col tiles & mobile bottom dock','Added Rally/Garrison Troop Ratio Simulator & Alliance TC/TG Distribution Chart','Added active profile switcher pill, #Kingdom filter & one-tap Alliance Share Card']},
+    {v:'v0.5.1 (Current)',d:'2026-11-21',t:'Jeabslist-Inspired Tactical UI + New Simulators',ko:['다크 택티컬 대시보드 전면 개편: 상단 통합 검색 캡슐 + 라이브 KvK·연맹 리셋 카운트다운 배너 + 2열 사선 네온 퀵 그리드 + 모바일 하단 고정 독(Bottom Dock)','신규 킬러 기능 탑재: 랠리·수성 병력 비율 시뮬레이터(50:20:30 / 60:20:20 / 10:10:80) 및 연맹 TC/TG 분포 차트','플레이어 프로필 활성화(상단 우측 프로필 배지 연동), 왕국(#) 필터, 원클릭 연맹 통계 공유 카드 추가'],en:['Redesigned dark tactical dashboard with unified search capsule, live countdown banners, diagonal neon 2-col tiles & mobile bottom dock','Added Rally/Garrison Troop Ratio Simulator & Alliance TC/TG Distribution Chart','Added active profile switcher pill, #Kingdom filter & one-tap Alliance Share Card']},
     {v:'v0.4.6',d:'2026-11-20',t:'Supabase DB & Gift Code Sync',ko:['Supabase players / gift_codes 실시간 동기화 및 선물 코드 일괄 발송기 통합'],en:['Integrated Supabase players & gift_codes sync with batch code sender']},
     {v:'v0.4.2',d:'2026-11-19',t:'PC Hybrid & Dev Notes',ko:['PC 와이드 사이드바·전술 AI 도킹 및 개발자 노트 신설'],en:['Added PC sidebar, Tactical AI dock & Dev Notes']}
   ];
@@ -1088,7 +1123,7 @@ function renderNotes(){
   <div class="max-w-3xl mx-auto space-y-3 text-xs">
     <div class="tac-card rounded-2xl p-4 flex items-center justify-between border-sky-500/40">
       <div><h2 class="text-base font-black text-white">${k?'📋 개발자 노트 & 업데이트 로드맵':'📋 Developer Notes & Roadmap'}</h2><p class="text-slate-400 mt-0.5">${k?'v0.5.1 ~ v0.5.99 패치 후 3일 뒤 v0.6.0 업데이트 예정':'v0.5.1–v0.5.99 patches leading to v0.6.0 in 3 days'}</p></div>
-      <span class="px-3 py-1 rounded-xl bg-sky-500/15 border border-sky-400/40 text-sky-300 font-mono-code font-bold">v0.5.0</span>
+      <span class="px-3 py-1 rounded-xl bg-sky-500/15 border border-sky-400/40 text-sky-300 font-mono-code font-bold">v0.5.1</span>
     </div>
     ${logs.map(l=>`<div class="tac-card rounded-2xl p-4 space-y-2"><div class="flex justify-between items-center"><b class="font-display text-sm text-amber-400">${l.v}</b><span class="font-mono-code text-slate-400">${l.d}</span></div><ul class="space-y-1 text-slate-300">${(k?l.ko:l.en).map(x=>`<li>• ${x}</li>`).join('')}</ul></div>`).join('')}
   </div>`;
@@ -1109,7 +1144,7 @@ function renderAi(){
     </div>
     <div class="p-2 bg-slate-950/60 border-b border-slate-800 flex flex-wrap gap-1">${chips.map(c=>`<button type="button" onclick="askAi('${c}')" class="px-2.5 py-1 rounded-lg bg-[#151c28] hover:border-sky-400 text-slate-200 border border-slate-800 text-[11px]">${c}</button>`).join('')}</div>
     <div id="aiLog" class="p-3.5 space-y-2 min-h-[220px] max-h-[45vh] overflow-y-auto">
-      <div class="p-2.5 rounded-xl bg-slate-950 border border-slate-800 text-slate-200">${k?'안녕하세요! Kingshot Hub v0.5.0 전술 AI입니다. 질문을 선택하거나 입력해 주세요.':'Hello! Ask anything about Kingshot tactics.'}</div>
+      <div class="p-2.5 rounded-xl bg-slate-950 border border-slate-800 text-slate-200">${k?'안녕하세요! Kingshot Hub v0.5.1 전술 AI입니다. 질문을 선택하거나 입력해 주세요.':'Hello! Ask anything about Kingshot tactics.'}</div>
     </div>
     <div class="p-2.5 bg-slate-950 border-t border-slate-800 flex gap-1.5">
       <input id="aiIn" onkeydown="if(event.key==='Enter')askAi()" placeholder="${k?'전술 질문 입력...':'Ask AI...'}" class="flex-1 bg-[#151c28] border border-slate-700 rounded-xl px-3 py-2 text-white"/>
