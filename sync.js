@@ -1,7 +1,7 @@
 const crypto = require('crypto');
 
-const SUPABASE_URL = process.env.SUPABASE_URL;
-const SERVICE_KEY = process.env.SUPABASE_SERVICE_KEY;
+const SUPABASE_URL = 'https://soyodukrsykhgsufwtth.supabase.co';
+const SERVICE_KEY = (process.env.SUPABASE_SERVICE_KEY || '').trim();
 const SECRET = 'mN4!pQs6JrYwV9';
 
 function sbHeaders(extra = {}) {
@@ -30,8 +30,8 @@ async function fetchPlayer(fid) {
 }
 
 async function run() {
-  if (!SUPABASE_URL || !SERVICE_KEY) {
-    throw new Error('Missing SUPABASE_URL or SUPABASE_SERVICE_KEY secret!');
+  if (!SERVICE_KEY) {
+    throw new Error('Missing SUPABASE_SERVICE_KEY secret!');
   }
 
   const listRes = await fetch(`${SUPABASE_URL}/rest/v1/players?select=fid`, {
