@@ -72,7 +72,7 @@ let curTab = 'search';
 
 const SUPABASE_URL = "https://soyodukrsykhgsufwtth.supabase.co";
 const SUPABASE_KEY = "sb_publishable_mHkDQ668sCfxQSJO61qAGA_vkbw_I94";
-const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const sb = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
 
 const TABS = {
   ko: [
@@ -175,6 +175,7 @@ function timeAgo(iso) {
 }
 
 async function enqueuePlayerLookup(fid) {
+  if (!sb) return;
   try {
     const { data } = await sb.from('lookup_queue').select('id').eq('fid', fid).eq('status', 'pending').limit(1);
     if (!data || data.length === 0) {
@@ -252,7 +253,7 @@ async function runHubSearch() {
   const raw = document.getElementById('hubSearchIn').value.trim();
   const area = document.getElementById('searchResultArea');
   const k = lang === 'ko';
-  if (!raw) { area.innerHTML = ''; return; }
+  if (!raw || !sb) { area.innerHTML = ''; return; }
 
   area.innerHTML = `<div class="text-zinc-400 py-1">${k ? '공용 DB 조회 중...' : 'Searching Public DB...'}</div>`;
 
@@ -293,7 +294,6 @@ async function runHubSearch() {
 
   if (list.length > 0) {
     area.innerHTML = list.map(p => renderPlayerCard(p, true)).join('');
-    // 숫자 ID 조회 시 홈 워커가 켜져 있으면 백그라운드에서 최신 TG 등급 자동 갱신 큐 등록
     if (isNum) enqueuePlayerLookup(Number(raw));
     return;
   }
@@ -371,6 +371,7 @@ function renderPlayerCard(p, editable) {
 }
 
 async function quickSavePlayer(fid) {
+  if (!sb) return;
   const nickname = (document.getElementById('qNick_' + fid)?.value || '').trim() || ('Governor_' + fid);
   const kid = parseInt(document.getElementById('qKid_' + fid)?.value, 10) || null;
   const stove_lv = parseStoveNum(document.getElementById('qLv_' + fid)?.value);
@@ -387,6 +388,7 @@ async function quickSavePlayer(fid) {
 }
 
 async function registerKingdomDb() {
+  if (!sb) return;
   const kid = parseInt(document.getElementById('kRegId').value, 10);
   const season_result = document.getElementById('kRegRes').value.trim();
   const transfer_group = parseInt(document.getElementById('kRegGrp').value, 10) || null;
@@ -407,7 +409,7 @@ async function loadLiveLists() {
   const k = lang === 'ko';
   const pBox = document.getElementById('livePlayersBox');
   const kBox = document.getElementById('liveKingdomsBox');
-  if (!pBox || !kBox) return;
+  if (!pBox || !kBox || !sb) return;
 
   const [{ data: players, count }, { data: kingdoms }] = await Promise.all([
     sb.from('players').select('*', { count: 'exact' }).order('updated_at', { ascending: false }).limit(15),
@@ -441,7 +443,7 @@ async function loadLiveLists() {
 
 async function loadGiftCodesDb() {
   const box = document.getElementById('giftCodeBox');
-  if (!box) return;
+  if (!box || !sb) return;
   const { data } = await sb.from('gift_codes').select('*').order('created_at', { ascending: false }).limit(12);
   if (!data || data.length === 0) {
     box.innerHTML = `<div class="p-3 rounded-xl bg-zinc-950 text-zinc-400 col-span-2">${lang === 'ko' ? '등록된 선물 코드가 없습니다. 위 입력창에서 첫 코드를 공유해 보세요!' : 'No gift codes yet.'}</div>`;
@@ -458,6 +460,7 @@ async function loadGiftCodesDb() {
 }
 
 async function addGiftCodeDb() {
+  if (!sb) return;
   const code = document.getElementById('newCodeIn').value.trim().toUpperCase();
   const reward = document.getElementById('newCodeNote').value.trim();
   if (!code) return;
@@ -658,23 +661,13 @@ function delRos(type, i) {
 function cpRos(type, mode) {
   const list = type === 'sw' ? swRos : triRos;
   const g = r => list.filter(x => x.r === r).map(x => x.n).join(', ') || '-';
-  const ko = type === 'sw' ? `[🗡️ 성검전 배정]
-🛡️ Tank: ${g('tank')}
-⚔️ DPS: ${g('dps')}
-💚 Support: ${g('support')}` : `[🚩 삼대연맹전 편성]
-⚔️ 공격조: ${g('attack')}
-🛡️ 수비조: ${g('defender')}
-⚡ 기동조: ${g('floater')}`;
-  const en = type === 'sw' ? `[🗡️ Swordland Roster]
-🛡️ Tank: ${g('tank')}
-⚔️ DPS: ${g('dps')}
-💚 Support: ${g('support')}` : `[🚩 Tri-Alliance Squads]
-⚔️ Attack: ${g('attack')}
-🛡️ Defender: ${g('defender')}
-⚡ Floater: ${g('floater')}`;
-  copyText(mode === 'ko' ? ko : mode === 'en' ? en : ko + '
----
-' + en);
+  const ko = type === 'sw'
+    ? `[🗡️ 성검전 배정]\n🛡️ Tank: ${g('tank')}\n⚔️ DPS: ${g('dps')}\n💚 Support: ${g('support')}`
+    : `[🚩 삼대연맹전 편성]\n⚔️ 공격조: ${g('attack')}\n🛡️ 수비조: ${g('defender')}\n⚡ 기동조: ${g('floater')}`;
+  const en = type === 'sw'
+    ? `[🗡️ Swordland Roster]\n🛡️ Tank: ${g('tank')}\n⚔️ DPS: ${g('dps')}\n💚 Support: ${g('support')}`
+    : `[🚩 Tri-Alliance Squads]\n⚔️ Attack: ${g('attack')}\n🛡️ Defender: ${g('defender')}\n⚡ Floater: ${g('floater')}`;
+  copyText(mode === 'ko' ? ko : mode === 'en' ? en : ko + '\n---\n' + en);
 }
 
 /* ==================== TAB 6~13: REMAINING MODULES ==================== */
@@ -757,32 +750,10 @@ function renderMys() {
 }
 
 const macros = [
-  { tKo: '🐻 베어 헌트 규칙 공지', tEn: '🐻 Bear Hunt Rules', ko: '[🐻 베어 헌트 필독]
-1. 참여자 1번 슬롯: 첸코, 연우, 아마데우스, 아마네, 마고, 비비안만 배치! (헬가·하워드·고든 금지)
-2. 병종 비율: 보10% : 기10% : 궁80%
-3. 시작 5분 전 채집 복귀 & 자동 집결 해제!', en: '[🐻 Bear Hunt Rules]
-1. Slot 1 Joiners ONLY: Chenko, Yeonwoo, Amadeus, Amane, Margot, Vivian
-2. Ratio: 10% Inf / 10% Cav / 80% Archers
-3. Recall gatherers & turn OFF Auto-Join 5m before start!' },
-  { tKo: '🛡️ 바이킹의 복수 공지', tEn: '🛡️ Viking Rules', ko: '[🛡️ 바이킹의 복수]
-1. 본인 성 100% 비우기 (모든 병력 동료 지원 파병)
-2. 이벤트 중 치료 금지
-3. 7·14·17 온라인 집중 지원 / 10·20 연맹 본부 방패보병 수비', en: '[🛡️ Viking Vengeance]
-1. Empty city 100% (reinforce allies)
-2. No healing during event
-3. Waves 7/14/17 online reinforce / 10/20 HQ Shield Inf garrison' },
-  { tKo: '⚔️ KvK 전투 단계 공지', tEn: '⚔️ KvK Battle Notice', ko: '[⚔️ KvK 전투 작전]
-1. 10:00 UTC 국경 개방 즉시 정찰 방지 & 전투 버프 활성화
-2. 야전 병원 초과 금지 (30분 단위 배치 치료 & 연맹 도움)', en: '[⚔️ KvK Battle Phase]
-1. Activate Anti-Scout & Combat Buffs at 10:00 UTC
-2. Never overflow Infirmary—batch heal every 30m!' },
-  { tKo: '🚩 삼대연맹전 작전 오더', tEn: '🚩 Tri-Alliance Orders', ko: '[🚩 삼대연맹전]
-1. 3~20분: 환승 센터 최우선 선점
-2. 20~40분: 주둔지 2곳 이상 점령 및 주둔 대장 지정
-3. 40~60분: 해신 신전 총력 사수 (+50,000점 보너스!)', en: '[🚩 Tri-Alliance Clash]
-1. 3–20m: Rush Transit Centers
-2. 20–40m: Hold 2+ Garrisons
-3. 40–60m: Secure Sea God Temple (+50,000 bonus!)' }
+  { tKo: '🐻 베어 헌트 규칙 공지', tEn: '🐻 Bear Hunt Rules', ko: '[🐻 베어 헌트 필독]\n1. 참여자 1번 슬롯: 첸코, 연우, 아마데우스, 아마네, 마고, 비비안만 배치! (헬가·하워드·고든 금지)\n2. 병종 비율: 보10% : 기10% : 궁80%\n3. 시작 5분 전 채집 복귀 & 자동 집결 해제!', en: '[🐻 Bear Hunt Rules]\n1. Slot 1 Joiners ONLY: Chenko, Yeonwoo, Amadeus, Amane, Margot, Vivian\n2. Ratio: 10% Inf / 10% Cav / 80% Archers\n3. Recall gatherers & turn OFF Auto-Join 5m before start!' },
+  { tKo: '🛡️ 바이킹의 복수 공지', tEn: '🛡️ Viking Rules', ko: '[🛡️ 바이킹의 복수]\n1. 본인 성 100% 비우기 (모든 병력 동료 지원 파병)\n2. 이벤트 중 치료 금지\n3. 7·14·17 온라인 집중 지원 / 10·20 연맹 본부 방패보병 수비', en: '[🛡️ Viking Vengeance]\n1. Empty city 100% (reinforce allies)\n2. No healing during event\n3. Waves 7/14/17 online reinforce / 10/20 HQ Shield Inf garrison' },
+  { tKo: '⚔️ KvK 전투 단계 공지', tEn: '⚔️ KvK Battle Notice', ko: '[⚔️ KvK 전투 작전]\n1. 10:00 UTC 국경 개방 즉시 정찰 방지 & 전투 버프 활성화\n2. 야전 병원 초과 금지 (30분 단위 배치 치료 & 연맹 도움)', en: '[⚔️ KvK Battle Phase]\n1. Activate Anti-Scout & Combat Buffs at 10:00 UTC\n2. Never overflow Infirmary—batch heal every 30m!' },
+  { tKo: '🚩 삼대연맹전 작전 오더', tEn: '🚩 Tri-Alliance Orders', ko: '[🚩 삼대연맹전]\n1. 3~20분: 환승 센터 최우선 선점\n2. 20~40분: 주둔지 2곳 이상 점령 및 주둔 대장 지정\n3. 40~60분: 해신 신전 총력 사수 (+50,000점 보너스!)', en: '[🚩 Tri-Alliance Clash]\n1. 3–20m: Rush Transit Centers\n2. 20–40m: Hold 2+ Garrisons\n3. 40–60m: Secure Sea God Temple (+50,000 bonus!)' }
 ];
 
 function renderMac() {
@@ -804,9 +775,7 @@ function renderMac() {
     </div>
   </div>`;
 }
-function cpMac(i, m) { const x = macros[i]; copyText(m === 'ko' ? x.ko : m === 'en' ? x.en : x.ko + '
----
-' + x.en); }
+function cpMac(i, m) { const x = macros[i]; copyText(m === 'ko' ? x.ko : m === 'en' ? x.en : x.ko + '\n---\n' + x.en); }
 
 function renderNotes() {
   const k = lang === 'ko';
