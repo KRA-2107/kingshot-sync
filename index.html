@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
-<title>KINGSHOT hub v0.5.5 | Global Tactical Hub</title>
+<title>KINGSHOT hub v0.5.6 | Global Tactical Hub</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
@@ -50,12 +50,12 @@ body{
 <!-- Mobile + Tablet Top Tactical Bar -->
 <header class="lg:hidden sticky top-0 z-30 glass border-b border-rose-500/25">
   <div class="px-3 pt-2.5 pb-2 space-y-2">
-    <!-- Row 1: KINGSHOT hub v0.5.5 + KO/EN + Notes Bell + Drawer -->
+    <!-- Row 1: KINGSHOT hub v0.5.6 + KO/EN + Notes Bell + Drawer -->
     <div class="flex items-center justify-between gap-2">
       <div class="flex items-center gap-2">
         <span class="w-6 h-6 rounded-lg bg-gradient-to-br from-rose-500 to-red-700 text-white font-display font-extrabold text-[11px] flex items-center justify-center crimson-glow">KS</span>
         <span class="font-display font-extrabold text-sm sm:text-base tracking-tight text-white">KINGSHOT <span class="text-rose-400">hub</span></span>
-        <span class="px-2 py-0.5 rounded-md bg-rose-500/20 border border-rose-500/45 text-rose-300 font-mono-code font-bold text-[10px]">v0.5.5</span>
+        <span class="px-2 py-0.5 rounded-md bg-rose-500/20 border border-rose-500/45 text-rose-300 font-mono-code font-bold text-[10px]">v0.5.6</span>
       </div>
       <div class="flex items-center gap-1.5">
         <div class="flex bg-zinc-950 p-0.5 rounded-lg border border-zinc-800">
@@ -64,7 +64,7 @@ body{
         </div>
         <button type="button" onclick="switchTab('notes')" class="relative p-1.5 rounded-lg bg-zinc-900 border border-zinc-800 text-zinc-200">
           <span class="text-xs">🔔</span>
-          <span class="absolute -top-1.5 -right-1 px-1 rounded-full bg-rose-600 text-white font-mono-code font-bold text-[8px]">5.5</span>
+          <span class="absolute -top-1.5 -right-1 px-1 rounded-full bg-rose-600 text-white font-mono-code font-bold text-[8px]">5.6</span>
         </button>
         <button type="button" onclick="toggleDrawer()" class="px-2.5 py-1 rounded-lg bg-zinc-900 border border-rose-500/35 text-xs font-bold text-rose-200">☰</button>
       </div>
@@ -91,7 +91,7 @@ body{
   <div onclick="toggleDrawer()" class="absolute inset-0 bg-black/75 backdrop-blur-sm"></div>
   <div class="absolute bottom-0 inset-x-0 glass rounded-t-3xl border-t border-rose-500/40 p-4 pb-8 space-y-3 max-h-[80vh] overflow-y-auto">
     <div class="flex items-center justify-between">
-      <span class="text-sm font-black text-rose-400" data-i="allMenu">🔥 전체 전술 도구 (v0.5.5)</span>
+      <span class="text-sm font-black text-rose-400" data-i="allMenu">🔥 전체 전술 도구 (v0.5.6)</span>
       <button type="button" onclick="toggleDrawer()" class="px-2.5 py-1 rounded-lg bg-zinc-900 border border-zinc-700 text-xs font-bold text-zinc-300">✕</button>
     </div>
     <div id="drawerGrid" class="grid grid-cols-2 sm:grid-cols-3 gap-2"></div>
@@ -109,7 +109,7 @@ body{
         <div>
           <div class="flex items-center gap-1.5">
             <span class="font-display text-sm font-extrabold text-white">KINGSHOT <span class="text-rose-400">hub</span></span>
-            <span class="text-[10px] font-mono-code font-bold px-1.5 py-0.5 rounded-md bg-rose-500/20 text-rose-300 border border-rose-500/40">v0.5.5</span>
+            <span class="text-[10px] font-mono-code font-bold px-1.5 py-0.5 rounded-md bg-rose-500/20 text-rose-300 border border-rose-500/40">v0.5.6</span>
           </div>
           <div class="text-[10px] text-rose-400 font-semibold mt-0.5">● GLOBAL TACTICAL SUITE</div>
         </div>
@@ -161,7 +161,7 @@ let cachedPlayers = [], kidFilter = 'ALL';
 
 const T = {
   ko: {
-    allMenu:"🔥 전체 전술 도구 (v0.5.5)", goBtn:"이동",
+    allMenu:"🔥 전체 전술 도구 (v0.5.6)", goBtn:"이동",
     dk1:"홈", dk2:"병력/검색", dk3:"베어/KvK", dk4:"전술 AI", dk5:"전체메뉴",
     tabs:[
       ['search','🏠 허브'],['kvk','⚔️ KvK ▾'],['bear','🐻 베어 헌트'],
@@ -172,7 +172,7 @@ const T = {
     ]
   },
   en: {
-    allMenu:"🔥 All Tactical Tools (v0.5.5)", goBtn:"Go",
+    allMenu:"🔥 All Tactical Tools (v0.5.6)", goBtn:"Go",
     dk1:"Home", dk2:"Troops/DB", dk3:"Bear/KvK", dk4:"Tactical AI", dk5:"All Menu",
     tabs:[
       ['search','🏠 Hub'],['kvk','⚔️ KvK ▾'],['bear','🐻 Bear Hunt'],
@@ -234,7 +234,7 @@ function renderNav(){
   ).join('');
 
   document.getElementById('pcNav').innerHTML = items.filter(([id])=>id!=='ai').map(([id,lbl])=>
-    `<button type="button" onclick="switchTab('${id}')" class="tab-btn w-full text-left px-3 py-2 rounded-xl border text-xs font-bold flex items-center justify-between ${curTab===id?'active':'border-transparent text-zinc-300 hover:bg-zinc-900/80'}"><span>${lbl}</span>${id==='notes'?'<span class="text-[9px] px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-300 font-mono-code">5.5</span>':''}</button>`
+    `<button type="button" onclick="switchTab('${id}')" class="tab-btn w-full text-left px-3 py-2 rounded-xl border text-xs font-bold flex items-center justify-between ${curTab===id?'active':'border-transparent text-zinc-300 hover:bg-zinc-900/80'}"><span>${lbl}</span>${id==='notes'?'<span class="text-[9px] px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-300 font-mono-code">5.6</span>':''}</button>`
   ).join('');
 
   ['search','rally','bear','ai'].forEach(id=>{
@@ -576,22 +576,33 @@ async function runHubSearch(){
     const fid = parseInt(raw);
     area.innerHTML = `<div class="glass rounded-2xl p-3.5 border-rose-500/40 text-rose-300 font-mono-code">⏳ ${k?'프록시 서버 통해 인게임 프로필 조회 중...':'Fetching live profile via API proxy...'}</div>`;
     let fetched = null;
-    try {
-      const pRes = await fetch('/.netlify/functions/ks-proxy', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'player', fid: String(fid) })
-      });
-      if (pRes.ok) {
-        const pJson = await pRes.json();
-        if (pJson?.ok && pJson?.data?.data) {
-          fetched = pJson.data.data;
-          if(badge){ badge.textContent = '🟢 API Live Sync'; badge.className = 'px-2.5 py-1 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 font-mono-code text-[10px]'; }
-        } else {
-          if(badge){ badge.textContent = '🔴 Manual Edit Mode'; badge.className = 'px-2.5 py-1 rounded-full bg-rose-500/20 border border-rose-500/40 text-rose-300 font-mono-code text-[10px]'; }
+    let proxyVia = '';
+    let proxyTrace = '';
+    const PROXY_URLS = ['https://ks-edge-proxy.ghb0909.workers.dev/', '/.netlify/functions/ks-proxy'];
+    for (const pUrl of PROXY_URLS) {
+      try {
+        const pRes = await fetch(pUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'player', fid: String(fid) })
+        });
+        if (pRes.ok) {
+          const pJson = await pRes.json();
+          if (pJson?.ok && pJson?.data?.data) {
+            fetched = pJson.data.data;
+            proxyVia = pJson.via || (pUrl.includes('workers.dev') ? 'CF-ICN Edge' : 'Netlify');
+            break;
+          } else if (pJson?.traces && pJson.traces.length) {
+            proxyTrace = pJson.traces[0];
+          }
         }
-      }
-    } catch (e) {}
+      } catch (e) {}
+    }
+    if (fetched) {
+      if(badge){ badge.textContent = '🟢 Live Sync (' + proxyVia.split(' ')[0] + ')'; badge.className = 'px-2.5 py-1 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 font-mono-code text-[10px]'; }
+    } else {
+      if(badge){ badge.textContent = '🔴 Manual Edit Mode' + (proxyTrace ? ' [' + proxyTrace.slice(0,22) + ']' : ''); badge.className = 'px-2.5 py-1 rounded-full bg-rose-500/20 border border-rose-500/40 text-rose-300 font-mono-code text-[10px]'; }
+    }
 
     const existing = (list && list[0]) ? list[0] : {};
     const merged = {
@@ -608,7 +619,7 @@ async function runHubSearch(){
       headers: { Prefer: 'resolution=merge-duplicates' },
       body: JSON.stringify(merged)
     });
-    const note = fetched ? (k?'🟢 실시간 API 동기화됨':'🟢 Live API Synced') : (k?'🔴 수동 편집 모드 (아래에서 닉네임·등급 저장)':'🔴 Manual Edit Mode');
+    const note = fetched ? (k?'🟢 실시간 API 동기화됨 ('+proxyVia+')':'🟢 Live API Synced') : (k?'🔴 수동 편집 모드'+(proxyTrace?' ['+proxyTrace+']':''):'🔴 Manual Edit Mode');
     area.innerHTML = renderEditablePlayerCard(merged, note);
     loadLiveLists();
     return;
@@ -682,12 +693,19 @@ async function runBulkGiftRedeem(){
   for(const p of players){
     const label = `${p.nickname || 'Governor'} (${p.fid})`;
     try{
-      const r2 = await fetch('/.netlify/functions/ks-proxy', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'redeem', fid: String(p.fid), cdk: cdk })
-      });
-      const pJson = await r2.json();
+      let pJson = null;
+      for (const pUrl of ['https://ks-edge-proxy.ghb0909.workers.dev/', '/.netlify/functions/ks-proxy']) {
+        try {
+          const r2 = await fetch(pUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'redeem', fid: String(p.fid), cdk: cdk })
+          });
+          const tmp = await r2.json();
+          if (tmp?.ok) { pJson = tmp; break; }
+          if (!pJson) pJson = tmp;
+        } catch (e) {}
+      }
       if(pJson?.ok && pJson?.data){
         const j2 = pJson.data;
         const ok = j2?.code === 0 || j2?.err_code === 20000;
@@ -1357,11 +1375,11 @@ function renderMac(){
 }
 function cpMac(i,m){const x=macros[i];copyText(m==='ko'?x.ko:m==='en'?x.en:x.ko+'\n---\n'+x.en);}
 
-/* ==================== TAB 11: FULL CHANGELOG ARCHIVE (v0.1.0 ~ v0.5.5) ==================== */
+/* ==================== TAB 11: FULL CHANGELOG ARCHIVE (v0.1.0 ~ v0.5.6) ==================== */
 function renderNotes(){
   const k=lang==='ko';
   const logs=[
-    {ver:'v0.5.5 (Current)',date:'2026-11-21',badge:'Global Neutral Branding',ko:['모든 왕국·연맹에서 범용적으로 활용할 수 있도록 특정 연맹/서버명 표기를 제거하고 글로벌 브랜드(KINGSHOT hub)로 통일','다크 크림슨·로즈 네온 테마, 마이크로 그리드 UI, Pretendard·Syne·JetBrains Mono 타이포그래피 최적화 유지','공지 매크로·전술 AI·상단 배너·DB 구조를 전 서버 범용 규격으로 정비'],en:['Removed alliance-specific tags and unified branding under KINGSHOT hub for multi-server adoption','Retained Dark Crimson & Rose Neon theme, micro-grid UI & Pretendard/Syne/JetBrains Mono typography','Standardized alliance macros, Tactical AI & dashboard banners for global servers']},
+    {ver:'v0.5.6 (Current)',date:'2026-11-21',badge:'Global Neutral Branding',ko:['모든 왕국·연맹에서 범용적으로 활용할 수 있도록 특정 연맹/서버명 표기를 제거하고 글로벌 브랜드(KINGSHOT hub)로 통일','다크 크림슨·로즈 네온 테마, 마이크로 그리드 UI, Pretendard·Syne·JetBrains Mono 타이포그래피 최적화 유지','공지 매크로·전술 AI·상단 배너·DB 구조를 전 서버 범용 규격으로 정비'],en:['Removed alliance-specific tags and unified branding under KINGSHOT hub for multi-server adoption','Retained Dark Crimson & Rose Neon theme, micro-grid UI & Pretendard/Syne/JetBrains Mono typography','Standardized alliance macros, Tactical AI & dashboard banners for global servers']},
     {ver:'v0.5.3',date:'2026-11-21',badge:'Crimson UI Overhaul',ko:['다크 크림슨·로즈 네온 테마 및 마이크로 그리드 UI 적용','v0.5.2 상단 통합 검색 캡슐, 라이브 카운트다운 배너, 2열 퀵 그리드, 모바일 5슬롯 하단 독(Bottom Dock) 및 Supabase 스키마(power_memo 포함) 100% 계승'],en:['Applied Dark Crimson & Rose neon dark theme with micro-grid UI','Preserved v0.5.2 top search capsule, live countdown banner, 2-row quick grid, 5-slot Bottom Dock & full Supabase schema (including power_memo)']},
     {ver:'v0.5.2',date:'2026-11-21',badge:'Full Changelog',ko:['개발자 노트(Dev Notes)에 v0.1.0 초기 빌드부터 v0.5.2 현재 버전까지 모든 업데이트 이력 및 패치 내역 100% 투명 공개','버전별 주요 추가 기능, UI 개편 내역, DB·프록시 구조 개선 히스토리 통합 아카이브 구축'],en:['Published full transparent changelog archive from v0.1.0 to v0.5.2','Consolidated feature releases, UI overhauls & DB/proxy architecture history']},
     {ver:'v0.5.1',date:'2026-11-21',badge:'DB Schema Sync',ko:['기존 Supabase players 테이블(fid, nickname, kid, stove_lv, power_memo) 및 sync.js 자동 갱신 봇과 100% 직통 호환 연동','게임 API 조회 시 도시센터 등급(TC/TG) 및 왕국 번호(#) 자동 입력 지원'],en:['100% compatible sync with Supabase players schema (fid, nickname, kid, stove_lv, power_memo) & sync.js bot','Auto-fills TC/TG level and Kingdom # on game API lookup']},
@@ -1376,11 +1394,11 @@ function renderNotes(){
   document.getElementById('mainApp').innerHTML=`
   <div class="max-w-4xl mx-auto space-y-3.5 text-xs">
     <div class="glass rounded-2xl p-4 border-rose-500/45 space-y-2.5">
-      <h2 class="text-base font-black text-white">${k?'📋 전체 업데이트 개발자 노트 (v0.1.0 ~ v0.5.5)':'📋 Full Update Changelog (v0.1.0 ~ v0.5.5)'}</h2>
-      <p class="text-zinc-400">${k?'초기 출범(v0.1.0)부터 현재까지의 모든 기능 추가·UI 개편·버그 수정 이력을 투명하게 기록합니다.':'Transparent archive of all features, UI updates & DB improvements from v0.1.0 to v0.5.5.'}</p>
+      <h2 class="text-base font-black text-white">${k?'📋 전체 업데이트 개발자 노트 (v0.1.0 ~ v0.5.6)':'📋 Full Update Changelog (v0.1.0 ~ v0.5.6)'}</h2>
+      <p class="text-zinc-400">${k?'초기 출범(v0.1.0)부터 현재까지의 모든 기능 추가·UI 개편·버그 수정 이력을 투명하게 기록합니다.':'Transparent archive of all features, UI updates & DB improvements from v0.1.0 to v0.5.6.'}</p>
       <div class="flex flex-wrap gap-2 pt-1">
-        <span class="px-2.5 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/40 text-emerald-300 font-mono-code font-bold text-[11px]">12 Milestones</span>
-        <span class="px-2.5 py-1 rounded-full bg-rose-500/20 border border-rose-500/45 text-rose-300 font-mono-code font-bold text-[11px]">v0.5.5 Crimson Edition</span>
+        <span class="px-2.5 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/40 text-emerald-300 font-mono-code font-bold text-[11px]">13 Milestones</span>
+        <span class="px-2.5 py-1 rounded-full bg-rose-500/20 border border-rose-500/45 text-rose-300 font-mono-code font-bold text-[11px]">v0.5.6 Crimson Edition</span>
       </div>
     </div>
     <div class="space-y-3">${logs.map((l,idx)=>`
