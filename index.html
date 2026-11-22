@@ -3,65 +3,81 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>KINGSHOT hub v0.5.7 — Global Strategy & Public DB Hub</title>
+  <title>KINGSHOT hub v0.5.7 — Global Tactical & Public DB Command Center</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
   <style>
     body {
-      background-color: #090a0f;
-      background-image: radial-gradient(#1f2433 1px, transparent 1px);
-      background-size: 20px 20px;
+      background-color: #07080c;
+      background-image:
+        radial-gradient(circle at 15% 15%, rgba(225, 29, 72, 0.14), transparent 35%),
+        radial-gradient(circle at 85% 10%, rgba(190, 18, 60, 0.10), transparent 30%),
+        radial-gradient(#1e2230 1px, transparent 1px);
+      background-size: 100% 100%, 100% 100%, 18px 18px;
       color: #f4f4f5;
       font-family: -apple-system, BlinkMacSystemFont, "Pretendard", "Segoe UI", Roboto, sans-serif;
     }
     .font-display { font-family: 'Syne', sans-serif; }
     .font-mono-code { font-family: 'JetBrains Mono', monospace; }
     .glass {
-      background: rgba(17, 20, 29, 0.92);
-      backdrop-filter: blur(12px);
+      background: rgba(15, 18, 26, 0.90);
+      backdrop-filter: blur(14px);
       border: 1px solid rgba(63, 63, 70, 0.65);
     }
-    .crimson-glow { box-shadow: 0 0 20px rgba(225, 29, 72, 0.28); }
+    .glass-crimson {
+      background: linear-gradient(145deg, rgba(28, 14, 22, 0.92), rgba(15, 18, 26, 0.95));
+      backdrop-filter: blur(14px);
+      border: 1px solid rgba(244, 63, 94, 0.38);
+    }
+    .crimson-glow { box-shadow: 0 0 24px rgba(225, 29, 72, 0.32); }
     .tab-scroll::-webkit-scrollbar { height: 4px; }
     .tab-scroll::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 4px; }
   </style>
 </head>
-<body class="min-h-screen pb-20">
+<body class="min-h-screen pb-24">
 
+  <!-- TOP COMMAND HEADER -->
   <header class="sticky top-0 z-40 glass border-b border-zinc-800/90 px-3 sm:px-6 py-3">
     <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2">
-      <div class="flex items-center gap-2.5">
-        <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-rose-500 to-red-700 flex items-center justify-center font-display font-extrabold text-white text-sm crimson-glow">KS</div>
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-rose-500 via-red-600 to-rose-800 flex items-center justify-center font-display font-extrabold text-white text-sm crimson-glow">KS</div>
         <div>
           <div class="flex items-center gap-2">
-            <span class="font-display font-extrabold text-base sm:text-lg tracking-tight text-white">KINGSHOT <span class="text-rose-500">hub</span></span>
-            <span class="px-2 py-0.5 rounded-full bg-rose-500/20 border border-rose-500/40 text-rose-300 font-mono-code text-[11px] font-bold">v0.5.7</span>
+            <span class="font-display font-extrabold text-base sm:text-xl tracking-tight text-white">KINGSHOT <span class="text-rose-500">hub</span></span>
+            <span class="px-2 py-0.5 rounded-full bg-rose-500/20 border border-rose-500/45 text-rose-300 font-mono-code text-[11px] font-bold">v0.5.7 PRO</span>
           </div>
-          <p id="subBrand" class="text-[11px] text-zinc-400">Global Tactical & Public DB Command Center</p>
+          <p id="subBrand" class="text-[11px] text-zinc-400">Global Tactical Command Center · Full Calculators & Public DB</p>
         </div>
       </div>
 
       <div class="flex items-center gap-2">
-        <span id="dbStatusPill" class="px-2.5 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/40 text-emerald-300 font-mono-code text-[11px]">● Public DB + Queue Ready</span>
+        <span id="dbStatusPill" class="px-2.5 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/40 text-emerald-300 font-mono-code text-[11px]">● Public DB + Queue Live</span>
         <button type="button" onclick="toggleLang()" class="px-3 py-1.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 text-xs font-bold text-white transition">
-          <span id="langBtnTxt">KO / EN</span>
+          <span id="langBtnTxt">🇰🇷 한국어 → EN</span>
         </button>
       </div>
     </div>
 
-    <nav id="tabBar" class="max-w-7xl mx-auto mt-3 flex gap-1.5 overflow-x-auto tab-scroll pb-1 text-xs"></nav>
+    <!-- LIVE BRIEFING TICKER -->
+    <div id="liveTicker" class="max-w-7xl mx-auto mt-2.5 px-3 py-1.5 rounded-xl bg-zinc-950/90 border border-zinc-800/80 flex flex-wrap items-center justify-between gap-2 text-[11px]"></div>
+
+    <!-- 14 TABS NAVIGATION -->
+    <nav id="tabBar" class="max-w-7xl mx-auto mt-2.5 flex gap-1.5 overflow-x-auto tab-scroll pb-1 text-xs"></nav>
   </header>
 
+  <!-- MAIN WORKSPACE -->
   <div class="max-w-7xl mx-auto px-3 sm:px-6 pt-5 grid grid-cols-1 lg:grid-cols-12 gap-5">
     <main id="mainApp" class="lg:col-span-9 space-y-5"></main>
     <aside id="pcAiDock" class="hidden lg:block lg:col-span-3"></aside>
   </div>
 
+  <!-- TOAST -->
   <div id="toastBox" class="fixed bottom-5 right-5 z-50 hidden px-4 py-2.5 rounded-xl bg-rose-600 text-white text-xs font-bold shadow-xl"></div>
 
 <script>
+const NL = String.fromCharCode(10);
 let lang = localStorage.getItem('ks_lang') || 'ko';
 let curTab = 'search';
 
@@ -79,31 +95,31 @@ try {
 const TABS = {
   ko: [
     ['search', '🔍 플레이어/왕국 DB'],
-    ['rally', '⚔️ 병력 편성기'],
-    ['bear', '🐻 베어 헌트'],
-    ['kvk', '👑 최강 왕국(KvK)'],
-    ['sw', '🗡️ 성검 쟁탈전'],
-    ['tri', '🚩 삼대연맹전'],
-    ['fac', '🏰 시설/전초기지'],
-    ['tg', '🔥 순금/정제 계산기'],
-    ['hero', '🦸 영웅/장비 도감'],
-    ['shop', '🛒 11대 상점 효율'],
-    ['mys', '✨ 신비한 시련/바이킹'],
-    ['mac', '📢 연맹 공지 매크로'],
+    ['rally', '⚔️ 병력 비율 & 시뮬'],
+    ['bear', '🐻 베어 헌트 & 재탑승'],
+    ['kvk', '👑 KvK 점수 계산기'],
+    ['sw', '🗡️ 성검 쟁탈전 30v30'],
+    ['tri', '🚩 삼대연맹전 60m'],
+    ['fac', '🏰 시설 & 전초기지'],
+    ['tg', '🔥 순금 & 정제 계산기'],
+    ['hero', '🦸 Gen1~10 & 장비'],
+    ['shop', '🛒 11대 상점 & 버프표'],
+    ['mys', '✨ 신비한 시련 & 바이킹'],
+    ['mac', '📢 연맹 공지 3종 복사'],
     ['ai', '🤖 전술 AI'],
     ['notes', '📋 업데이트 노트']
   ],
   en: [
     ['search', '🔍 Player/Kingdom DB'],
-    ['rally', '⚔️ Troop Ratio'],
-    ['bear', '🐻 Bear Hunt'],
-    ['kvk', '👑 KvK Guide'],
-    ['sw', '🗡️ Swordland'],
-    ['tri', '🚩 Tri-Alliance'],
-    ['fac', '🏰 Facilities'],
-    ['tg', '🔥 Truegold Calc'],
-    ['hero', '🦸 Heroes & Gear'],
-    ['shop', '🛒 Shop Priority'],
+    ['rally', '⚔️ Troop Simulator'],
+    ['bear', '🐻 Bear Hunt & Cycle'],
+    ['kvk', '👑 KvK Prep Calc'],
+    ['sw', '🗡️ Swordland 30v30'],
+    ['tri', '🚩 Tri-Alliance 60m'],
+    ['fac', '🏰 Facilities & Outposts'],
+    ['tg', '🔥 Truegold & Refine'],
+    ['hero', '🦸 Gen1–10 & Gear'],
+    ['shop', '🛒 11 Shops & Buffs'],
     ['mys', '✨ Mystic & Viking'],
     ['mac', '📢 Alliance Macros'],
     ['ai', '🤖 Tactical AI'],
@@ -132,6 +148,7 @@ function setLang(l) {
   localStorage.setItem('ks_lang', l);
   const btn = document.getElementById('langBtnTxt');
   if (btn) btn.textContent = l === 'ko' ? '🇰🇷 한국어 → EN' : '🇺🇸 English → KO';
+  renderTicker();
   renderTabBar();
   renderTab();
   renderPcAiDock();
@@ -141,12 +158,34 @@ function toggleLang() {
   setLang(lang === 'ko' ? 'en' : 'ko');
 }
 
+function renderTicker() {
+  const k = lang === 'ko';
+  const el = document.getElementById('liveTicker');
+  if (!el) return;
+  el.innerHTML = `
+    <div class="flex items-center gap-2 text-zinc-300">
+      <span class="px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-300 font-bold">META</span>
+      <span>${k ? '베어 1번 슬롯: 첸코·연우·아마데우스·아마네·마고·비비안 (10:10:80) | 슈퍼정제 16주 플랜 최적' : 'Bear Slot 1: Chenko, Yeonwoo, Amadeus, Amane, Margot, Vivian (10:10:80) | 16-Wk Super Refine Optimal'}</span>
+    </div>
+    <span class="font-mono-code text-zinc-400">UTC <span id="utcClock">--:--</span></span>
+  `;
+  updateUtcClock();
+}
+
+function updateUtcClock() {
+  const c = document.getElementById('utcClock');
+  if (!c) return;
+  const now = new Date();
+  c.textContent = String(now.getUTCHours()).padStart(2, '0') + ':' + String(now.getUTCMinutes()).padStart(2, '0');
+}
+setInterval(updateUtcClock, 15000);
+
 function renderTabBar() {
   const bar = document.getElementById('tabBar');
   if (!bar) return;
   bar.innerHTML = TABS[lang].map(([id, label]) => {
     const active = curTab === id;
-    return `<button type="button" onclick="switchTab('${id}')" class="px-3 py-1.5 rounded-xl whitespace-nowrap font-bold transition ${active ? 'bg-rose-600 text-white crimson-glow' : 'bg-zinc-900/90 text-zinc-300 hover:bg-zinc-800 border border-zinc-800'}">${label}</button>`;
+    return `<button type="button" onclick="switchTab('${id}')" class="px-3 py-1.5 rounded-xl whitespace-nowrap font-bold transition ${active ? 'bg-gradient-to-r from-rose-500 to-red-600 text-white crimson-glow' : 'bg-zinc-900/90 text-zinc-300 hover:bg-zinc-800 border border-zinc-800'}">${label}</button>`;
   }).join('');
 }
 
@@ -156,6 +195,7 @@ function switchTab(id) {
   renderTab();
 }
 
+/* ==================== TAB 0: PUBLIC DB & LOOKUP QUEUE ==================== */
 function formatStove(lv) {
   if (!lv && lv !== 0) return lang === 'ko' ? '등급 미정' : 'Unset';
   if (typeof lv === 'string') return lv;
@@ -194,7 +234,7 @@ function renderSearch() {
   const k = lang === 'ko';
   document.getElementById('mainApp').innerHTML = `
   <div class="space-y-5 text-xs">
-    <div class="glass rounded-2xl p-4 sm:p-5 border-rose-500/30 space-y-4">
+    <div class="glass-crimson rounded-2xl p-4 sm:p-5 space-y-4">
       <div class="flex flex-wrap items-center justify-between gap-2">
         <div>
           <h2 class="text-base sm:text-lg font-black text-white">${k ? '🔍 원스톱 플레이어 ID & #왕국 공용 DB 검색' : '🔍 One-Stop Player ID & #Kingdom Public DB'}</h2>
@@ -429,7 +469,7 @@ async function loadLiveLists() {
         <span class="text-zinc-400 text-[11px]">#${p.kid || '?'} · ${p.fid}</span>
       </div>
       <span class="text-[10px] text-emerald-400 font-mono-code">${timeAgo(p.updated_at)}</span>
-    </div>`).join('') : `<div class="p-3 rounded-xl bg-zinc-950 text-zinc-400">${k ? '아직 등록된 플레이어가 없습니다. 위 검색창에 숫자 ID를 입력해 첫 등록해 보세요!' : 'No tracked players yet.'}</div>`;
+    </div>`).join('') : `<div class="p-3 rounded-xl bg-zinc-950 text-zinc-400">${k ? '아직 등록된 플레이어가 없습니다.' : 'No tracked players yet.'}</div>`;
 
   kBox.innerHTML = (kingdoms && kingdoms.length) ? kingdoms.map(x => `
     <div onclick="document.getElementById('hubSearchIn').value='#${x.kid}'; runHubSearch();" class="p-2.5 rounded-xl bg-zinc-950 hover:bg-zinc-900 cursor-pointer border border-zinc-800 flex items-center justify-between transition">
@@ -475,6 +515,7 @@ async function addGiftCodeDb() {
   loadGiftCodesDb();
 }
 
+/* ==================== TAB 1: TROOP RATIO & MULTI-MARCH SIMULATOR ==================== */
 let rallyPreset = 'pvp';
 function renderRally() {
   const k = lang === 'ko';
@@ -482,15 +523,19 @@ function renderRally() {
     ['pvp', k ? '⚔️ 표준 필드/집결 (50:20:30)' : '⚔️ Standard PvP (50:20:30)'],
     ['gar', k ? '🛡️ 성/시설 수성 (60:20:20)' : '🛡️ Garrison (60:20:20)'],
     ['bear', k ? '🐻 베어 헌트 극딜 (10:10:80)' : '🐻 Bear Hunt (10:10:80)'],
-    ['spear', k ? '🐎 기병 돌격/결투 (40:40:20)' : '🐎 Cav Rush (40:40:20)']
+    ['spear', k ? '🐎 기병 돌격/결투 (40:40:20)' : '🐎 Cav Rush (40:40:20)'],
+    ['tank', k ? '🧱 방패 보병 철벽 (70:15:15)' : '🧱 Heavy Shield (70:15:15)']
   ];
   document.getElementById('mainApp').innerHTML = `
   <div class="glass rounded-2xl p-4 sm:p-5 space-y-4 text-xs">
-    <h2 class="text-base font-black text-white">${k ? '⚔️ 실시간 병종 비율 & 다중 부대 계산기' : '⚔️ Troop Ratio & Multi-March Calculator'}</h2>
-    <div class="flex flex-wrap gap-1.5">
-      ${presets.map(([id, lb]) => `<button type="button" onclick="rallyPreset='${id}';calcRally()" class="px-3 py-1.5 rounded-xl font-bold ${rallyPreset===id?'bg-rose-600 text-white':'bg-zinc-900 border border-zinc-700 text-zinc-300'}">${lb}</button>`).join('')}
+    <div class="flex flex-wrap items-center justify-between gap-2">
+      <h2 class="text-base font-black text-white">${k ? '⚔️ 실시간 병종 비율 & 다중 부대 편성 시뮬레이터' : '⚔️ Troop Ratio & Multi-March Simulator'}</h2>
+      <span class="px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 font-mono-code">Auto-Split</span>
     </div>
-    <div class="grid grid-cols-2 gap-3">
+    <div class="flex flex-wrap gap-1.5">
+      ${presets.map(([id, lb]) => `<button type="button" onclick="rallyPreset='${id}';calcRally()" class="px-3 py-1.5 rounded-xl font-bold ${rallyPreset===id?'bg-rose-600 text-white crimson-glow':'bg-zinc-900 border border-zinc-700 text-zinc-300'}">${lb}</button>`).join('')}
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
       <div>
         <label class="text-zinc-400 block mb-1">${k ? '1부대 출정 정원' : '1 March Capacity'}</label>
         <input id="simCap" type="number" value="150000" oninput="calcRally()" class="w-full bg-zinc-950 border border-zinc-700 rounded-xl px-3 py-2 font-mono-code text-white"/>
@@ -498,6 +543,14 @@ function renderRally() {
       <div>
         <label class="text-zinc-400 block mb-1">${k ? '동시 출정 부대 수' : 'March Queues'}</label>
         <input id="simMarches" type="number" value="5" oninput="calcRally()" class="w-full bg-zinc-950 border border-zinc-700 rounded-xl px-3 py-2 font-mono-code text-white"/>
+      </div>
+      <div>
+        <label class="text-zinc-400 block mb-1">${k ? '병력 티어 (메모용)' : 'Troop Tier'}</label>
+        <select id="simTier" onchange="calcRally()" class="w-full bg-zinc-950 border border-zinc-700 rounded-xl px-3 py-2 font-mono-code text-white">
+          <option value="T10 Helios">T10 Helios (불꽃)</option>
+          <option value="T10">T10 Apex</option>
+          <option value="T9">T9</option>
+        </select>
       </div>
     </div>
     <div id="simOut" class="space-y-3"></div>
@@ -508,88 +561,136 @@ function renderRally() {
 function calcRally() {
   const cap = parseInt(document.getElementById('simCap').value, 10) || 100000;
   const mCnt = parseInt(document.getElementById('simMarches').value, 10) || 3;
-  const [ri, rc, ra] = { pvp: [50, 20, 30], gar: [60, 20, 20], bear: [10, 10, 80], spear: [40, 40, 20] }[rallyPreset];
+  const tier = document.getElementById('simTier')?.value || 'T10';
+  const [ri, rc, ra] = { pvp: [50, 20, 30], gar: [60, 20, 20], bear: [10, 10, 80], spear: [40, 40, 20], tank: [70, 15, 15] }[rallyPreset];
   const inf = Math.round(cap * ri / 100), cav = Math.round(cap * rc / 100), arch = cap - inf - cav;
   const k = lang === 'ko';
-  const copyStr = `[Kingshot Troop ${ri}:${rc}:${ra}] 1 March (${cap.toLocaleString()}): Inf ${inf.toLocaleString()} / Cav ${cav.toLocaleString()} / Arch ${arch.toLocaleString()}`;
+  const copyStr = `[Kingshot ${tier} ${ri}:${rc}:${ra}] 1 March (${cap.toLocaleString()}): Inf ${inf.toLocaleString()} / Cav ${cav.toLocaleString()} / Arch ${arch.toLocaleString()} | Total ${mCnt} Marches: Inf ${(inf*mCnt).toLocaleString()} / Cav ${(cav*mCnt).toLocaleString()} / Arch ${(arch*mCnt).toLocaleString()}`;
   document.getElementById('simOut').innerHTML = `
     <div class="grid grid-cols-3 gap-2.5 text-center">
-      <div class="p-3 rounded-xl bg-zinc-950 border border-zinc-800">
+      <div class="p-3.5 rounded-xl bg-zinc-950 border border-zinc-800">
         <div class="text-zinc-300 font-bold">${k ? '🛡️ 보병' : '🛡️ Infantry'} (${ri}%)</div>
-        <div class="font-mono-code font-black text-base text-white mt-0.5">${inf.toLocaleString()}</div>
-        <div class="text-[10px] text-zinc-400">${mCnt}부대: ${(inf * mCnt).toLocaleString()}</div>
+        <div class="font-mono-code font-black text-base sm:text-lg text-white mt-0.5">${inf.toLocaleString()}</div>
+        <div class="text-[10px] text-zinc-400 mt-0.5">${mCnt}부대 총합: ${(inf * mCnt).toLocaleString()}</div>
       </div>
-      <div class="p-3 rounded-xl bg-zinc-950 border border-zinc-800">
+      <div class="p-3.5 rounded-xl bg-zinc-950 border border-zinc-800">
         <div class="text-zinc-300 font-bold">${k ? '🐎 기병' : '🐎 Cavalry'} (${rc}%)</div>
-        <div class="font-mono-code font-black text-base text-white mt-0.5">${cav.toLocaleString()}</div>
-        <div class="text-[10px] text-zinc-400">${mCnt}부대: ${(cav * mCnt).toLocaleString()}</div>
+        <div class="font-mono-code font-black text-base sm:text-lg text-white mt-0.5">${cav.toLocaleString()}</div>
+        <div class="text-[10px] text-zinc-400 mt-0.5">${mCnt}부대 총합: ${(cav * mCnt).toLocaleString()}</div>
       </div>
-      <div class="p-3 rounded-xl bg-zinc-950 border border-rose-500/50">
+      <div class="p-3.5 rounded-xl bg-zinc-950 border border-rose-500/50">
         <div class="text-rose-400 font-bold">${k ? '🏹 궁병' : '🏹 Archers'} (${ra}%)</div>
-        <div class="font-mono-code font-black text-base text-rose-300 mt-0.5">${arch.toLocaleString()}</div>
-        <div class="text-[10px] text-zinc-400">${mCnt}부대: ${(arch * mCnt).toLocaleString()}</div>
+        <div class="font-mono-code font-black text-base sm:text-lg text-rose-300 mt-0.5">${arch.toLocaleString()}</div>
+        <div class="text-[10px] text-zinc-400 mt-0.5">${mCnt}부대 총합: ${(arch * mCnt).toLocaleString()}</div>
       </div>
     </div>
-    <button type="button" onclick="copyText('${copyStr}')" class="w-full py-2.5 rounded-xl bg-rose-600 text-white font-bold">${k ? '📋 연맹 채팅용 편성표 복사' : '📋 Copy Troop Ratio'}</button>`;
+    <button type="button" onclick="copyText('${copyStr}')" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-rose-500 to-red-600 text-white font-black crimson-glow">${k ? '📋 연맹 채팅용 병력 편성표 복사' : '📋 Copy Troop Breakdown'}</button>`;
 }
 
+/* ==================== TAB 2: BEAR HUNT & RE-JOIN CYCLE ==================== */
 function renderBear() {
   const k = lang === 'ko';
   document.getElementById('mainApp').innerHTML = `
   <div class="glass rounded-2xl p-4 sm:p-5 space-y-4 text-xs">
-    <h2 class="text-base font-black text-white">${k ? '🐻 베어 헌트 (Bear Hunt) 고득점 공식 & 집결 탑승 계산기' : '🐻 Bear Hunt Meta & Re-Join Calculator'}</h2>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-      <div class="p-3 rounded-xl bg-zinc-950 border border-rose-500/40">
-        <b class="text-rose-400">${k ? '1. 참여자(Joiner) 1번 슬롯 고정' : '1. Slot 1 Joiner Heroes'}</b>
-        <p class="text-zinc-300 mt-1">${k ? '첸코, 연우, 아마데우스, 아마네, 마고, 비비안만 1번 슬롯 배치! (방어형 헬가·하워드·고든 절대 금지)' : 'Only Chenko, Yeonwoo, Amadeus, Amane, Margot, Vivian in Slot 1!'}</p>
+    <h2 class="text-base font-black text-white">${k ? '🐻 베어 헌트 (Bear Hunt) 집결장·참여자 영웅 & 연속 재탑승 계산기' : '🐻 Bear Hunt Heroes & Rally Re-Join Calculator'}</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+      <div class="p-3.5 rounded-xl bg-zinc-950 border border-rose-500/40 space-y-1.5">
+        <b class="text-rose-400 text-sm">${k ? '👑 집결장 (Rally Host) 3인 조합' : '👑 Rally Host Top 3 Heroes'}</b>
+        <p class="text-zinc-200">${k ? '• 1순위 극딜 조합: 아마데우스(또는 헬가) + 사울(또는 마고/비비안) + 주력 딜러' : '• Best Host: Amadeus (or Helga) + Saul (or Margot/Vivian) + Main DPS'}</p>
+        <p class="text-zinc-400">${k ? '• 집결장은 본인의 가장 강한 3영웅과 10:10:80 비율로 5분 집결을 개설합니다.' : '• Host uses strongest 3 heroes with 10:10:80 ratio.'}</p>
       </div>
-      <div class="p-3 rounded-xl bg-zinc-950 border border-zinc-800">
-        <b class="text-white">${k ? '2. 병종 황금 비율 (10 : 10 : 80)' : '2. Optimal Ratio (10:10:80)'}</b>
-        <p class="text-zinc-300 mt-1">${k ? '보병 10% · 기병 10% · 궁병 80%로 극딜 세팅 (궁병 부족 시 보병 최소화)' : '10% Inf / 10% Cav / 80% Archers for maximum damage.'}</p>
-      </div>
-      <div class="p-3 rounded-xl bg-zinc-950 border border-zinc-800">
-        <b class="text-white">${k ? '3. 5분 집결 & 텔레포트 배치' : '3. 5-Min Rally & Hive'}</b>
-        <p class="text-zinc-300 mt-1">${k ? '함정 바로 옆 1~2열 배치로 행군 시간을 10초 이내로 단축하세요.' : 'Teleport right next to the trap (<10s march).'}</p>
+      <div class="p-3.5 rounded-xl bg-zinc-950 border border-emerald-500/40 space-y-1.5">
+        <b class="text-emerald-400 text-sm">${k ? '⚔️ 참여자 (Joiner) 1번 슬롯 절대 규칙' : '⚔️ Joiner Slot 1 Mandatory Rule'}</b>
+        <p class="text-zinc-200">${k ? '• 허용 영웅: 첸코, 연우, 아마데우스, 아마네, 마고, 비비안 (공격/살상력 원정 스킬)' : '• ONLY: Chenko, Yeonwoo, Amadeus, Amane, Margot, Vivian'}</p>
+        <p class="text-rose-300">${k ? '• 금지 영웅: 헬가, 하워드, 고든, 다이아나 등 방어/채집 스킬 영웅 1번 배치 금지!' : '• BANNED in Slot 1: Helga, Howard, Gordon, Diana!'}</p>
       </div>
     </div>
-    <div class="p-3.5 rounded-xl bg-zinc-950 border border-zinc-800 flex flex-wrap items-center gap-3">
-      <span class="font-bold text-white">${k ? '⏱️ 편도 행군 시간(초):' : '⏱️ One-way March (sec):'}</span>
-      <input id="bearSec" type="number" value="12" oninput="calcBear()" class="w-24 bg-zinc-900 border border-zinc-700 rounded-lg px-2.5 py-1.5 font-mono-code text-white"/>
-      <span id="bearOut" class="text-rose-300 font-bold"></span>
+
+    <div class="p-4 rounded-xl bg-zinc-950 border border-zinc-800 space-y-3">
+      <b class="text-white text-sm block">${k ? '⏱️ 집결 복귀 & 30분 연속 재탑승 타이밍 계산기' : '⏱️ 30-Min Rally Re-Join Cycle Calculator'}</b>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div>
+          <label class="text-zinc-400 block mb-1">${k ? '함정까지 편도 행군 시간 (초)' : 'One-way March Time (sec)'}</label>
+          <input id="bearSec" type="number" value="10" oninput="calcBear()" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-2 font-mono-code text-white"/>
+        </div>
+        <div>
+          <label class="text-zinc-400 block mb-1">${k ? '동시 운용 집결 탑승 부대 수' : 'Active Joiner Marches'}</label>
+          <input id="bearQueues" type="number" value="5" oninput="calcBear()" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-2 font-mono-code text-white"/>
+        </div>
+      </div>
+      <div id="bearOut" class="p-3 rounded-xl bg-rose-500/15 border border-rose-500/35 text-rose-200 font-bold"></div>
     </div>
   </div>`;
   calcBear();
 }
+
 function calcBear() {
-  const s = parseInt(document.getElementById('bearSec').value, 10) || 12;
+  const s = parseInt(document.getElementById('bearSec').value, 10) || 10;
+  const q = parseInt(document.getElementById('bearQueues').value, 10) || 5;
   const cycle = 300 + s * 2;
-  const runs = Math.floor(1800 / cycle);
+  const perQueue = Math.floor(1800 / cycle);
+  const totalRuns = perQueue * q;
+  const stagger = Math.round(cycle / q);
   document.getElementById('bearOut').textContent = lang === 'ko'
-    ? `왕복 주기 ${cycle}초 → 30분간 최대 ${runs}회 연속 탑승 가능`
-    : `Cycle ${cycle}s → Max ${runs} rallies in 30m`;
+    ? `1부대 왕복 주기: ${cycle}초 (5분 + 왕복 ${s*2}초) → 30분간 1부대당 ${perQueue}회 × ${q}부대 = 총 ${totalRuns}회 탑승! (${stagger}초 간격 순차 출격 추천)`
+    : `1-March Cycle: ${cycle}s → ${perQueue} runs/queue × ${q} queues = ${totalRuns} total rallies in 30m (Stagger every ${stagger}s)`;
 }
 
+/* ==================== TAB 3: KVK PREP SCORE CALCULATOR ==================== */
 function renderKvk() {
   const k = lang === 'ko';
-  const days = [
-    [k ? '1일차: 도시 건설' : 'Day 1: City Construction', k ? '순금·건설 가속 집중 소모' : 'Truegold & Building Speedups'],
-    [k ? '2일차: 영웅 육성' : 'Day 2: Hero Development', k ? '신화 조각·영웅 룰렛·전용무기' : 'Mythic Shards & Exclusive Gear'],
-    [k ? '3일차: 야수/집결 사냥' : 'Day 3: Beast & Rally', k ? '스태미나 집중 소모 및 빙원 야수' : 'Stamina & Polar Terrors'],
-    [k ? '4일차: 병력 훈련' : 'Day 4: Troop Training', k ? '훈련 가속 및 승급 집중' : 'Training Speedups & Promotion'],
-    [k ? '5일차: 연구 & 장비' : 'Day 5: Tech & Chief Gear', k ? '연구 가속·부적·영주 장비' : 'Research Speedups & Charms']
+  const inputs = [
+    ['kvkTg', k ? '🔥 순금 (Truegold, 개당 2,000점)' : '🔥 Truegold (2,000 pts)', 2000, 1],
+    ['kvkSpeed', k ? '⏩ 각종 가속 합계 (분당 30점)' : '⏩ Speedups (Minutes, 30 pts)', 30, 5],
+    ['kvkMith', k ? '💎 미스릴 (Mithril, 개당 40,000점)' : '💎 Mithril (40,000 pts)', 40000, 5],
+    ['kvkWidget', k ? '🗡️ 전용무기 위젯 (개당 8,000점)' : '🗡️ Exclusive Widget (8,000 pts)', 8000, 2],
+    ['kvkHammer', k ? '🔨 단조 망치 (개당 4,000점)' : '🔨 Forge Hammer (4,000 pts)', 4000, 2],
+    ['kvkPet', k ? '🐾 고급 조련 표식 (개당 15,000점)' : '🐾 Adv. Taming Mark (15,000 pts)', 15000, 3],
+    ['kvkShard', k ? '🧩 신화 영웅 조각 (개당 3,040점)' : '🧩 Mythic Hero Shard (3,040 pts)', 3040, 2]
   ];
   document.getElementById('mainApp').innerHTML = `
   <div class="glass rounded-2xl p-4 sm:p-5 space-y-4 text-xs">
-    <h2 class="text-base font-black text-white">${k ? '👑 최강 왕국 (KvK) 5일 준비 단계 & 왕성전 가이드' : '👑 Kingdom of Power (KvK) 5-Day Prep & Castle Battle'}</h2>
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2.5">
-      ${days.map(([t, d]) => `<div class="p-3 rounded-xl bg-zinc-950 border border-zinc-800"><b class="text-rose-400 block">${t}</b><p class="text-zinc-300 mt-1">${d}</p></div>`).join('')}
+    <div class="flex flex-wrap items-center justify-between gap-2">
+      <h2 class="text-base font-black text-white">${k ? '👑 최강 왕국 (KvK) 준비 단계 개인 예상 점수 계산기' : '👑 KvK Prep Phase Personal Score Calculator'}</h2>
+      <span class="px-2.5 py-1 rounded-full bg-rose-500/20 text-rose-300 font-mono-code font-bold">5-Day Prep</span>
     </div>
-    <div class="p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/30 text-zinc-200">
-      <b>${k ? '⚔️ 토요일 왕성전 핵심:' : '⚔️ Saturday Castle Battle:'}</b> ${k ? '10:00 UTC 국경 개방 즉시 정찰 방지(Anti-Scout) 활성화, 야전 병원 초과 금지(30분 단위 배치 치료 + 연맹 도움).' : 'Activate Anti-Scout at 10:00 UTC; batch heal every 30m so Infirmary never overflows.'}
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+      ${inputs.map(([id, label, pts, day]) => `
+        <div class="p-3 rounded-xl bg-zinc-950 border border-zinc-800 space-y-1">
+          <div class="flex justify-between text-[11px]">
+            <span class="text-zinc-300 font-bold">${label}</span>
+            <span class="text-rose-400 font-mono-code">Day ${day}</span>
+          </div>
+          <input id="${id}" type="number" value="0" min="0" oninput="calcKvkScore()" class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-2.5 py-1.5 font-mono-code text-white"/>
+        </div>`).join('')}
     </div>
+    <div id="kvkScoreOut" class="p-4 rounded-2xl bg-gradient-to-r from-rose-950/80 to-zinc-950 border border-rose-500/40 space-y-2"></div>
   </div>`;
+  calcKvkScore();
 }
 
+function calcKvkScore() {
+  const g = id => parseFloat(document.getElementById(id)?.value) || 0;
+  const d1 = g('kvkTg') * 2000;
+  const d2 = g('kvkWidget') * 8000 + g('kvkHammer') * 4000 + g('kvkShard') * 3040;
+  const d3 = g('kvkPet') * 15000;
+  const d5 = g('kvkSpeed') * 30 + g('kvkMith') * 40000;
+  const total = d1 + d2 + d3 + d5;
+  const k = lang === 'ko';
+  document.getElementById('kvkScoreOut').innerHTML = `
+    <div class="flex flex-wrap items-center justify-between gap-2">
+      <span class="text-sm font-bold text-zinc-200">${k ? '🏆 5일 준비 단계 예상 총점:' : '🏆 Estimated 5-Day Total Score:'}</span>
+      <span class="font-mono-code text-xl sm:text-2xl font-black text-rose-400">${Math.round(total).toLocaleString()} pts</span>
+    </div>
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-2 border-t border-zinc-800 text-[11px] font-mono-code">
+      <div class="p-2 rounded bg-zinc-900">1일차(건설): <b>${Math.round(d1).toLocaleString()}</b></div>
+      <div class="p-2 rounded bg-zinc-900">2일차(영웅): <b>${Math.round(d2).toLocaleString()}</b></div>
+      <div class="p-2 rounded bg-zinc-900">3일차(야수/펫): <b>${Math.round(d3).toLocaleString()}</b></div>
+      <div class="p-2 rounded bg-zinc-900">5일차(가속/미스릴): <b>${Math.round(d5).toLocaleString()}</b></div>
+    </div>`;
+}
+
+/* ==================== TAB 4 & 5: SWORDLAND & TRI-ALLIANCE ==================== */
 let swRos = JSON.parse(localStorage.getItem('ks_swRos') || '[]');
 let triRos = JSON.parse(localStorage.getItem('ks_triRos') || '[]');
 
@@ -599,11 +700,11 @@ function renderSw() {
   <div class="glass rounded-2xl p-4 sm:p-5 space-y-4 text-xs">
     <h2 class="text-base font-black text-white">${k ? '🗡️ 성검 쟁탈전 (Swordland Showdown) 30vs30 전술 & 로스터' : '🗡️ Swordland Showdown 30v30 Tactics & Roster'}</h2>
     <div class="grid grid-cols-1 md:grid-cols-3 gap-2.5">
-      <div class="p-3 rounded-xl bg-zinc-950 border border-zinc-800"><b class="text-rose-400">왕실 마구간</b><p class="text-zinc-300 mt-1">${k ? '텔레포트 쿨타임 50% 감소 (기동조 필수)' : '-50% Teleport cooldown'}</p></div>
+      <div class="p-3 rounded-xl bg-zinc-950 border border-zinc-800"><b class="text-rose-400">왕실 마구간 (Royal Stables)</b><p class="text-zinc-300 mt-1">${k ? '텔레포트 쿨타임 50% 감소 (기동조 최우선 점령)' : '-50% Teleport cooldown'}</p></div>
       <div class="p-3 rounded-xl bg-zinc-950 border border-zinc-800"><b class="text-rose-400">종탑 & 교화홀</b><p class="text-zinc-300 mt-1">${k ? '종탑 점령 시간 -50%, 15분 개방 교화홀 공방 +15%' : 'Bell Tower -50% capture; Hall +15% dmg'}</p></div>
-      <div class="p-3 rounded-xl bg-zinc-950 border border-zinc-800"><b class="text-rose-400">열세 시 게릴라</b><p class="text-zinc-300 mt-1">${k ? '전장 이탈 12분 쿨타임 활용, 빈 외곽 거점 타격으로 개인 유물 점수 극대화' : 'Use 12m Leave Battlefield cooldown to snipe outer buildings.'}</p></div>
+      <div class="p-3 rounded-xl bg-zinc-950 border border-zinc-800"><b class="text-rose-400">유물 점수 & 열세 게릴라</b><p class="text-zinc-300 mt-1">${k ? '전투 유물(공격 80점/방어 40점 per 10k). 열세 시 전장 이탈(12분 쿨) 후 외곽 빈 건물 타격' : 'Combat Relics: 80 atk / 40 def per 10k. Leave Battlefield (12m CD) to snipe outer nodes.'}</p></div>
     </div>
-    ${renderRosterBox('sw', swRos, [['tank','🛡️ Tank'],['dps','⚔️ DPS'],['support','💚 Support']])}
+    ${renderRosterBox('sw', swRos, [['tank','🛡️ Tank (수성/탱커)'],['dps','⚔️ DPS (집결/타격)'],['support','💚 Support (지원/보급)']])}
   </div>`;
 }
 
@@ -617,7 +718,7 @@ function renderTri() {
       <div class="p-3 rounded-xl bg-zinc-950 border border-zinc-800"><b class="text-rose-400">20~40분: 주둔지 장악</b><p class="text-zinc-300 mt-1">${k ? '주둔지 2곳 이상 점령 및 수성 대장 지정' : 'Hold 2+ Garrisons with designated captains'}</p></div>
       <div class="p-3 rounded-xl bg-zinc-950 border border-rose-500/40"><b class="text-rose-400">40~60분: 해신 신전</b><p class="text-zinc-300 mt-1">${k ? '해신 신전 점령 시 +50,000점 대역전 보너스!' : 'Secure Sea God Temple (+50,000 bonus!)'}</p></div>
     </div>
-    ${renderRosterBox('tri', triRos, [['attack','⚔️ 공격조'],['defender','🛡️ 수비조'],['floater','⚡ 기동조']])}
+    ${renderRosterBox('tri', triRos, [['attack','⚔️ 공격조 (Attack)'],['defender','🛡️ 수비조 (Defender)'],['floater','⚡ 기동조 (Floater)']])}
   </div>`;
 }
 
@@ -637,8 +738,8 @@ function renderRosterBox(type, list, roles) {
     </div>
     <div class="flex gap-1.5">
       <button type="button" onclick="cpRos('${type}','both')" class="px-3 py-1.5 rounded-lg bg-rose-600 text-white font-bold">${k ? '통합 복사' : 'Copy Both'}</button>
-      <button type="button" onclick="cpRos('${type}','ko')" class="px-3 py-1.5 rounded-lg bg-zinc-900 border border-zinc-700 text-white font-bold">한국어</button>
-      <button type="button" onclick="cpRos('${type}','en')" class="px-3 py-1.5 rounded-lg bg-zinc-900 border border-zinc-700 text-white font-bold">EN</button>
+      <button type="button" onclick="cpRos('${type}','ko')" class="px-3 py-1.5 rounded-lg bg-zinc-900 border border-zinc-700 text-white font-bold">한국어만</button>
+      <button type="button" onclick="cpRos('${type}','en')" class="px-3 py-1.5 rounded-lg bg-zinc-900 border border-zinc-700 text-white font-bold">English</button>
     </div>
   </div>`;
 }
@@ -657,7 +758,6 @@ function delRos(type, i) {
 function cpRos(type, mode) {
   const list = type === 'sw' ? swRos : triRos;
   const g = r => list.filter(x => x.r === r).map(x => x.n).join(', ') || '-';
-  const NL = String.fromCharCode(10);
   const ko = type === 'sw'
     ? `[🗡️ 성검전 배정]${NL}🛡️ Tank: ${g('tank')}${NL}⚔️ DPS: ${g('dps')}${NL}💚 Support: ${g('support')}`
     : `[🚩 삼대연맹전 편성]${NL}⚔️ 공격조: ${g('attack')}${NL}🛡️ 수비조: ${g('defender')}${NL}⚡ 기동조: ${g('floater')}`;
@@ -667,109 +767,298 @@ function cpRos(type, mode) {
   copyText(mode === 'ko' ? ko : mode === 'en' ? en : ko + NL + '---' + NL + en);
 }
 
+/* ==================== TAB 6: FACILITIES & OUTPOSTS ==================== */
 function renderFac() {
   const k = lang === 'ko';
   const items = [
     ['⚔️ 병기 전초기지 (Arsenal)', '부대 공격력 +5% ~ +8%', 'Troop Attack +5% to +8%'],
     ['🛡️ 요새 전초기지 (Armoury)', '부대 방어력 +5% ~ +8%', 'Troop Defense +5% to +8%'],
     ['🏗️ 건설 전초기지 (Builder)', '건설 속도 +10% ~ +15%', 'Construction Speed +10% to +15%'],
-    ['🔬 학자 전초기지 (Scholar)', '연구 속도 +10% ~ +15%', 'Research Speed +10% to +15%']
+    ['🔬 학자 전초기지 (Scholar)', '연구 속도 +10% ~ +15%', 'Research Speed +10% to +15%'],
+    ['🏥 야전 전초기지 (Medical)', '치료 속도 +15% ~ +20%', 'Healing Speed +15% to +20%'],
+    ['🐎 기동 전초기지 (Expedition)', '행군 속도 +15% ~ +25%', 'March Speed +15% to +25%']
   ];
   document.getElementById('mainApp').innerHTML = `
   <div class="glass rounded-2xl p-4 sm:p-5 space-y-3 text-xs">
-    <h2 class="text-base font-black text-white">${k ? '🏰 시설 및 전초기지 점령 규칙 & 버프표' : '🏰 Facilities & Outposts Guide'}</h2>
-    <p class="text-zinc-300">${k ? '• 연맹 깃발 영역이 시설 면적의 75% 이상을 덮어야 공격 가능하며, 무주지 15분 연속 점령 시 소유권이 확정됩니다.' : '• Requires >=75% Alliance Banner coverage and 15m continuous hold to capture.'}</p>
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+    <h2 class="text-base font-black text-white">${k ? '🏰 시설 · 성채(Sanctuary) & 8종 전초기지 버프표' : '🏰 Facilities, Sanctuaries & Outposts'}</h2>
+    <div class="p-3 rounded-xl bg-rose-500/15 border border-rose-500/35 text-zinc-200">
+      ${k ? '• 연맹 깃발 영역이 시설 면적의 75% 이상을 덮어야 공격 가능하며, 무주지 15분 연속 점령(또는 30분 방어 완료) 시 소유권이 확정됩니다.' : '• Requires >=75% Alliance Banner coverage and 15m continuous hold to capture.'}
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
       ${items.map(([t, ko, en]) => `<div class="p-3 rounded-xl bg-zinc-950 border border-zinc-800"><b class="text-rose-400">${t}</b><p class="text-zinc-200 mt-1">${k ? ko : en}</p></div>`).join('')}
     </div>
   </div>`;
 }
 
+/* ==================== TAB 7: TRUEGOLD & SUPER REFINE CALCULATOR ==================== */
+const TG_BUILDINGS = {
+  furnace:  { ko: '용광로 (Furnace / TC)', en: 'Furnace (TC)', tg: [660, 790, 1190, 1400, 1675, 900, 1080, 1080], ttg: [0,0,0,0,0, 45, 75, 120] },
+  embassy:  { ko: '대사관 (Embassy)', en: 'Embassy', tg: [165, 195, 295, 350, 415, 225, 270, 270], ttg: [0,0,0,0,0, 11, 19, 30] },
+  command:  { ko: '사령부 (Command Center)', en: 'Command Center', tg: [330, 395, 595, 700, 835, 450, 540, 540], ttg: [0,0,0,0,0, 22, 37, 60] },
+  infantry: { ko: '보병 병영 (Barracks)', en: 'Infantry Barracks', tg: [295, 355, 535, 630, 750, 405, 485, 485], ttg: [0,0,0,0,0, 20, 34, 54] },
+  cavalry:  { ko: '기병 마구간 (Stable)', en: 'Cavalry Stable', tg: [295, 355, 535, 630, 750, 405, 485, 485], ttg: [0,0,0,0,0, 20, 34, 54] },
+  archer:   { ko: '궁병 사격장 (Range)', en: 'Archer Range', tg: [295, 355, 535, 630, 750, 405, 485, 485], ttg: [0,0,0,0,0, 20, 34, 54] },
+  academy:  { ko: '전쟁 아카데미 (War Academy)', en: 'War Academy', tg: [190, 230, 345, 405, 485, 260, 310, 310], ttg: [0,0,0,0,0, 13, 22, 35] },
+  infirmary:{ ko: '야전 병원 (Infirmary)', en: 'Infirmary', tg: [130, 155, 235, 280, 335, 180, 215, 215], ttg: [0,0,0,0,0, 9, 15, 24] }
+};
+
 function renderTg() {
   const k = lang === 'ko';
+  const refinePlans = [
+    ['2주 초고속 (주 100회)', '순금 47,200개 소모', '비효율 (급한 핵과금용)'],
+    ['8주 단기 (주 68회)', '순금 32,450개 소모', '중간 효율'],
+    ['16주 최적 플랜 (주 34회)', '순금 25,197개 소모', '★ 최고 가성비 추천'],
+    ['26주 장기 (주 20회)', '순금 18,160개 소모', '무·소과금 안정 플랜']
+  ];
   document.getElementById('mainApp').innerHTML = `
-  <div class="glass rounded-2xl p-4 sm:p-5 space-y-3 text-xs">
-    <h2 class="text-base font-black text-white">${k ? '🔥 순금(Truegold) & 순정금 건물 요구량 가이드' : '🔥 Truegold & Tempered Truegold Guide'}</h2>
-    <div class="p-3.5 rounded-xl bg-zinc-950 border border-rose-500/35 text-zinc-200 space-y-1.5">
-      <b class="text-rose-400">${k ? '🏗️ 8대 핵심 건물 Lv.1 ~ Lv.8 총합:' : '🏗️ All 8 Core Buildings Lv.1–8 Total:'}</b>
-      <p>• ${k ? '일반 순금(Truegold): 총 31,422개 / 순정금(Tempered TG): 총 908개' : 'Truegold: 31,422 / Tempered Truegold: 908'}</p>
-      <p>• ${k ? '업그레이드 최우선 순위: ① 용광로(TC) → ② 대사관 → ③ 사령부 → ④ 궁병/보병/기병 병영' : 'Priority: 1. Furnace → 2. Embassy → 3. Command Center → 4. Barracks/Range/Stable'}</p>
+  <div class="space-y-5 text-xs">
+    <div class="glass rounded-2xl p-4 sm:p-5 space-y-4">
+      <div class="flex flex-wrap items-center justify-between gap-2">
+        <h2 class="text-base font-black text-white">${k ? '🔥 순금(Truegold) & 순정금(Tempered TG) 건물 계산기' : '🔥 Truegold & Tempered Truegold Calculator'}</h2>
+        <span class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 font-mono-code">Lv.1 ~ Lv.8</span>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div>
+          <label class="text-zinc-400 block mb-1">${k ? '건물 선택' : 'Select Building'}</label>
+          <select id="tgBld" onchange="calcTg()" class="w-full bg-zinc-950 border border-zinc-700 rounded-xl px-3 py-2 text-white">
+            ${Object.entries(TG_BUILDINGS).map(([id, o]) => `<option value="${id}">${k ? o.ko : o.en}</option>`).join('')}
+          </select>
+        </div>
+        <div>
+          <label class="text-zinc-400 block mb-1">${k ? '현재 등급 (0 = 시작 전)' : 'Current Level'}</label>
+          <select id="tgFrom" onchange="calcTg()" class="w-full bg-zinc-950 border border-zinc-700 rounded-xl px-3 py-2 font-mono-code text-white">
+            ${[0,1,2,3,4,5,6,7].map(n => `<option value="${n}">TG ${n}</option>`).join('')}
+          </select>
+        </div>
+        <div>
+          <label class="text-zinc-400 block mb-1">${k ? '목표 등급' : 'Target Level'}</label>
+          <select id="tgTo" onchange="calcTg()" class="w-full bg-zinc-950 border border-zinc-700 rounded-xl px-3 py-2 font-mono-code text-white">
+            ${[1,2,3,4,5,6,7,8].map(n => `<option value="${n}" ${n===8?'selected':''}>TG ${n}</option>`).join('')}
+          </select>
+        </div>
+      </div>
+      <div id="tgOut" class="p-4 rounded-xl bg-zinc-950 border border-rose-500/40"></div>
+    </div>
+
+    <div class="glass rounded-2xl p-4 sm:p-5 space-y-3">
+      <h3 class="text-sm font-bold text-white">${k ? '⚗️ 슈퍼 정제 (Super Refine) 주간 주차별 효율표 (목표: 순정금 908개)' : '⚗️ Super Refine Weekly Plan (Target: 908 Tempered TG)'}</h3>
+      <p class="text-zinc-400">${k ? '매주 1~20회(순금 20개) → 21~40회(50개) → 41~60회(100개) → 61~80회(130개) → 81~100회(160개)로 비용이 급증하므로 분산 정제가 핵심입니다.' : 'Weekly refine cost escalates steeply after 20/40/60 attempts.'}</p>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
+        ${refinePlans.map(([t, c, n], idx) => `<div class="p-3 rounded-xl bg-zinc-950 border ${idx===2?'border-rose-500/60':'border-zinc-800'}"><b class="text-rose-400 block">${t}</b><div class="font-mono-code text-white font-bold mt-1">${c}</div><div class="text-[11px] text-zinc-400 mt-0.5">${n}</div></div>`).join('')}
+      </div>
     </div>
   </div>`;
+  calcTg();
 }
+
+function calcTg() {
+  const b = TG_BUILDINGS[document.getElementById('tgBld').value];
+  const f = parseInt(document.getElementById('tgFrom').value, 10);
+  const t = parseInt(document.getElementById('tgTo').value, 10);
+  const k = lang === 'ko';
+  if (t <= f) {
+    document.getElementById('tgOut').innerHTML = `<span class="text-rose-400">${k ? '목표 등급을 현재 등급보다 높게 선택하세요.' : 'Target must be higher than current.'}</span>`;
+    return;
+  }
+  let sumTg = 0, sumTtg = 0;
+  for (let i = f; i < t; i++) { sumTg += b.tg[i]; sumTtg += b.ttg[i]; }
+  document.getElementById('tgOut').innerHTML = `
+    <div class="flex flex-wrap items-center justify-between gap-3">
+      <div>
+        <div class="text-zinc-400">${k ? b.ko : b.en} (TG ${f} → TG ${t})</div>
+        <div class="text-lg font-black text-white mt-0.5">🔥 순금 <span class="text-amber-300 font-mono-code">${sumTg.toLocaleString()}</span>개 + ✨ 순정금 <span class="text-rose-400 font-mono-code">${sumTtg.toLocaleString()}</span>개</div>
+      </div>
+      <div class="text-[11px] text-zinc-400 font-mono-code">${k ? '전체 8개 건물 Lv.1~8 총합: 순금 31,422 / 순정금 908' : 'All 8 Bldgs Lv.1–8: 31,422 TG / 908 Tempered'}</div>
+    </div>`;
+}
+
+/* ==================== TAB 8: GEN 1~10 HEROES, EXCLUSIVE WEAPON & MYTHIC GEAR ==================== */
+const GEN_LIST = [
+  ['Gen 1 (0일차)', '아마데우스 · 헬가 · 제로니모 (초기 핵심)', '200% / 16%'],
+  ['Gen 2 (40일차)', '플린트 · 필리 · 알론소 (룰렛/명예)', '240% / 19%'],
+  ['Gen 3 (120일차)', '로건 · 미아 · 그렉 (집결 메타 전환)', '290% / 23%'],
+  ['Gen 4 (200일차)', '아모스 · 레이나 · 린 (방어/공격 균형)', '370% / 29%'],
+  ['Gen 5 (280일차)', '용비 · 스루드 · 비비안 (베어·집결 1티어)', '444.35% / 111%'],
+  ['Gen 6 (360일차)', '트리톤 · 소피아 · 양 (고배율 원정 스탯)', '540.43% / 133.5%'],
+  ['Gen 7~10 (440일+)', '후속 세대 영웅 스탯 스케일링 구간', '최대 1110.88% / 277.5%']
+];
 
 function renderHero() {
   const k = lang === 'ko';
   document.getElementById('mainApp').innerHTML = `
-  <div class="glass rounded-2xl p-4 sm:p-5 space-y-3 text-xs">
-    <h2 class="text-base font-black text-white">${k ? '🦸 영웅 장비 강화 우선순위 & 전용무기 가이드' : '🦸 Hero Gear Priority & Exclusive Weapons'}</h2>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-2.5">
-      <div class="p-3 rounded-xl bg-zinc-950 border border-rose-500/40"><b class="text-rose-400">1순위 (살상력/공격)</b><p class="text-zinc-300 mt-1">${k ? '궁병·기병 장갑(Lethality) 및 보병 건틀릿 최우선 Lv.20→60→100 강화' : 'Archer/Cav Gloves & Inf Gauntlets first (Lv.20→60→100)'}</p></div>
-      <div class="p-3 rounded-xl bg-zinc-950 border border-zinc-800"><b class="text-white">2순위 (보조 공격/부츠)</b><p class="text-zinc-300 mt-1">${k ? '부츠 슬롯 공격력 보너스 단계별 강화' : 'Upgrade Boots for secondary Attack bonus'}</p></div>
-      <div class="p-3 rounded-xl bg-zinc-950 border border-zinc-800"><b class="text-white">3순위 (방어 갑옷 멈춤)</b><p class="text-zinc-300 mt-1">${k ? '방어·체력 갑옷류는 Lv.59 / Lv.79에서 멈추고 딜러 장비에 집중 (전용무기 10강 총 275개)' : 'Stop Armor at Lv.59/79. Exclusive Lv.10 = 275 parts.'}</p></div>
+  <div class="space-y-5 text-xs">
+    <!-- 신화 영웅 장비 3x3 직관적 강화 순서 -->
+    <div class="glass rounded-2xl p-4 sm:p-5 space-y-3">
+      <h2 class="text-base font-black text-white">${k ? '🛡️ 신화 영웅 장비 (Mythic Gear) 부위별 4단계 강화 우선순위' : '🛡️ Mythic Hero Gear 4-Step Upgrade Priority'}</h2>
+      <p class="text-zinc-400">${k ? '망치와 경험치 재화를 아끼기 위해 공격/살상력 부위(장갑·부츠)를 먼저 20 → 60 → 100 돌파하고, 방어 갑옷류는 돌파 직전(Lv.19 · 59 · 79)에서 멈추세요.' : 'Upgrade Lethality/Attack slots (Gloves/Boots) to 20→60→100 first, stopping Armor slots at Lv.19/59/79.'}</p>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+        <div class="p-3.5 rounded-xl bg-zinc-950 border border-rose-500/50 space-y-1">
+          <span class="px-2 py-0.5 rounded bg-rose-600 text-white font-bold text-[10px]">1순위 · 최우선 돌파</span>
+          <b class="text-white block text-sm mt-1">🏹 궁병 장갑 · 🐎 기병 장갑 · 🛡️ 보병 건틀릿</b>
+          <p class="text-zinc-300">살상력(Lethality) & 핵심 공격 슬롯 → Lv.20 → Lv.60 → Lv.100 최우선 강화</p>
+        </div>
+        <div class="p-3.5 rounded-xl bg-zinc-950 border border-amber-500/40 space-y-1">
+          <span class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 font-bold text-[10px]">2순위 · 보조 공격/기동</span>
+          <b class="text-white block text-sm mt-1">🏹 궁병 부츠 · 🐎 기병 부츠 · 🛡️ 보병 부츠</b>
+          <p class="text-zinc-300">공격력(Attack) 보너스 슬롯 → 1순위 돌파 직후 Lv.20 → Lv.60 → Lv.100 추격</p>
+        </div>
+        <div class="p-3.5 rounded-xl bg-zinc-950 border border-zinc-800 space-y-1">
+          <span class="px-2 py-0.5 rounded bg-zinc-800 text-zinc-300 font-bold text-[10px]">3순위 · Lv.19 / 59 / 79 멈춤</span>
+          <b class="text-white block text-sm mt-1">🛡️ 방어·체력 갑옷 & 투구 슬롯</b>
+          <p class="text-zinc-400">딜러 장비 100강 완료 전까지 Lv.19 → Lv.59 → Lv.79에서 멈춰 망치 절약</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 전용무기 부속품 계산기 & Gen 1~10 타임라인 -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+      <div class="lg:col-span-5 glass rounded-2xl p-4 space-y-3">
+        <h3 class="text-sm font-bold text-white">${k ? '🗡️ 전용무기 (Exclusive Gear) 부속품 계산기' : '🗡️ Exclusive Gear Parts Calculator'}</h3>
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="text-zinc-400 block mb-1">${k ? '현재 강수' : 'From Lv'}</label>
+            <select id="ewFrom" onchange="calcEw()" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-2.5 py-1.5 font-mono-code text-white">
+              ${[0,1,2,3,4,5,6,7,8,9].map(n => `<option value="${n}">Lv.${n}</option>`).join('')}
+            </select>
+          </div>
+          <div>
+            <label class="text-zinc-400 block mb-1">${k ? '목표 강수' : 'To Lv'}</label>
+            <select id="ewTo" onchange="calcEw()" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-2.5 py-1.5 font-mono-code text-white">
+              ${[1,2,3,4,5,6,7,8,9,10].map(n => `<option value="${n}" ${n===10?'selected':''}>Lv.${n}</option>`).join('')}
+            </select>
+          </div>
+        </div>
+        <div id="ewOut" class="p-3 rounded-xl bg-zinc-950 border border-rose-500/40 font-bold text-rose-300"></div>
+        <p class="text-[11px] text-zinc-400">${k ? '• Lv.1(5개)부터 Lv.10(50개)까지 5개씩 증가하며, 10강 풀업 시 총 275개가 소모됩니다.' : '• Lv.1(5) to Lv.10(50), total 275 parts.'}</p>
+      </div>
+
+      <div class="lg:col-span-7 glass rounded-2xl p-4 space-y-2.5">
+        <h3 class="text-sm font-bold text-white">${k ? '🧬 Gen 1 ~ Gen 10 세대별 출시일 & 원정 스탯 DB' : '🧬 Gen 1–10 Release Timeline & Stats'}</h3>
+        <div class="space-y-1.5">
+          ${GEN_LIST.map(([g, h, st]) => `
+            <div class="p-2.5 rounded-xl bg-zinc-950 border border-zinc-800 flex flex-wrap items-center justify-between gap-2">
+              <div><b class="text-rose-400">${g}</b> <span class="text-zinc-200 ml-1.5">${h}</span></div>
+              <span class="font-mono-code text-[11px] text-amber-300">${st}</span>
+            </div>`).join('')}
+        </div>
+      </div>
     </div>
   </div>`;
+  calcEw();
 }
 
+function calcEw() {
+  const f = parseInt(document.getElementById('ewFrom').value, 10);
+  const t = parseInt(document.getElementById('ewTo').value, 10);
+  if (t <= f) { document.getElementById('ewOut').textContent = '목표 강수를 높게 선택하세요.'; return; }
+  let sum = 0;
+  for (let i = f + 1; i <= t; i++) sum += i * 5;
+  document.getElementById('ewOut').textContent = `Lv.${f} → Lv.${t} 필요 전용무기 부속품: 총 ${sum}개`;
+}
+
+/* ==================== TAB 9: 11 SHOPS PRIORITY & 10-EVENT BUFF MATRIX ==================== */
 function renderShop() {
   const k = lang === 'ko';
   const shops = [
-    ['결투장 상점 (Arena)', '신화 영웅 장비 상자 (Mythic Gear Chest) 1순위', 'Mythic Gear Chest #1'],
-    ['연맹 상점 (Alliance)', '70% 할인 고급 텔레포트 & VIP 포인트', '70% Off Adv. Teleport & VIP'],
-    ['VIP 상점', '주간 신화 영웅 조각 & 8시간 가속', 'Weekly Mythic Shards & 8h Speedups'],
-    ['미궁/시련 상점', '순금(Truegold) & 영주 부적 재료', 'Truegold & Chief Charm Mats']
+    ['1. 떠돌이 상인', '자원 구매 필수, 보석 500개 전까지 새로고침 활용'],
+    ['2. 경기장 상점', '1순위 레전드 장비 상자 → 2순위 미스릴 (08:55 막판 순위 올리기)'],
+    ['3. 성검 상점', '영웅 장비 및 영주 보석 재료 5종 최우선'],
+    ['4. 최강왕국(KvK) 상점', '순금(Truegold) 최우선 매입'],
+    ['5. 시련 상점', '주 1회 미스릴 필수 구매 후 잔여 포인트 영주 부적'],
+    ['6. 다이아 상점', '영웅 룰렛용 보석 16만 개 상시 확보 후 이벤트 때 펫 단련석 투자'],
+    ['7. 연맹 상점', '70% 할인 고급 텔레포트 & VIP 포인트'],
+    ['8. VIP 상점', '주간 신화 영웅 조각 & 8시간 가속'],
+    ['9. 미궁 상점', '순금 & 정제 재료'],
+    ['10. 협곡/전장 상점', '단조 망치 & 설계도면'],
+    ['11. 명예/훈장 상점', '전용무기 위젯 & 스킬북']
+  ];
+  const matrix = [
+    ['🐻 곰사냥 (Bear)', 'O', 'O', 'O', 'O', 'O', 'X'],
+    ['🛡️ 바이킹 (Viking)', 'O', 'X', 'O', 'O', 'O', 'X'],
+    ['🗡️ 성검전 (Swordland)', 'O', 'O', 'O', 'O', 'X', 'X'],
+    ['👑 캐슬/KvK 전투', 'O', 'O', 'O', 'O', 'O', 'O'],
+    ['🚩 삼대연맹전', 'O', 'O', 'O', 'O', 'X', 'X']
   ];
   document.getElementById('mainApp').innerHTML = `
-  <div class="glass rounded-2xl p-4 sm:p-5 space-y-3 text-xs">
-    <h2 class="text-base font-black text-white">${k ? '🛒 주요 상점별 필수 구매 우선순위' : '🛒 Shop Purchase Priority'}</h2>
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-      ${shops.map(([s, ko, en]) => `<div class="p-3 rounded-xl bg-zinc-950 border border-zinc-800"><b class="text-rose-400">${s}</b><p class="text-zinc-200 mt-1">${k ? ko : en}</p></div>`).join('')}
+  <div class="space-y-5 text-xs">
+    <div class="glass rounded-2xl p-4 sm:p-5 space-y-3">
+      <h2 class="text-base font-black text-white">${k ? '🛒 무·소과금 전용 11대 상점 필수 구매 효율표' : '🛒 F2P / Low-Spender 11-Shop Priority Guide'}</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
+        ${shops.map(([s, d]) => `<div class="p-3 rounded-xl bg-zinc-950 border border-zinc-800"><b class="text-rose-400">${s}</b><p class="text-zinc-200 mt-1">${d}</p></div>`).join('')}
+      </div>
+    </div>
+
+    <div class="glass rounded-2xl p-4 sm:p-5 space-y-3 overflow-x-auto">
+      <h3 class="text-sm font-bold text-white">${k ? '📊 주요 콘텐츠별 버프 적용 여부 매트릭스' : '📊 Event Buff Application Matrix'}</h3>
+      <table class="w-full text-left border-collapse min-w-[520px]">
+        <thead>
+          <tr class="border-b border-zinc-800 text-zinc-400">
+            <th class="py-2">콘텐츠</th><th>도시버프</th><th>출정수용량</th><th>펫버프</th><th>섬장식</th><th>왕스킬/관직</th><th>거점버프</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-zinc-900 font-mono-code">
+          ${matrix.map(r => `<tr><td class="py-2 font-sans font-bold text-white">${r[0]}</td>${r.slice(1).map(v => `<td class="${v==='O'?'text-emerald-400 font-bold':'text-rose-400'}">${v}</td>`).join('')}</tr>`).join('')}
+        </tbody>
+      </table>
     </div>
   </div>`;
 }
 
+/* ==================== TAB 10: MYSTIC TRIAL & VIKING VENGEANCE ==================== */
 function renderMys() {
   const k = lang === 'ko';
   document.getElementById('mainApp').innerHTML = `
   <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 text-xs">
-    <div class="lg:col-span-6 glass rounded-2xl p-4 space-y-2.5">
-      <h2 class="text-sm font-bold text-white">${k ? '✨ 신비한 시련 (Mystic Trial) 3부대 비율' : '✨ Mystic Trial 3-March Ratios'}</h2>
-      <div class="p-3 rounded-xl bg-zinc-950 border border-zinc-800"><b class="text-rose-400">빛나는 첨탑 (Spire)</b><p class="text-zinc-300 mt-1">1부대 50/15/35 · 2부대 50/35/15 · 3부대 50/20/30</p></div>
-      <div class="p-3 rounded-xl bg-zinc-950 border border-zinc-800"><b class="text-rose-400">결투장 (Coliseum)</b><p class="text-zinc-300 mt-1">1부대 50/10/40 · 2부대 40/40/20 · 3부대 50/20/30</p></div>
+    <div class="lg:col-span-6 glass rounded-2xl p-4 space-y-3">
+      <h2 class="text-sm font-bold text-white">${k ? '✨ 신비한 시련 (Mystic Trial) 3부대 기병 순위별 비율' : '✨ Mystic Trial 3-March Ratios'}</h2>
+      <div class="p-3 rounded-xl bg-zinc-950 border border-zinc-800 space-y-1">
+        <b class="text-rose-400">빛나는 첨탑 (Radiant Spire)</b>
+        <p class="text-zinc-200">• 1부대 (기병 2순위): <b>50% / 15% / 35%</b></p>
+        <p class="text-zinc-200">• 2부대 (기병 1순위): <b>50% / 35% / 15%</b></p>
+        <p class="text-zinc-200">• 3부대 (기본 균형): <b>50% / 20% / 30%</b></p>
+      </div>
+      <div class="p-3 rounded-xl bg-zinc-950 border border-zinc-800 space-y-1">
+        <b class="text-rose-400">결투장 (Coliseum)</b>
+        <p class="text-zinc-200">• 1부대 (기병 2순위): <b>50% / 10% / 40%</b></p>
+        <p class="text-zinc-200">• 2부대 (기병 1순위): <b>40% / 40% / 20%</b></p>
+        <p class="text-zinc-200">• 3부대 (기본 균형): <b>50% / 20% / 30%</b></p>
+      </div>
     </div>
+
     <div class="lg:col-span-6 glass rounded-2xl p-4 space-y-2.5">
       <h2 class="text-sm font-bold text-white">${k ? '🛡️ 바이킹의 복수 (20웨이브) 3대 황금률' : '🛡️ Viking Vengeance 3 Golden Rules'}</h2>
-      <div class="p-3 rounded-xl bg-rose-500/15 border border-rose-500/35"><b class="text-rose-300">${k ? '1. 본인 성 100% 비우기' : '1. Empty City 100%'}</b><p class="text-zinc-300 mt-1">${k ? '모든 병력을 동료 성에 파병하고 경비소에는 최강 영웅 3명 배치' : 'Send all troops to reinforce allies.'}</p></div>
-      <div class="p-3 rounded-xl bg-zinc-950 border border-zinc-800"><b class="text-white">${k ? '2. 이벤트 중 치료 금지 & 특수 웨이브' : '2. No Healing & Special Waves'}</b><p class="text-zinc-300 mt-1">${k ? '7·14·17 온라인 지원 집중 / 10·20 연맹 본부(HQ) 방패 보병 수비' : '7/14/17 Online reinforce / 10/20 HQ Shield Inf garrison.'}</p></div>
+      <div class="p-3 rounded-xl bg-rose-500/15 border border-rose-500/35"><b class="text-rose-300">1. 본인 성 100% 비우기</b><p class="text-zinc-300 mt-1">모든 병력을 동료 성에 지원 파병하고, 본성 경비소에는 최강 영웅 3명만 배치하세요.</p></div>
+      <div class="p-3 rounded-xl bg-zinc-950 border border-zinc-800"><b class="text-white">2. 이벤트 진행 중 치료 금지</b><p class="text-zinc-300 mt-1">치료 완료 즉시 병력이 본성으로 복귀하여 파병 와준 동료의 방어 킬 점수를 빼앗습니다.</p></div>
+      <div class="p-3 rounded-xl bg-zinc-950 border border-zinc-800"><b class="text-rose-300">3. 특수 웨이브 (7·14·17 / 10·20)</b><p class="text-zinc-300 mt-1">• 7·14·17: 온라인 유저만 공격 → 온라인 집중 지원<br>• 10·20: 연맹 본부(HQ) 공격 → 방패 보병 위주(보65k/기5k) 집결 수비</p></div>
     </div>
   </div>`;
 }
 
-const NL_CHAR = String.fromCharCode(10);
+/* ==================== TAB 11: ALLIANCE MACROS ==================== */
 const macros = [
   {
     tKo: '🐻 베어 헌트 규칙 공지',
     tEn: '🐻 Bear Hunt Rules',
-    ko: ['[🐻 베어 헌트 필독]', '1. 참여자 1번 슬롯: 첸코, 연우, 아마데우스, 아마네, 마고, 비비안만 배치! (헬가·하워드·고든 금지)', '2. 병종 비율: 보10% : 기10% : 궁80%', '3. 시작 5분 전 채집 복귀 & 자동 집결 해제!'].join(NL_CHAR),
-    en: ['[🐻 Bear Hunt Rules]', '1. Slot 1 Joiners ONLY: Chenko, Yeonwoo, Amadeus, Amane, Margot, Vivian', '2. Ratio: 10% Inf / 10% Cav / 80% Archers', '3. Recall gatherers & turn OFF Auto-Join 5m before start!'].join(NL_CHAR)
+    ko: ['[🐻 베어 헌트 필독]', '1. 참여자 1번 슬롯: 첸코, 연우, 아마데우스, 아마네, 마고, 비비안만 배치! (헬가·하워드·고든 금지)', '2. 병종 비율: 보10% : 기10% : 궁80%', '3. 시작 5분 전 채집 복귀 & 자동 집결 해제!'].join(NL),
+    en: ['[🐻 Bear Hunt Rules]', '1. Slot 1 Joiners ONLY: Chenko, Yeonwoo, Amadeus, Amane, Margot, Vivian', '2. Ratio: 10% Inf / 10% Cav / 80% Archers', '3. Recall gatherers & turn OFF Auto-Join 5m before start!'].join(NL)
   },
   {
     tKo: '🛡️ 바이킹의 복수 공지',
     tEn: '🛡️ Viking Rules',
-    ko: ['[🛡️ 바이킹의 복수]', '1. 본인 성 100% 비우기 (모든 병력 동료 지원 파병)', '2. 이벤트 중 치료 금지', '3. 7·14·17 온라인 집중 지원 / 10·20 연맹 본부 방패보병 수비'].join(NL_CHAR),
-    en: ['[🛡️ Viking Vengeance]', '1. Empty city 100% (reinforce allies)', '2. No healing during event', '3. Waves 7/14/17 online reinforce / 10/20 HQ Shield Inf garrison'].join(NL_CHAR)
+    ko: ['[🛡️ 바이킹의 복수]', '1. 본인 성 100% 비우기 (모든 병력 동료 지원 파병)', '2. 이벤트 중 치료 금지', '3. 7·14·17 온라인 집중 지원 / 10·20 연맹 본부 방패보병 수비'].join(NL),
+    en: ['[🛡️ Viking Vengeance]', '1. Empty city 100% (reinforce allies)', '2. No healing during event', '3. Waves 7/14/17 online reinforce / 10/20 HQ Shield Inf garrison'].join(NL)
   },
   {
     tKo: '⚔️ KvK 전투 단계 공지',
     tEn: '⚔️ KvK Battle Notice',
-    ko: ['[⚔️ KvK 전투 작전]', '1. 10:00 UTC 국경 개방 즉시 정찰 방지 & 전투 버프 활성화', '2. 야전 병원 초과 금지 (30분 단위 배치 치료 & 연맹 도움)'].join(NL_CHAR),
-    en: ['[⚔️ KvK Battle Phase]', '1. Activate Anti-Scout & Combat Buffs at 10:00 UTC', '2. Never overflow Infirmary—batch heal every 30m!'].join(NL_CHAR)
+    ko: ['[⚔️ KvK 전투 작전]', '1. 10:00 UTC 국경 개방 즉시 정찰 방지 & 전투 버프 활성화', '2. 야전 병원 초과 금지 (30분 단위 배치 치료 & 연맹 도움)'].join(NL),
+    en: ['[⚔️ KvK Battle Phase]', '1. Activate Anti-Scout & Combat Buffs at 10:00 UTC', '2. Never overflow Infirmary—batch heal every 30m!'].join(NL)
   },
   {
     tKo: '🚩 삼대연맹전 작전 오더',
     tEn: '🚩 Tri-Alliance Orders',
-    ko: ['[🚩 삼대연맹전]', '1. 3~20분: 환승 센터 최우선 선점', '2. 20~40분: 주둔지 2곳 이상 점령 및 주둔 대장 지정', '3. 40~60분: 해신 신전 총력 사수 (+50,000점 보너스!)'].join(NL_CHAR),
-    en: ['[🚩 Tri-Alliance Clash]', '1. 3–20m: Rush Transit Centers', '2. 20–40m: Hold 2+ Garrisons', '3. 40–60m: Secure Sea God Temple (+50,000 bonus!)'].join(NL_CHAR)
+    ko: ['[🚩 삼대연맹전]', '1. 3~20분: 환승 센터 최우선 선점', '2. 20~40분: 주둔지 2곳 이상 점령 및 주둔 대장 지정', '3. 40~60분: 해신 신전 총력 사수 (+50,000점 보너스!)'].join(NL),
+    en: ['[🚩 Tri-Alliance Clash]', '1. 3–20m: Rush Transit Centers', '2. 20–40m: Hold 2+ Garrisons', '3. 40–60m: Secure Sea God Temple (+50,000 bonus!)'].join(NL)
   }
 ];
 
@@ -777,14 +1066,14 @@ function renderMac() {
   const k = lang === 'ko';
   document.getElementById('mainApp').innerHTML = `
   <div class="glass rounded-2xl p-4 space-y-3 text-xs">
-    <h2 class="text-sm font-bold text-white">${k ? '📢 연맹 공지 원클릭 복사 (통합 / 한국어 / English)' : '📢 Alliance Macros (Both / KO / EN)'}</h2>
+    <h2 class="text-sm font-bold text-white">${k ? '📢 연맹 공지 원클릭 복사 (통합 / 한국어만 / English)' : '📢 Alliance Macros (Both / KO / EN)'}</h2>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-3">${macros.map((m, i) => `
       <div class="p-3 rounded-xl bg-zinc-950 border border-zinc-800 space-y-2">
         <div class="flex justify-between items-center"><b class="text-rose-400">${k ? m.tKo : m.tEn}</b>
           <div class="flex gap-1">
             <button type="button" onclick="cpMac(${i},'both')" class="px-2 py-0.5 rounded bg-rose-600 text-white font-bold text-[10px]">${k ? '통합' : 'Both'}</button>
-            <button type="button" onclick="cpMac(${i},'ko')" class="px-2 py-0.5 rounded bg-zinc-900 border border-zinc-700 text-white font-bold text-[10px]">한국어</button>
-            <button type="button" onclick="cpMac(${i},'en')" class="px-2 py-0.5 rounded bg-zinc-900 border border-zinc-700 text-white font-bold text-[10px]">EN</button>
+            <button type="button" onclick="cpMac(${i},'ko')" class="px-2 py-0.5 rounded bg-zinc-900 border border-zinc-700 text-white font-bold text-[10px]">한국어만</button>
+            <button type="button" onclick="cpMac(${i},'en')" class="px-2 py-0.5 rounded bg-zinc-900 border border-zinc-700 text-white font-bold text-[10px]">English</button>
           </div>
         </div>
         <pre class="whitespace-pre-wrap font-sans text-zinc-300 bg-black/60 p-2.5 rounded-lg border border-zinc-800">${k ? m.ko : m.en}</pre>
@@ -794,14 +1083,14 @@ function renderMac() {
 }
 function cpMac(i, m) {
   const x = macros[i];
-  copyText(m === 'ko' ? x.ko : m === 'en' ? x.en : x.ko + NL_CHAR + '---' + NL_CHAR + x.en);
+  copyText(m === 'ko' ? x.ko : m === 'en' ? x.en : x.ko + NL + '---' + NL + x.en);
 }
 
+/* ==================== TAB 12 & 13: AI & CHANGELOG ==================== */
 function renderNotes() {
   const k = lang === 'ko';
   const logs = [
-    { ver: 'v0.5.7 (Current)', date: '2026-11-22', badge: 'Hybrid Public DB + Home-Worker Queue', ko: ['실패하던 외부 데이터센터 프록시 호출을 제거하고 모든 기기 0.1초 즉시 조회 가능한 Supabase 공용 DB 엔진으로 전환', '미등록 숫자 ID 검색 시 홈 워커 대기열(lookup_queue) 자동 등록 및 6초 실시간 수신 + 즉시 간편 등록 동시 지원', '선물 코드 공용 게시판 및 왕국 KvK/전송 그룹 통합 검색 강화'], en: ['Replaced blocked datacenter proxies with instant Public DB lookup across all devices', 'Added automatic lookup_queue enqueuing with 6s live worker polling + instant manual save', 'Enhanced public gift code board and #Kingdom search'] },
-    { ver: 'v0.5.6', date: '2026-11-22', badge: 'Edge Dual-Proxy Test', ko: ['듀얼 프록시 구조 테스트 및 글로벌 브랜드 통일'], en: ['Dual-proxy routing test & global branding'] },
+    { ver: 'v0.5.7 PRO (Current)', date: '2026-11-22', badge: 'Full Restoration + Public DB + Queue', ko: ['기존 v0.5.6의 모든 심화 계산기(순금/정제 16주, KvK 점수, 베어 재탑승, Gen 1~10, 전용무기 275, 11대 상점, 버프 매트릭스) 100% 복원', 'Supabase 공용 DB 즉시 조회 및 홈 워커 대기열(lookup_queue) 실시간 연동 통합', '크림슨·로즈 네온 커맨드 센터 UI 및 GitHub Pages 무제한 배포 최적화'], en: ['Restored 100% of v0.5.6 advanced calculators & databases alongside v0.5.7 Public DB + Queue engine'] },
     { ver: 'v0.5.4', date: '2026-11-21', badge: 'Global Neutral Branding', ko: ['모든 왕국·연맹 범용 브랜드(KINGSHOT hub) 및 14개 전술 모듈 통합'], en: ['Unified KINGSHOT hub branding & 14 tactical modules'] }
   ];
   document.getElementById('mainApp').innerHTML = `
@@ -819,13 +1108,13 @@ function getAiHtml(isDock) {
   const k = lang === 'ko';
   const pfx = isDock ? 'dk_' : 'mn_';
   return `
-  <div class="glass rounded-2xl overflow-hidden flex flex-col ${isDock ? 'h-[520px] sticky top-24' : 'h-[440px]'} text-xs">
+  <div class="glass rounded-2xl overflow-hidden flex flex-col ${isDock ? 'h-[540px] sticky top-28' : 'h-[440px]'} text-xs">
     <div class="px-3.5 py-2.5 bg-zinc-950 border-b border-zinc-800 flex items-center justify-between">
       <b class="text-rose-400">🤖 ${k ? '킹샷 전술 AI' : 'Tactical AI'}</b>
-      <span class="text-[10px] text-zinc-400">Instant DB</span>
+      <span class="text-[10px] text-emerald-400 font-mono-code">● Ready</span>
     </div>
     <div id="${pfx}aiLog" class="flex-1 p-3 overflow-y-auto space-y-2">
-      <div class="p-2.5 rounded-xl bg-zinc-950 border border-zinc-800 text-zinc-200">${k ? '안녕하세요! 베어, 시련, 순금, 장비, 시설, 상점 키워드로 질문해 주세요.' : 'Hello! Ask about Bear, Trial, Truegold, Gear, Facilities, or Shops.'}</div>
+      <div class="p-2.5 rounded-xl bg-zinc-950 border border-zinc-800 text-zinc-200">${k ? '안녕하세요! 베어, 시련, 순금, 장비, 전용무기, 상점, 시설 키워드로 질문해 주세요.' : 'Hello! Ask about Bear, Trial, Truegold, Gear, Shops, or Facilities.'}</div>
     </div>
     <div class="p-2.5 bg-zinc-950 border-t border-zinc-800 flex gap-1.5">
       <input id="${pfx}aiIn" onkeydown="if(event.key==='Enter')askAi(null,'${pfx}')" placeholder="${k ? '전술 질문...' : 'Ask AI...'}" class="flex-1 bg-zinc-900 border border-zinc-700 rounded-xl px-2.5 py-2 text-white"/>
@@ -846,11 +1135,12 @@ async function askAi(preset, pfx) {
   const log = document.getElementById(pfx + 'aiLog'), k = lang === 'ko';
   log.innerHTML += `<div class="flex justify-end"><div class="p-2 rounded-xl bg-rose-600 text-white font-bold">${q}</div></div>`;
   const s = q.toLowerCase();
-  let ans = k ? '베어, 시련, 순금, 장비, 시설, 상점 키워드로 질문해 주세요!' : 'Ask about Bear, Trial, Truegold, Gear, Facilities, or Shops!';
+  let ans = k ? '베어, 시련, 순금, 장비, 상점, 시설 키워드로 질문해 주세요!' : 'Ask about Bear, Trial, Truegold, Gear, Shops, or Facilities!';
   if (s.includes('베어') || s.includes('bear')) ans = k ? '🐻 참여자 1번 슬롯: 첸코, 연우, 아마데우스, 아마네, 마고, 비비안! 병종 비율 보10:기10:궁80' : '🐻 Slot 1: Chenko, Yeonwoo, Amadeus, Amane, Margot, Vivian. Ratio 10:10:80.';
   else if (s.includes('시련') || s.includes('trial')) ans = k ? '✨ 첨탑: 50/15/35, 50/35/15, 50/20/30 | 결투장: 50/10/40, 40/40/20, 50/20/30' : '✨ Spire: 50/15/35, 50/35/15, 50/20/30 | Coliseum: 50/10/40, 40/40/20, 50/20/30';
-  else if (s.includes('순금') || s.includes('truegold')) ans = k ? '🏗️ 8개 건물 Lv.1~8 총합: 순금 31,422개 + 순정금 908개' : '🏗️ All 8 buildings Lv.1–8: 31,422 Truegold + 908 Tempered TG.';
-  else if (s.includes('장비') || s.includes('gear')) ans = k ? '🛡️ 공격/살상력(장갑·부츠) Lv.20→60→100 먼저 강화, 방어 갑옷류는 Lv.59·79 멈춤!' : '🛡️ Upgrade Gloves/Boots to 20→60→100 first; stop Armor at Lv.59/79.';
+  else if (s.includes('순금') || s.includes('truegold')) ans = k ? '🏗️ 8개 건물 Lv.1~8 총합: 순금 31,422개 + 순정금 908개 (슈퍼 정제 16주 주 34회 플랜 최적)' : '🏗️ All 8 buildings Lv.1–8: 31,422 Truegold + 908 Tempered TG (16-wk refine optimal).';
+  else if (s.includes('장비') || s.includes('gear') || s.includes('전용무기')) ans = k ? '🛡️ 공격/살상력(장갑·부츠) Lv.20→60→100 먼저 강화, 방어 갑옷류는 Lv.19·59·79 멈춤! 전용무기 10강 총 275개.' : '🛡️ Upgrade Gloves/Boots to 20→60→100 first; stop Armor at Lv.19/59/79. Exclusive Lv.10 = 275 parts.';
+  else if (s.includes('상점') || s.includes('shop')) ans = k ? '🛒 경기장(레전드 상자→미스릴), KvK(순금), 시련(주 1회 미스릴), 다이아(룰렛 16만 보석 유지 후 펫 단련석)' : '🛒 Arena(Legend Chest→Mithril), KvK(Truegold), Trial(Weekly Mithril).';
   else if (s.includes('시설') || s.includes('facility')) ans = k ? '🏰 연맹 깃발 75% 이상 덮어야 공격 가능, 15분 연속 점령 시 확정!' : '🏰 Requires >=75% banner coverage & 15m continuous hold.';
   log.innerHTML += `<div class="p-2 rounded-xl bg-zinc-950 border border-zinc-800 whitespace-pre-wrap">${ans}</div>`;
   log.scrollTop = log.scrollHeight;
