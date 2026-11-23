@@ -1087,19 +1087,100 @@ function renderShop() {
 
 function renderMys() {
   const k = lang === 'ko';
+  const zones = [
+    ['🌿 생명의 숲 (Forest of Life)', '🌿 Forest of Life', '펫(Pet) 및 펫 전투 스킬', 'Pets & Pet Combat Skills', '50 / 15 / 35', '왕국 54일차+ (1세대 펫 해금)'],
+    ['💎 수정 동굴 (Crystal Cave)', '💎 Crystal Cave', '영주 보석(Governor Charm)', 'Governor Charms', '60 / 20 / 20', 'TC 25 이상 (보석 해금)'],
+    ['📚 지식의 연결점 (Knowledge Nexus)', '📚 Knowledge Nexus', '아카데미 & 전쟁 아카데미 연구', 'Academy & War Academy Tech', '50 / 20 / 30', 'TC 19 즉시 개방'],
+    ['🌋 용암 요새 (Molten Fort)', '🌋 Molten Fort', '영주 장비(Governor Gear)', 'Governor Gear', '60 / 15 / 25', 'TC 22 이상 (영주 장비 해금)']
+  ];
   document.getElementById('mainApp').innerHTML = `
   <div class="space-y-4 text-xs">
-    <div class="glass rounded-2xl p-4 space-y-2.5">
-      <h2 class="text-sm sm:text-base font-black text-white">${k ? '✨ 신비한 시련 (Mystic Trial) 3부대 비율' : '✨ Mystic Trial 3-March Ratios'}</h2>
-      <div class="p-3 rounded-xl bg-zinc-950 border border-zinc-800 space-y-1"><b class="text-rose-400">빛나는 첨탑 (Spire)</b><p class="text-zinc-200">1부대(기병2순위): 50/15/35 · 2부대(기병1순위): 50/35/15 · 3부대: 50/20/30</p></div>
-      <div class="p-3 rounded-xl bg-zinc-950 border border-zinc-800 space-y-1"><b class="text-rose-400">결투장 (Coliseum)</b><p class="text-zinc-200">1부대(기병2순위): 50/10/40 · 2부대(기병1순위): 40/40/20 · 3부대: 50/20/30</p></div>
+    <!-- 1. 빛나는 첨탑 & 결투장 3부대 비율 + 원클릭 복사 -->
+    <div class="glass-crimson rounded-2xl p-4 space-y-3">
+      <div class="flex flex-wrap items-center justify-between gap-2">
+        <div>
+          <h2 class="text-sm sm:text-base font-black text-white">${k ? '✨ 신비한 시련 (Mystic Trial) 6대 구역 & 3부대 비율' : '✨ Mystic Trial 6 Zones & 3-March Ratios'}</h2>
+          <p class="text-[11px] text-zinc-400 mt-0.5">${k ? '💡 핵심 팁: 편성 수정 후 [출격]을 누르지 않고 뒤로가기를 누르면 일일 도전 횟수 소모 없이 저장됩니다!' : '💡 PRO TIP: Edit formation and press Back (do NOT click Deploy) to save without spending daily attempts!'}</p>
+        </div>
+        <span class="px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 font-mono-code text-[10px]">TC 19+</span>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <!-- 빛나는 첨탑 -->
+        <div class="p-3.5 rounded-xl bg-zinc-950 border border-rose-500/40 space-y-2">
+          <div class="flex items-center justify-between">
+            <b class="text-rose-400 text-sm">${k ? '🗼 빛나는 첨탑 (Radiant Spire)' : '🗼 Radiant Spire'}</b>
+            <span class="text-[10px] text-amber-300 font-mono-code">${k ? '본인 실제 병력 티어 반영' : 'Uses Own Troop Tier'}</span>
+          </div>
+          <div class="space-y-1 text-zinc-200 font-mono-code">
+            <div class="p-1.5 rounded bg-zinc-900/90 flex justify-between"><span>1부대 (${k ? '기병 2순위' : '2nd Cav'})</span><b class="text-white">50 / 15 / 35</b></div>
+            <div class="p-1.5 rounded bg-zinc-900/90 flex justify-between"><span>2부대 (${k ? '기병 1순위' : '1st Cav'})</span><b class="text-rose-300">50 / 35 / 15</b></div>
+            <div class="p-1.5 rounded bg-zinc-900/90 flex justify-between"><span>3부대 (${k ? '기본 균형' : 'Balanced'})</span><b class="text-white">50 / 20 / 30</b></div>
+          </div>
+        </div>
+
+        <!-- 결투장 -->
+        <div class="p-3.5 rounded-xl bg-zinc-950 border border-purple-500/40 space-y-2">
+          <div class="flex items-center justify-between">
+            <b class="text-purple-300 text-sm">${k ? '⚔️ 결투장 (Coliseum)' : '⚔️ Coliseum'}</b>
+            <span class="text-[10px] text-zinc-400 font-mono-code">${k ? '영웅·장비·전용무기 반영' : 'Heroes & Gear Stats'}</span>
+          </div>
+          <div class="space-y-1 text-zinc-200 font-mono-code">
+            <div class="p-1.5 rounded bg-zinc-900/90 flex justify-between"><span>1부대 (${k ? '기병 2순위' : '2nd Cav'})</span><b class="text-white">50 / 10 / 40</b></div>
+            <div class="p-1.5 rounded bg-zinc-900/90 flex justify-between"><span>2부대 (${k ? '기병 1순위' : '1st Cav'})</span><b class="text-purple-300">40 / 40 / 20</b></div>
+            <div class="p-1.5 rounded bg-zinc-900/90 flex justify-between"><span>3부대 (${k ? '기본 균형' : 'Balanced'})</span><b class="text-white">50 / 20 / 30</b></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 나머지 4대 속성 구역 -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+        ${zones.map(([tKo, tEn, sKo, sEn, ratio, req]) => `
+          <div class="p-3 rounded-xl bg-zinc-950 border border-zinc-800 flex items-center justify-between gap-2">
+            <div class="min-w-0">
+              <b class="text-white block truncate">${k ? tKo : tEn}</b>
+              <span class="text-[11px] text-zinc-400 block truncate">${k ? sKo : sEn} · ${req}</span>
+            </div>
+            <span class="px-2.5 py-1 rounded-lg bg-rose-500/15 border border-rose-500/35 font-mono-code font-bold text-rose-300 whitespace-nowrap shrink-0">${ratio}</span>
+          </div>`).join('')}
+      </div>
     </div>
+
+    <!-- 2. 주간 소탕(Raid) 신비 수정(Misty Crystal) 수입 계산기 -->
+    <div class="glass rounded-2xl p-4 space-y-3">
+      <div class="flex flex-wrap items-center justify-between gap-2">
+        <h3 class="text-sm font-bold text-white">${k ? '💎 주간 소탕 (Raid) 신비 수정 & 시련 상점 계산기' : '💎 Weekly Raid Misty Crystal Calculator'}</h3>
+        <span class="text-[11px] text-zinc-400">${k ? '10스테이지 최초 클리어 시 소탕 해금 (스테이지당 수정 10개)' : 'Unlock Raid at Stage 10 (10 Crystals/stage)'}</span>
+      </div>
+      <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+        <div><label class="text-zinc-400 block mb-1">🗼 첨탑 클리어 층</label><input id="mt_spire" type="number" value="40" min="0" oninput="calcMysticRaid()" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-2.5 py-1.5 font-mono-code text-white"/></div>
+        <div><label class="text-zinc-400 block mb-1">⚔️ 결투장 클리어 층</label><input id="mt_col" type="number" value="40" min="0" oninput="calcMysticRaid()" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-2.5 py-1.5 font-mono-code text-white"/></div>
+        <div><label class="text-zinc-400 block mb-1">🌿 생명의 숲 층</label><input id="mt_for" type="number" value="35" min="0" oninput="calcMysticRaid()" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-2.5 py-1.5 font-mono-code text-white"/></div>
+        <div><label class="text-zinc-400 block mb-1">💎 수정 동굴 층</label><input id="mt_cav" type="number" value="35" min="0" oninput="calcMysticRaid()" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-2.5 py-1.5 font-mono-code text-white"/></div>
+        <div><label class="text-zinc-400 block mb-1">📚 지식 연결점 층</label><input id="mt_nex" type="number" value="40" min="0" oninput="calcMysticRaid()" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-2.5 py-1.5 font-mono-code text-white"/></div>
+        <div><label class="text-zinc-400 block mb-1">🌋 용암 요새 층</label><input id="mt_mol" type="number" value="35" min="0" oninput="calcMysticRaid()" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-2.5 py-1.5 font-mono-code text-white"/></div>
+      </div>
+      <div id="mtRaidOut" class="p-3 rounded-xl bg-zinc-950 border border-rose-500/40 space-y-1"></div>
+    </div>
+
+    <!-- 3. 바이킹의 복수 3대 황금률 -->
     <div class="glass rounded-2xl p-4 space-y-2">
       <h2 class="text-sm sm:text-base font-black text-white">${k ? '🛡️ 바이킹의 복수 (20웨이브) 3대 황금률' : '🛡️ Viking Vengeance 3 Golden Rules'}</h2>
-      <div class="p-3 rounded-xl bg-rose-500/15 border border-rose-500/35"><b class="text-rose-300">1. 본인 성 100% 비우기</b><p class="text-zinc-300 mt-0.5">모든 병력을 동료 성에 지원 파병하고 경비소에는 최강 영웅 3명 배치</p></div>
+      <div class="p-3 rounded-xl bg-rose-500/15 border border-rose-500/35"><b class="text-rose-300">1. 본인 성 100% 비우기</b><p class="text-zinc-300 mt-0.5">모든 병력을 동료 성에 지원 파병하고 경비소에는 최강 영웅 3명 배치 (펫 스킬은 신비한 시련에서 자동 발동되므로 쿨타임 낭비 불필요)</p></div>
       <div class="p-3 rounded-xl bg-zinc-950 border border-zinc-800"><b class="text-white">2. 이벤트 중 치료 금지 & 특수 웨이브</b><p class="text-zinc-300 mt-0.5">7·14·17 온라인 지원 집중 / 10·20 연맹 본부(HQ) 방패 보병 수비</p></div>
     </div>
   </div>`;
+  calcMysticRaid();
+}
+
+function calcMysticRaid() {
+  const g = id => Math.max(0, parseInt(document.getElementById(id)?.value, 10) || 0);
+  const totalStages = g('mt_spire') + g('mt_col') + g('mt_for') + g('mt_cav') + g('mt_nex') + g('mt_mol');
+  const crystals = totalStages * 10;
+  const k = lang === 'ko';
+  document.getElementById('mtRaidOut').innerHTML = k
+    ? `<div class="flex items-center justify-between"><span class="text-zinc-300 font-bold">주간 소탕 예상 신비 수정 (총 ${totalStages}스테이지):</span><b class="font-mono-code text-base text-amber-300">💎 ${crystals.toLocaleString()}개 / 주</b></div><div class="text-[11px] text-zinc-400">• 시련 상점 필수 구매: 주간 미스릴(Gen 2+) → 순금 가루(전쟁 아카데미+) → 영주 부적 재료 (시련 상자 1~3% 확률 '지식의 전당' 장식 풀업 시 부대 공격력 +20%)</div>`
+    : `<div class="flex items-center justify-between"><span class="text-zinc-300 font-bold">Weekly Raid Income (${totalStages} stages):</span><b class="font-mono-code text-base text-amber-300">💎 ${crystals.toLocaleString()} / wk</b></div><div class="text-[11px] text-zinc-400">• Trial Shop Priority: Weekly Mithril → Truegold Dust → Governor Charm Mats</div>`;
 }
 
 const macros = [
