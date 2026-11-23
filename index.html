@@ -52,17 +52,17 @@
   <!-- TOP COMMAND HEADER -->
   <header class="sticky top-0 z-40 glass border-b border-rose-500/20 px-3 sm:px-6 py-2.5">
     <div class="max-w-7xl mx-auto space-y-2">
-      <!-- Row 1: Brand + Right Action Buttons -->
-      <div class="flex items-center justify-between gap-2">
-        <div class="flex items-center gap-2 min-w-0 cursor-pointer" onclick="switchTab('search')">
-          <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-rose-500 via-red-600 to-rose-900 flex items-center justify-center font-display font-extrabold text-white text-xs shrink-0 crimson-glow">KS</div>
-          <div class="flex items-center gap-1.5 whitespace-nowrap">
-            <span class="font-display font-extrabold text-sm sm:text-base tracking-tight text-white">KINGSHOT <span class="text-rose-500">hub</span></span>
-            <span class="px-1.5 py-0.5 rounded-md bg-rose-500/20 border border-rose-500/40 text-rose-300 font-mono-code text-[10px] font-bold">v0.5.9</span>
+      <!-- Row 1: Brand + Right Action Buttons (Mobile Zero-Overlap Layout) -->
+      <div class="flex items-center justify-between gap-1.5">
+        <div class="flex items-center gap-1.5 min-w-0 cursor-pointer" onclick="switchTab('search')">
+          <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-gradient-to-br from-rose-500 via-red-600 to-rose-900 flex items-center justify-center font-display font-extrabold text-white text-[11px] sm:text-xs shrink-0 crimson-glow">KS</div>
+          <div class="flex items-center gap-1 min-w-0">
+            <span class="font-display font-extrabold text-[13px] sm:text-base tracking-tight text-white truncate">KINGSHOT <span class="text-rose-500">hub</span></span>
+            <span class="px-1.5 py-0.5 rounded-md bg-rose-500/20 border border-rose-500/40 text-rose-300 font-mono-code text-[9px] sm:text-[10px] font-bold shrink-0">v0.5.9</span>
           </div>
         </div>
 
-        <div class="flex items-center gap-1.5 shrink-0">
+        <div class="flex items-center gap-1 sm:gap-1.5 shrink-0">
           <!-- Desktop Quick Profile Chip -->
           <div id="desktopProfileWrap" class="hidden lg:block">
             <button type="button" onclick="openQuickProfile()" class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-zinc-900/90 hover:bg-zinc-800 border border-rose-500/30 text-[11px] text-zinc-200 whitespace-nowrap btn-tap">
@@ -71,29 +71,30 @@
             </button>
           </div>
 
-          <!-- Gift Code Quick Button -->
-          <button type="button" onclick="switchTab('search'); setTimeout(()=>document.getElementById('giftSection')?.scrollIntoView({behavior:'smooth'}),80)" title="Gift Codes" class="w-8 h-8 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 flex items-center justify-center text-xs shrink-0 btn-tap">🎁</button>
+          <!-- Gift Code Quick Button (Hidden on very narrow screens; accessible via Mobile Profile Strip) -->
+          <button type="button" onclick="switchTab('search'); setTimeout(()=>document.getElementById('giftSection')?.scrollIntoView({behavior:'smooth'}),80)" title="Gift Codes" class="hidden sm:flex w-8 h-8 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 items-center justify-center text-xs shrink-0 btn-tap">🎁</button>
 
           <!-- Changelog Bell Badge -->
-          <button type="button" onclick="switchTab('notes')" class="px-2 py-1.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 flex items-center gap-1 text-[11px] font-mono-code text-rose-300 whitespace-nowrap shrink-0 btn-tap">
+          <button type="button" onclick="switchTab('notes')" class="px-1.5 sm:px-2 py-1 rounded-lg sm:rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 flex items-center gap-0.5 text-[10px] sm:text-[11px] font-mono-code text-rose-300 whitespace-nowrap shrink-0 btn-tap">
             <span>🔔</span><span class="font-bold">5.9</span>
           </button>
 
           <!-- 3-Language Selector Pill (KO / EN / TR) -->
-          <div class="flex items-center rounded-xl bg-zinc-900/95 border border-rose-500/40 p-0.5 text-[10px] font-mono-code font-bold shrink-0">
-            <button type="button" id="langBtn_ko" onclick="setLang('ko')" class="px-1.5 py-1 rounded-lg transition">KO</button>
-            <button type="button" id="langBtn_en" onclick="setLang('en')" class="px-1.5 py-1 rounded-lg transition">EN</button>
-            <button type="button" id="langBtn_tr" onclick="setLang('tr')" class="px-1.5 py-1 rounded-lg transition">TR</button>
+          <div class="flex items-center rounded-lg sm:rounded-xl bg-zinc-900/95 border border-rose-500/40 p-0.5 text-[9px] sm:text-[10px] font-mono-code font-bold shrink-0">
+            <button type="button" id="langBtn_ko" onclick="setLang('ko')" class="px-1.5 py-0.5 sm:py-1 rounded-md sm:rounded-lg transition">KO</button>
+            <button type="button" id="langBtn_en" onclick="setLang('en')" class="px-1.5 py-0.5 sm:py-1 rounded-md sm:rounded-lg transition">EN</button>
+            <button type="button" id="langBtn_tr" onclick="setLang('tr')" class="px-1.5 py-0.5 sm:py-1 rounded-md sm:rounded-lg transition">TR</button>
           </div>
         </div>
       </div>
 
-      <!-- Mobile Dedicated Quick Profile Strip -->
-      <div id="mobileProfileRow" class="lg:hidden hidden">
-        <button type="button" onclick="openQuickProfile()" class="w-full px-3 py-1 rounded-lg bg-zinc-950/90 border border-rose-500/25 flex items-center justify-between text-[11px] text-zinc-200 btn-tap">
+      <!-- Mobile Dedicated Quick Profile + Gift Shortcut Strip -->
+      <div id="mobileProfileRow" class="lg:hidden flex items-center gap-1.5">
+        <button type="button" onclick="openQuickProfile()" class="flex-1 min-w-0 px-2.5 py-1 rounded-lg bg-zinc-950/90 border border-rose-500/25 flex items-center justify-between text-[11px] text-zinc-200 btn-tap">
           <span class="flex items-center gap-1.5 truncate"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0"></span><b id="mobileQpLabel" class="truncate">Player Sync</b></span>
-          <span id="mobileQpOpen" class="text-[10px] text-rose-300 font-mono-code shrink-0 ml-2">프로필 ↗</span>
+          <span id="mobileQpOpen" class="text-[10px] text-rose-300 font-mono-code shrink-0 ml-1.5">프로필 ↗</span>
         </button>
+        <button type="button" onclick="switchTab('search'); setTimeout(()=>document.getElementById('giftSection')?.scrollIntoView({behavior:'smooth'}),80)" class="px-2.5 py-1 rounded-lg bg-zinc-950/90 border border-amber-500/30 text-[11px] text-amber-300 font-bold whitespace-nowrap shrink-0 btn-tap">🎁 코드</button>
       </div>
 
       <!-- Row 2: Top Integrated Search Capsule -->
@@ -264,7 +265,7 @@ function setLang(l) {
   ['ko', 'en', 'tr'].forEach(code => {
     const btn = document.getElementById('langBtn_' + code);
     if (btn) {
-      btn.className = `px-1.5 py-1 rounded-lg transition ${l === code ? 'bg-rose-600 text-white' : 'text-zinc-400 hover:text-white'}`;
+      btn.className = `px-1.5 py-0.5 sm:py-1 rounded-md sm:rounded-lg transition ${l === code ? 'bg-rose-600 text-white' : 'text-zinc-400 hover:text-white'}`;
     }
   });
   const topIn = document.getElementById('topQuickSearch');
@@ -1426,9 +1427,9 @@ function updateEventCountdown() {
   const m = Math.floor((diff % 3600) / 60);
   const s = diff % 60;
   txtEl.textContent = t(
-    '⏱️ 다음 KvK 왕성전 (토 10:00 UTC · 관직예약 금 23:50)',
+    '⏱️ KvK 왕성전 (토 10:00 · 관직 금 23:50 UTC)',
     '⏱️ Next KvK Castle (Sat 10:00 UTC)',
-    '⏱️ Sonraki KvK Kale Savaşı (Cmt 10:00 UTC)'
+    '⏱️ Sonraki KvK (Cmt 10:00 UTC)'
   );
   cdEl.textContent = `${d}d ${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
 }
