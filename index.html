@@ -29,7 +29,7 @@
     .font-display { font-family: 'Syne', sans-serif; }
     .font-mono-code { font-family: 'JetBrains Mono', monospace; }
     .glass {
-      background: rgba(16, 12, 16, 0.88);
+      background: rgba(16, 12, 16, 0.90);
       backdrop-filter: blur(14px);
       -webkit-backdrop-filter: blur(14px);
       border: 1px solid rgba(255, 255, 255, 0.08);
@@ -49,10 +49,10 @@
 </head>
 <body class="min-h-screen pb-24 lg:pb-12">
 
-  <!-- TOP COMMAND HEADER (MOBILE CLEAN SINGLE-LINE ALIGNMENT) -->
+  <!-- TOP COMMAND HEADER (STRICT MOBILE OVERLAP FIX) -->
   <header class="sticky top-0 z-40 glass border-b border-rose-500/20 px-3 sm:px-6 py-2.5">
     <div class="max-w-7xl mx-auto space-y-2">
-      <!-- Row 1: Brand + Right Action Buttons (Strictly Single-Line on Mobile) -->
+      <!-- Row 1: Brand + Right Action Buttons (No Overlap on Narrow iPhone) -->
       <div class="flex items-center justify-between gap-2">
         <div class="flex items-center gap-2 min-w-0 cursor-pointer" onclick="switchTab('search')">
           <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-rose-500 via-red-600 to-rose-900 flex items-center justify-center font-display font-extrabold text-white text-xs shrink-0 crimson-glow">KS</div>
@@ -63,11 +63,13 @@
         </div>
 
         <div class="flex items-center gap-1.5 shrink-0">
-          <!-- Desktop/Tablet Quick Profile Chip -->
-          <button type="button" id="quickProfileChip" onclick="openQuickProfile()" class="hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-zinc-900/90 hover:bg-zinc-800 border border-rose-500/30 text-[11px] text-zinc-200 whitespace-nowrap btn-tap">
-            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-            <span id="qpLabel" class="font-bold">Player Sync</span>
-          </button>
+          <!-- Desktop/Wide Tablet Only Quick Profile Chip -->
+          <div id="desktopProfileWrap" class="hidden lg:block">
+            <button type="button" onclick="openQuickProfile()" class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-zinc-900/90 hover:bg-zinc-800 border border-rose-500/30 text-[11px] text-zinc-200 whitespace-nowrap btn-tap">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+              <span id="qpLabel" class="font-bold">Player Sync</span>
+            </button>
+          </div>
 
           <!-- Gift Code Quick Button -->
           <button type="button" onclick="switchTab('search'); setTimeout(()=>document.getElementById('giftSection')?.scrollIntoView({behavior:'smooth'}),80)" title="Gift Codes" class="w-8 h-8 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 flex items-center justify-center text-xs shrink-0 btn-tap">🎁</button>
@@ -84,11 +86,11 @@
         </div>
       </div>
 
-      <!-- Mobile Quick Profile Strip (Dedicated Row so Header Never Wraps) -->
-      <div id="mobileProfileRow" class="md:hidden hidden">
+      <!-- Mobile/Tablet Dedicated Quick Profile Strip -->
+      <div id="mobileProfileRow" class="lg:hidden hidden">
         <button type="button" onclick="openQuickProfile()" class="w-full px-3 py-1 rounded-lg bg-zinc-950/90 border border-rose-500/25 flex items-center justify-between text-[11px] text-zinc-200 btn-tap">
           <span class="flex items-center gap-1.5 truncate"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0"></span><b id="mobileQpLabel" class="truncate">Player Sync</b></span>
-          <span class="text-[10px] text-rose-300 font-mono-code shrink-0 ml-2">프로필 열기 ↗</span>
+          <span class="text-[10px] text-rose-300 font-mono-code shrink-0 ml-2">프로필 ↗</span>
         </button>
       </div>
 
@@ -106,15 +108,10 @@
     </div>
   </header>
 
-  <!-- MAIN WORKSPACE (MOBILE SINGLE / PC 3-COLUMN HYBRID) -->
+  <!-- MAIN WORKSPACE -->
   <div class="max-w-7xl mx-auto px-3 sm:px-6 pt-4 grid grid-cols-1 lg:grid-cols-12 gap-5">
-    <!-- PC Left Command Sidebar -->
     <aside id="pcLeftNav" class="hidden lg:block lg:col-span-2"></aside>
-
-    <!-- Center Main Content -->
     <main id="mainApp" class="lg:col-span-7 space-y-4"></main>
-
-    <!-- PC Right Tactical AI Dock -->
     <aside id="pcAiDock" class="hidden lg:block lg:col-span-3"></aside>
   </div>
 
@@ -346,7 +343,6 @@ function renderSearch() {
   const k = lang === 'ko';
   document.getElementById('mainApp').innerHTML = `
   <div class="space-y-4 text-xs">
-    <!-- Bento KPI Strip -->
     <div class="grid grid-cols-3 gap-2">
       <div class="glass rounded-xl p-2.5 border-rose-500/25">
         <div class="text-[10px] text-zinc-400 whitespace-nowrap">${k ? '공용 DB 상태' : 'Public DB'}</div>
@@ -362,7 +358,6 @@ function renderSearch() {
       </div>
     </div>
 
-    <!-- One-Stop Search & Queue -->
     <div class="glass-crimson rounded-2xl p-4 space-y-3">
       <div class="flex flex-wrap items-center justify-between gap-2">
         <div>
@@ -380,7 +375,6 @@ function renderSearch() {
       <div id="searchResultArea" class="space-y-2.5"></div>
     </div>
 
-    <!-- Tracked Players & Kingdom Board -->
     <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
       <div class="md:col-span-7 glass rounded-2xl p-4 space-y-2.5">
         <div class="flex items-center justify-between gap-2">
@@ -402,7 +396,6 @@ function renderSearch() {
       </div>
     </div>
 
-    <!-- Gift Codes Board -->
     <div id="giftSection" class="glass rounded-2xl p-4 space-y-2.5">
       <div class="flex flex-wrap items-center justify-between gap-2">
         <div>
@@ -604,12 +597,8 @@ async function loadLiveLists() {
     lastQuickFid = String(topP.fid);
     const labelTxt = `${topP.nickname || 'Governor'} (${formatStove(topP.stove_lv)})`;
 
-    const chip = document.getElementById('quickProfileChip');
     const lbl = document.getElementById('qpLabel');
-    if (chip && lbl) {
-      chip.classList.remove('hidden');
-      lbl.textContent = labelTxt;
-    }
+    if (lbl) lbl.textContent = labelTxt;
 
     const mRow = document.getElementById('mobileProfileRow');
     const mLbl = document.getElementById('mobileQpLabel');
@@ -1148,7 +1137,7 @@ function cpMac(i, m) {
 function renderNotes() {
   const k = lang === 'ko';
   const logs = [
-    { ver: 'v0.5.7 (Current)', date: '2026-11-22', badge: 'Mobile Layout Fix + Public DB + Queue', ko: ['모바일 상단 헤더 한 줄 정렬 최적화 및 퀵 프로필 전용 슬롯 분리로 여백 개선', 'v0.1.0 초기 알파부터 현재까지 전체 15개 마일스톤 업데이트 히스토리 아카이브 복원', 'Supabase 공용 DB 즉시 조회 및 홈 워커 대기열(lookup_queue) 실시간 연동 통합'], en: ['Fixed mobile top header spacing & restored full v0.1.0–v0.5.7 changelog archive with Public DB + Queue'] },
+    { ver: 'v0.5.7 (Current)', date: '2026-11-22', badge: 'Mobile Header Overlap Fix + Public DB + Queue', ko: ['모바일 상단 헤더 겹침 완전 제거 및 퀵 프로필 전용 슬롯 분리', 'v0.1.0 초기 알파부터 현재까지 전체 15개 마일스톤 업데이트 히스토리 아카이브 복원', 'Supabase 공용 DB 즉시 조회 및 홈 워커 대기열(lookup_queue) 실시간 연동 통합'], en: ['Eliminated mobile top header overlap & restored full v0.1.0–v0.5.7 changelog archive with Public DB + Queue'] },
     { ver: 'v0.5.6', date: '2026-11-22', badge: 'Edge Dual-Proxy Test', ko: ['Cloudflare 인천 엣지 프록시 + Netlify 백업 듀얼 프록시 구조 테스트'], en: ['Cloudflare Edge + Netlify dual-proxy routing test'] },
     { ver: 'v0.5.5', date: '2026-11-21', badge: 'Auto-Lookup & Gift Redeem Engine', ko: ['실시간 플레이어 자동 조회 및 선물 코드 일괄 발송 엔진 구축'], en: ['Built live player auto-lookup & bulk gift redemption engine'] },
     { ver: 'v0.5.4', date: '2026-11-21', badge: 'Global Multi-Server Branding', ko: ['특정 연맹/서버 표기를 제거하고 전 서버 범용 브랜드(KINGSHOT hub)로 통일'], en: ['Removed alliance-specific tags and unified under global KINGSHOT hub'] },
