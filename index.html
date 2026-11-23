@@ -49,50 +49,56 @@
 </head>
 <body class="min-h-screen pb-24 lg:pb-12">
 
-  <!-- TOP COMMAND HEADER (v0.5.3~v0.5.6 STYLE RESTORED) -->
+  <!-- TOP COMMAND HEADER (MOBILE CLEAN SINGLE-LINE ALIGNMENT) -->
   <header class="sticky top-0 z-40 glass border-b border-rose-500/20 px-3 sm:px-6 py-2.5">
     <div class="max-w-7xl mx-auto space-y-2">
-      <!-- Row 1: Brand + Quick Profile Chip + Bell + Lang -->
+      <!-- Row 1: Brand + Right Action Buttons (Strictly Single-Line on Mobile) -->
       <div class="flex items-center justify-between gap-2">
-        <div class="flex items-center gap-2.5 cursor-pointer" onclick="switchTab('search')">
-          <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-rose-500 via-red-600 to-rose-900 flex items-center justify-center font-display font-extrabold text-white text-xs crimson-glow">KS</div>
-          <div>
-            <div class="flex items-center gap-1.5">
-              <span class="font-display font-extrabold text-sm sm:text-base tracking-tight text-white">KINGSHOT <span class="text-rose-500">hub</span></span>
-              <span class="px-1.5 py-0.5 rounded-md bg-rose-500/20 border border-rose-500/40 text-rose-300 font-mono-code text-[10px] font-bold">v0.5.7</span>
-            </div>
+        <div class="flex items-center gap-2 min-w-0 cursor-pointer" onclick="switchTab('search')">
+          <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-rose-500 via-red-600 to-rose-900 flex items-center justify-center font-display font-extrabold text-white text-xs shrink-0 crimson-glow">KS</div>
+          <div class="flex items-center gap-1.5 whitespace-nowrap">
+            <span class="font-display font-extrabold text-sm sm:text-base tracking-tight text-white">KINGSHOT <span class="text-rose-500">hub</span></span>
+            <span class="px-1.5 py-0.5 rounded-md bg-rose-500/20 border border-rose-500/40 text-rose-300 font-mono-code text-[10px] font-bold">v0.5.7</span>
           </div>
         </div>
 
-        <div class="flex items-center gap-1.5">
-          <!-- Quick Profile Chip (Auto-loaded from DB without revealing server name in URL) -->
-          <button type="button" id="quickProfileChip" onclick="openQuickProfile()" class="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-zinc-900/90 hover:bg-zinc-800 border border-rose-500/30 text-[11px] text-zinc-200 btn-tap">
+        <div class="flex items-center gap-1.5 shrink-0">
+          <!-- Desktop/Tablet Quick Profile Chip -->
+          <button type="button" id="quickProfileChip" onclick="openQuickProfile()" class="hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-zinc-900/90 hover:bg-zinc-800 border border-rose-500/30 text-[11px] text-zinc-200 whitespace-nowrap btn-tap">
             <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
             <span id="qpLabel" class="font-bold">Player Sync</span>
           </button>
 
           <!-- Gift Code Quick Button -->
-          <button type="button" onclick="switchTab('search'); setTimeout(()=>document.getElementById('giftSection')?.scrollIntoView({behavior:'smooth'}),80)" title="Gift Codes" class="w-8 h-8 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 flex items-center justify-center text-xs btn-tap">🎁</button>
+          <button type="button" onclick="switchTab('search'); setTimeout(()=>document.getElementById('giftSection')?.scrollIntoView({behavior:'smooth'}),80)" title="Gift Codes" class="w-8 h-8 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 flex items-center justify-center text-xs shrink-0 btn-tap">🎁</button>
 
           <!-- Changelog Bell Badge (5.7) -->
-          <button type="button" onclick="switchTab('notes')" class="relative px-2 py-1.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 flex items-center gap-1 text-[11px] font-mono-code text-rose-300 btn-tap">
+          <button type="button" onclick="switchTab('notes')" class="px-2 py-1.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 flex items-center gap-1 text-[11px] font-mono-code text-rose-300 whitespace-nowrap shrink-0 btn-tap">
             <span>🔔</span><span class="font-bold">5.7</span>
           </button>
 
           <!-- Language Toggle -->
-          <button type="button" onclick="toggleLang()" class="px-2.5 py-1.5 rounded-xl bg-rose-600/20 hover:bg-rose-600/30 border border-rose-500/40 text-[11px] font-bold text-rose-200 btn-tap">
-            <span id="langBtnTxt">KO / EN</span>
+          <button type="button" onclick="toggleLang()" class="px-2.5 py-1.5 rounded-xl bg-rose-600/20 hover:bg-rose-600/30 border border-rose-500/40 text-[11px] font-bold text-rose-200 whitespace-nowrap shrink-0 btn-tap">
+            <span id="langBtnTxt">KO/EN</span>
           </button>
         </div>
       </div>
 
+      <!-- Mobile Quick Profile Strip (Dedicated Row so Header Never Wraps) -->
+      <div id="mobileProfileRow" class="md:hidden hidden">
+        <button type="button" onclick="openQuickProfile()" class="w-full px-3 py-1 rounded-lg bg-zinc-950/90 border border-rose-500/25 flex items-center justify-between text-[11px] text-zinc-200 btn-tap">
+          <span class="flex items-center gap-1.5 truncate"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0"></span><b id="mobileQpLabel" class="truncate">Player Sync</b></span>
+          <span class="text-[10px] text-rose-300 font-mono-code shrink-0 ml-2">프로필 열기 ↗</span>
+        </button>
+      </div>
+
       <!-- Row 2: Top Integrated Search Capsule -->
       <div class="flex items-center gap-1.5">
-        <div class="flex-1 flex items-center bg-zinc-950/95 border border-zinc-800 focus-within:border-rose-500 rounded-xl px-3 py-1.5">
-          <span class="text-zinc-400 text-xs mr-2">🔍</span>
+        <div class="flex-1 flex items-center bg-zinc-950/95 border border-zinc-800 focus-within:border-rose-500 rounded-xl px-3 py-1.5 min-w-0">
+          <span class="text-zinc-400 text-xs mr-2 shrink-0">🔍</span>
           <input id="topQuickSearch" onkeydown="if(event.key==='Enter')triggerTopSearch()" placeholder="플레이어 ID(숫자), 닉네임, 또는 #왕국번호 검색..." class="w-full bg-transparent text-xs text-white placeholder-zinc-500 focus:outline-none"/>
         </div>
-        <button type="button" onclick="triggerTopSearch()" class="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-rose-500 to-red-600 text-white text-xs font-bold crimson-glow btn-tap">이동</button>
+        <button type="button" onclick="triggerTopSearch()" class="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-rose-500 to-red-600 text-white text-xs font-bold whitespace-nowrap shrink-0 crimson-glow btn-tap">이동</button>
       </div>
 
       <!-- Row 3: Slim 1-Line Scrollable Tabs -->
@@ -112,7 +118,7 @@
     <aside id="pcAiDock" class="hidden lg:block lg:col-span-3"></aside>
   </div>
 
-  <!-- MOBILE 5-SLOT FIXED BOTTOM DOCK (v0.5.3~v0.5.6 STYLE) -->
+  <!-- MOBILE 5-SLOT FIXED BOTTOM DOCK -->
   <nav class="lg:hidden fixed bottom-0 inset-x-0 z-40 glass border-t border-rose-500/25 px-2 py-1.5">
     <div class="max-w-md mx-auto grid grid-cols-5 gap-1 text-center text-[10px]">
       <button type="button" onclick="switchTab('search')" id="dock_search" class="py-1 rounded-xl flex flex-col items-center gap-0.5 text-zinc-400 btn-tap">
@@ -230,7 +236,7 @@ function setLang(l) {
   lang = l;
   localStorage.setItem('ks_lang', l);
   const k = l === 'ko';
-  document.getElementById('langBtnTxt').textContent = k ? 'KO / EN' : 'EN / KO';
+  document.getElementById('langBtnTxt').textContent = k ? 'KO/EN' : 'EN/KO';
   const topIn = document.getElementById('topQuickSearch');
   if (topIn) topIn.placeholder = k ? '플레이어 ID(숫자), 닉네임, 또는 #왕국번호 검색...' : 'Search Player ID, Nickname, or #Kingdom...';
   document.getElementById('dkLbl_home').textContent = k ? '홈·DB' : 'Home';
@@ -303,7 +309,7 @@ function openQuickProfile() {
 
 /* ==================== TAB 0: PUBLIC DB & LOOKUP QUEUE ==================== */
 function formatStove(lv) {
-  if (!lv && lv !== 0) return lang === 'ko' ? '등급 미정' : 'Unset';
+  if (!lv && lv !== 0) return lang === 'ko' ? '미등록' : 'Unset';
   if (typeof lv === 'string') return lv;
   return lv <= 30 ? 'TC ' + lv : 'TG ' + (lv - 30);
 }
@@ -343,16 +349,16 @@ function renderSearch() {
     <!-- Bento KPI Strip -->
     <div class="grid grid-cols-3 gap-2">
       <div class="glass rounded-xl p-2.5 border-rose-500/25">
-        <div class="text-[10px] text-zinc-400">${k ? '공용 DB 상태' : 'Public DB'}</div>
-        <div class="font-mono-code font-bold text-emerald-400 text-xs mt-0.5">● LIVE SYNC</div>
+        <div class="text-[10px] text-zinc-400 whitespace-nowrap">${k ? '공용 DB 상태' : 'Public DB'}</div>
+        <div class="font-mono-code font-bold text-emerald-400 text-[11px] sm:text-xs mt-0.5 whitespace-nowrap">● LIVE SYNC</div>
       </div>
       <div class="glass rounded-xl p-2.5">
-        <div class="text-[10px] text-zinc-400">${k ? '등록 플레이어' : 'Players'}</div>
-        <div id="kpiPlayers" class="font-mono-code font-bold text-white text-xs mt-0.5">-</div>
+        <div class="text-[10px] text-zinc-400 whitespace-nowrap">${k ? '등록 플레이어' : 'Players'}</div>
+        <div id="kpiPlayers" class="font-mono-code font-bold text-white text-[11px] sm:text-xs mt-0.5 whitespace-nowrap">-</div>
       </div>
       <div class="glass rounded-xl p-2.5">
-        <div class="text-[10px] text-zinc-400">${k ? '전술 모듈' : 'Modules'}</div>
-        <div class="font-mono-code font-bold text-rose-400 text-xs mt-0.5">14 ACTIVE</div>
+        <div class="text-[10px] text-zinc-400 whitespace-nowrap">${k ? '전술 모듈' : 'Modules'}</div>
+        <div class="font-mono-code font-bold text-rose-400 text-[11px] sm:text-xs mt-0.5 whitespace-nowrap">14 ACTIVE</div>
       </div>
     </div>
 
@@ -363,12 +369,12 @@ function renderSearch() {
           <h2 class="text-sm sm:text-base font-black text-white">${k ? '🔍 플레이어 ID · 닉네임 · #왕국 통합 검색' : '🔍 Player ID · Nickname · #Kingdom Search'}</h2>
           <p class="text-[11px] text-zinc-400 mt-0.5">${k ? '미등록 숫자 ID 검색 시 홈 워커 대기열(lookup_queue)에 자동 등록되며, 즉시 수동 입력도 지원합니다.' : 'Auto-queues unregistered numeric IDs for home-worker sync, with instant manual save.'}</p>
         </div>
-        <span id="dbCountBadge" class="px-2 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/40 text-emerald-300 font-mono-code text-[10px]">Syncing...</span>
+        <span id="dbCountBadge" class="px-2 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/40 text-emerald-300 font-mono-code text-[10px] whitespace-nowrap">Syncing...</span>
       </div>
 
       <div class="flex gap-2">
-        <input id="hubSearchIn" onkeydown="if(event.key==='Enter')runHubSearch()" placeholder="${k ? '플레이어 ID, 닉네임, 또는 #왕국번호' : 'Player ID, Nickname, or #Kingdom'}" class="flex-1 bg-zinc-950 border border-zinc-700 rounded-xl px-3 py-2 text-sm text-white focus:border-rose-500 focus:outline-none"/>
-        <button type="button" onclick="runHubSearch()" class="px-4 py-2 rounded-xl bg-gradient-to-r from-rose-500 to-red-600 text-white font-black text-xs crimson-glow btn-tap">${k ? '검색 / 등록' : 'Search'}</button>
+        <input id="hubSearchIn" onkeydown="if(event.key==='Enter')runHubSearch()" placeholder="${k ? '플레이어 ID, 닉네임, 또는 #왕국번호' : 'Player ID, Nickname, or #Kingdom'}" class="flex-1 min-w-0 bg-zinc-950 border border-zinc-700 rounded-xl px-3 py-2 text-sm text-white focus:border-rose-500 focus:outline-none"/>
+        <button type="button" onclick="runHubSearch()" class="px-4 py-2 rounded-xl bg-gradient-to-r from-rose-500 to-red-600 text-white font-black text-xs whitespace-nowrap shrink-0 crimson-glow btn-tap">${k ? '검색 / 등록' : 'Search'}</button>
       </div>
 
       <div id="searchResultArea" class="space-y-2.5"></div>
@@ -377,9 +383,9 @@ function renderSearch() {
     <!-- Tracked Players & Kingdom Board -->
     <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
       <div class="md:col-span-7 glass rounded-2xl p-4 space-y-2.5">
-        <div class="flex items-center justify-between">
-          <h3 class="text-xs font-bold text-white">${k ? '🏆 실시간 공용 DB 플레이어 명단' : '🏆 Public DB Tracked Players'}</h3>
-          <button type="button" onclick="loadLiveLists()" class="px-2 py-1 rounded-lg bg-zinc-900 border border-zinc-700 text-rose-300 font-bold text-[10px] btn-tap">↻ ${k ? '새로고침' : 'Refresh'}</button>
+        <div class="flex items-center justify-between gap-2">
+          <h3 class="text-xs font-bold text-white whitespace-nowrap">${k ? '🏆 실시간 공용 DB 플레이어 명단' : '🏆 Public DB Tracked Players'}</h3>
+          <button type="button" onclick="loadLiveLists()" class="px-2 py-1 rounded-lg bg-zinc-900 border border-zinc-700 text-rose-300 font-bold text-[10px] whitespace-nowrap shrink-0 btn-tap">↻ ${k ? '새로고침' : 'Refresh'}</button>
         </div>
         <div id="livePlayersBox" class="space-y-1.5"></div>
       </div>
@@ -390,7 +396,7 @@ function renderSearch() {
           <input id="kRegId" type="number" placeholder="${k ? '왕국#' : 'King#'}" class="w-20 bg-zinc-950 border border-zinc-700 rounded-lg px-2 py-1.5 font-mono-code text-white"/>
           <input id="kRegRes" placeholder="${k ? '전적 (예: 승)' : 'Result'}" class="flex-1 min-w-[70px] bg-zinc-950 border border-zinc-700 rounded-lg px-2 py-1.5 text-white"/>
           <input id="kRegGrp" type="number" placeholder="${k ? '그룹' : 'Grp'}" class="w-14 bg-zinc-950 border border-zinc-700 rounded-lg px-2 py-1.5 font-mono-code text-white"/>
-          <button type="button" onclick="registerKingdomDb()" class="px-2.5 py-1.5 rounded-lg bg-rose-600 text-white font-bold btn-tap">${k ? '저장' : 'Save'}</button>
+          <button type="button" onclick="registerKingdomDb()" class="px-2.5 py-1.5 rounded-lg bg-rose-600 text-white font-bold whitespace-nowrap btn-tap">${k ? '저장' : 'Save'}</button>
         </div>
         <div id="liveKingdomsBox" class="space-y-1.5"></div>
       </div>
@@ -403,12 +409,12 @@ function renderSearch() {
           <h3 class="text-xs font-bold text-white">${k ? '🎁 선물 코드 (Gift Code) 실시간 공유' : '🎁 Public Gift Code Board'}</h3>
           <p class="text-[11px] text-zinc-400">${k ? '코드를 복사한 뒤 공식 교환소에서 플레이어 ID를 입력해 수령하세요.' : 'Copy active gift codes and redeem on the official portal.'}</p>
         </div>
-        <a href="https://ks-giftcode.centurygame.com/" target="_blank" rel="noopener" class="px-2.5 py-1.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 text-rose-300 font-bold text-[11px]">${k ? '공식 교환소 ↗' : 'Redeem Site ↗'}</a>
+        <a href="https://ks-giftcode.centurygame.com/" target="_blank" rel="noopener" class="px-2.5 py-1.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 text-rose-300 font-bold text-[11px] whitespace-nowrap">${k ? '공식 교환소 ↗' : 'Redeem Site ↗'}</a>
       </div>
       <div class="flex flex-wrap gap-1.5">
         <input id="newCodeIn" placeholder="${k ? '선물 코드 (예: KINGSHOT2026)' : 'Gift Code'}" class="flex-1 min-w-[140px] bg-zinc-950 border border-zinc-700 rounded-xl px-3 py-1.5 font-mono-code uppercase text-white"/>
         <input id="newCodeNote" placeholder="${k ? '보상 메모' : 'Note'}" class="w-36 bg-zinc-950 border border-zinc-700 rounded-xl px-3 py-1.5 text-white"/>
-        <button type="button" onclick="addGiftCodeDb()" class="px-3.5 py-1.5 rounded-xl bg-rose-600 text-white font-bold btn-tap">${k ? '+ 등록' : '+ Add'}</button>
+        <button type="button" onclick="addGiftCodeDb()" class="px-3.5 py-1.5 rounded-xl bg-rose-600 text-white font-bold whitespace-nowrap btn-tap">${k ? '+ 등록' : '+ Add'}</button>
       </div>
       <div id="giftCodeBox" class="grid grid-cols-1 sm:grid-cols-2 gap-2"></div>
     </div>
@@ -485,7 +491,7 @@ async function runHubSearch() {
         </div>
         <div class="flex flex-wrap items-center justify-between gap-2">
           <input id="qMemo_${fid}" placeholder="${k ? '전투력/특이사항 메모 (선택)' : 'Power/Notes (opt)'}" class="flex-1 min-w-[140px] bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-1.5 text-white"/>
-          <button type="button" onclick="quickSavePlayer(${fid})" class="px-4 py-1.5 rounded-xl bg-rose-600 text-white font-bold btn-tap">${k ? '공용 DB 저장' : 'Save'}</button>
+          <button type="button" onclick="quickSavePlayer(${fid})" class="px-4 py-1.5 rounded-xl bg-rose-600 text-white font-bold whitespace-nowrap btn-tap">${k ? '공용 DB 저장' : 'Save'}</button>
         </div>
       </div>`;
 
@@ -516,15 +522,15 @@ function renderPlayerCard(p, editable) {
   const safeMemo = String(p.power_memo || '').split('"').join('&quot;');
   return `
     <div class="p-3.5 rounded-2xl bg-zinc-950 border border-zinc-800 space-y-2.5">
-      <div class="flex flex-wrap items-center justify-between gap-2">
-        <div class="flex items-center gap-2.5">
-          <div class="px-2.5 py-1.5 rounded-xl bg-rose-500/20 border border-rose-500/40 font-mono-code font-bold text-rose-300">${lvTxt}</div>
-          <div>
-            <div class="font-bold text-sm text-white">${safeNick} <span class="text-[11px] font-mono-code text-zinc-400">(${p.fid})</span></div>
-            <div class="text-[11px] text-zinc-400">Kingdom #${p.kid || '?'} ${safeMemo ? `· <span class="text-amber-300">${safeMemo}</span>` : ''} · <span class="text-emerald-400">${timeAgo(p.updated_at)}</span></div>
+      <div class="flex items-center justify-between gap-2">
+        <div class="flex items-center gap-2.5 min-w-0">
+          <div class="px-2 py-1 rounded-xl bg-rose-500/20 border border-rose-500/40 font-mono-code font-bold text-rose-300 whitespace-nowrap shrink-0">${lvTxt}</div>
+          <div class="min-w-0">
+            <div class="font-bold text-sm text-white truncate">${safeNick} <span class="text-[11px] font-mono-code text-zinc-400">(${p.fid})</span></div>
+            <div class="text-[11px] text-zinc-400 truncate">Kingdom #${p.kid || '?'} ${safeMemo ? `· <span class="text-amber-300">${safeMemo}</span>` : ''} · <span class="text-emerald-400">${timeAgo(p.updated_at)}</span></div>
           </div>
         </div>
-        <button type="button" onclick="copyText('${p.fid}')" class="px-2.5 py-1 rounded-lg bg-zinc-900 border border-zinc-700 text-zinc-200 font-mono-code text-[11px] btn-tap">Copy ID</button>
+        <button type="button" onclick="copyText('${p.fid}')" class="px-2.5 py-1 rounded-lg bg-zinc-900 border border-zinc-700 text-zinc-200 font-mono-code text-[11px] whitespace-nowrap shrink-0 btn-tap">Copy ID</button>
       </div>
       ${editable ? `
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-1.5 pt-2 border-t border-zinc-900">
@@ -532,8 +538,8 @@ function renderPlayerCard(p, editable) {
         <input id="qKid_${p.fid}" type="number" value="${p.kid || ''}" placeholder="${k ? '왕국#' : 'King#'}" class="bg-zinc-900 border border-zinc-700 rounded-lg px-2 py-1 font-mono-code text-white"/>
         <input id="qLv_${p.fid}" value="${p.stove_lv ? lvTxt.replace(' ', '') : ''}" placeholder="TC30/TG5" class="bg-zinc-900 border border-zinc-700 rounded-lg px-2 py-1 font-mono-code text-white"/>
         <div class="flex gap-1">
-          <input id="qMemo_${p.fid}" value="${safeMemo}" placeholder="${k ? '전투력/메모' : 'Memo'}" class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-2 py-1 text-white"/>
-          <button type="button" onclick="quickSavePlayer(${p.fid})" class="px-2.5 py-1 rounded-lg bg-rose-600 text-white font-bold whitespace-nowrap btn-tap">${k ? '갱신' : 'Save'}</button>
+          <input id="qMemo_${p.fid}" value="${safeMemo}" placeholder="${k ? '전투력/메모' : 'Memo'}" class="w-full min-w-0 bg-zinc-900 border border-zinc-700 rounded-lg px-2 py-1 text-white"/>
+          <button type="button" onclick="quickSavePlayer(${p.fid})" class="px-2.5 py-1 rounded-lg bg-rose-600 text-white font-bold whitespace-nowrap shrink-0 btn-tap">${k ? '갱신' : 'Save'}</button>
         </div>
       </div>` : ''}
     </div>`;
@@ -593,35 +599,43 @@ async function loadLiveLists() {
     if (kpiP) kpiP.textContent = k ? `${count}명` : `${count}`;
   }
 
-  // Update Quick Profile Chip at top header (without hardcoding any server tag)
   if (players && players.length > 0) {
     const topP = lastQuickFid ? (players.find(x => String(x.fid) === String(lastQuickFid)) || players[0]) : players[0];
     lastQuickFid = String(topP.fid);
+    const labelTxt = `${topP.nickname || 'Governor'} (${formatStove(topP.stove_lv)})`;
+
     const chip = document.getElementById('quickProfileChip');
     const lbl = document.getElementById('qpLabel');
     if (chip && lbl) {
       chip.classList.remove('hidden');
-      lbl.textContent = `${topP.nickname || 'Governor'} (${formatStove(topP.stove_lv)})`;
+      lbl.textContent = labelTxt;
+    }
+
+    const mRow = document.getElementById('mobileProfileRow');
+    const mLbl = document.getElementById('mobileQpLabel');
+    if (mRow && mLbl) {
+      mRow.classList.remove('hidden');
+      mLbl.textContent = `${labelTxt} · #${topP.kid || '?'}`;
     }
   }
 
   pBox.innerHTML = (players && players.length) ? players.map(p => `
-    <div onclick="document.getElementById('hubSearchIn').value='${p.fid}'; runHubSearch();" class="p-2.5 rounded-xl bg-zinc-950 hover:bg-zinc-900 cursor-pointer border border-zinc-800 flex items-center justify-between transition">
+    <div onclick="document.getElementById('hubSearchIn').value='${p.fid}'; runHubSearch();" class="p-2.5 rounded-xl bg-zinc-950 hover:bg-zinc-900 cursor-pointer border border-zinc-800 flex items-center justify-between gap-2 transition">
       <div class="flex items-center gap-2 min-w-0">
-        <span class="px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-300 font-mono-code font-bold text-[10px] shrink-0">${formatStove(p.stove_lv)}</span>
+        <span class="px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-300 font-mono-code font-bold text-[10px] whitespace-nowrap shrink-0">${formatStove(p.stove_lv)}</span>
         <b class="text-white truncate">${p.nickname || ('Governor_' + p.fid)}</b>
-        <span class="text-zinc-400 text-[10px] shrink-0">#${p.kid || '?'} · ${p.fid}</span>
+        <span class="text-zinc-400 text-[10px] whitespace-nowrap shrink-0">#${p.kid || '?'}</span>
       </div>
-      <span class="text-[10px] text-emerald-400 font-mono-code shrink-0 ml-2">${timeAgo(p.updated_at)}</span>
+      <span class="text-[10px] text-emerald-400 font-mono-code whitespace-nowrap shrink-0">${timeAgo(p.updated_at)}</span>
     </div>`).join('') : `<div class="p-3 rounded-xl bg-zinc-950 text-zinc-400">${k ? '등록된 플레이어가 없습니다.' : 'No tracked players yet.'}</div>`;
 
   kBox.innerHTML = (kingdoms && kingdoms.length) ? kingdoms.map(x => `
-    <div onclick="document.getElementById('hubSearchIn').value='#${x.kid}'; runHubSearch();" class="p-2.5 rounded-xl bg-zinc-950 hover:bg-zinc-900 cursor-pointer border border-zinc-800 flex items-center justify-between transition">
-      <div>
+    <div onclick="document.getElementById('hubSearchIn').value='#${x.kid}'; runHubSearch();" class="p-2.5 rounded-xl bg-zinc-950 hover:bg-zinc-900 cursor-pointer border border-zinc-800 flex items-center justify-between gap-2 transition">
+      <div class="min-w-0 truncate">
         <b class="text-purple-300">Kingdom #${x.kid}</b>
         <span class="text-[11px] text-zinc-300 ml-1.5">${x.season_result || '-'} ${x.transfer_group ? `(G${x.transfer_group})` : ''}</span>
       </div>
-      <span class="text-[10px] text-zinc-400 font-mono-code">${timeAgo(x.updated_at)}</span>
+      <span class="text-[10px] text-zinc-400 font-mono-code whitespace-nowrap shrink-0">${timeAgo(x.updated_at)}</span>
     </div>`).join('') : `<div class="p-3 rounded-xl bg-zinc-950 text-zinc-400">${k ? '등록된 왕국 기록이 없습니다.' : 'No kingdom records yet.'}</div>`;
 }
 
@@ -635,11 +649,11 @@ async function loadGiftCodesDb() {
   }
   box.innerHTML = data.map(c => `
     <div class="p-2.5 rounded-xl bg-zinc-950 border border-zinc-800 flex items-center justify-between gap-2">
-      <div>
+      <div class="min-w-0 truncate">
         <span class="font-mono-code font-bold text-amber-300">${c.code}</span>
         ${c.reward ? `<span class="text-[11px] text-zinc-400 ml-2">${c.reward}</span>` : ''}
       </div>
-      <button type="button" onclick="copyText('${c.code}')" class="px-2.5 py-1 rounded-lg bg-rose-600/20 border border-rose-500/40 text-rose-300 font-bold text-[10px] btn-tap">Copy</button>
+      <button type="button" onclick="copyText('${c.code}')" class="px-2.5 py-1 rounded-lg bg-rose-600/20 border border-rose-500/40 text-rose-300 font-bold text-[10px] whitespace-nowrap shrink-0 btn-tap">Copy</button>
     </div>`).join('');
 }
 
@@ -790,7 +804,6 @@ function renderKvk() {
       <div id="kvkScoreOut" class="p-3.5 rounded-2xl bg-gradient-to-r from-rose-950/80 to-zinc-950 border border-rose-500/40 space-y-2"></div>
     </div>
 
-    <!-- Triple Counter-Rally Calculator (v0.4.4 EN-translated) -->
     <div class="glass rounded-2xl p-4 space-y-3">
       <h3 class="text-sm font-bold text-white">${k ? '🎯 3중 카운터 집결 타이머 계산기' : '🎯 Triple Counter-Rally Timer Calculator'}</h3>
       <div class="grid grid-cols-3 gap-2">
@@ -878,7 +891,7 @@ function renderRosterBox(type, list, roles) {
       <select id="${type}Role" class="bg-zinc-900 border border-zinc-700 rounded-lg px-2 py-1.5 text-white">
         ${roles.map(([v, l]) => `<option value="${v}">${l}</option>`).join('')}
       </select>
-      <button type="button" onclick="addRos('${type}')" class="px-3 py-1.5 rounded-lg bg-rose-600 text-white font-bold btn-tap">${k ? '추가' : 'Add'}</button>
+      <button type="button" onclick="addRos('${type}')" class="px-3 py-1.5 rounded-lg bg-rose-600 text-white font-bold whitespace-nowrap btn-tap">${k ? '추가' : 'Add'}</button>
     </div>
     <div class="flex flex-wrap gap-1.5">
       ${list.map((x, idx) => `<span onclick="delRos('${type}',${idx})" class="cursor-pointer px-2 py-1 rounded-lg bg-zinc-900 border border-zinc-700 text-zinc-200">${x.r.toUpperCase()} · <b>${x.n}</b> ✕</span>`).join('')}
@@ -1026,7 +1039,7 @@ function renderHero() {
 
     <div class="glass rounded-2xl p-4 space-y-2">
       <h3 class="text-sm font-bold text-white">${k ? '🧬 Gen 1 ~ Gen 10 세대별 출시일 & 스탯' : '🧬 Gen 1–10 Release & Stats'}</h3>
-      ${gens.map(([g, h, st]) => `<div class="p-2.5 rounded-xl bg-zinc-950 border border-zinc-800 flex justify-between items-center"><div><b class="text-rose-400">${g}</b> <span class="text-zinc-200 ml-1">${h}</span></div><span class="font-mono-code text-[10px] text-amber-300">${st}</span></div>`).join('')}
+      ${gens.map(([g, h, st]) => `<div class="p-2.5 rounded-xl bg-zinc-950 border border-zinc-800 flex justify-between items-center gap-2"><div class="min-w-0 truncate"><b class="text-rose-400">${g}</b> <span class="text-zinc-200 ml-1">${h}</span></div><span class="font-mono-code text-[10px] text-amber-300 whitespace-nowrap shrink-0">${st}</span></div>`).join('')}
     </div>
   </div>`;
   calcEw();
@@ -1114,8 +1127,8 @@ function renderMac() {
     <h2 class="text-sm font-bold text-white">${k ? '📢 연맹 공지 원클릭 복사 (통합 / 한국어만 / English)' : '📢 Alliance Macros (Both / KO / EN)'}</h2>
     <div class="grid grid-cols-1 gap-3">${macros.map((m, i) => `
       <div class="p-3 rounded-xl bg-zinc-950 border border-zinc-800 space-y-2">
-        <div class="flex justify-between items-center"><b class="text-rose-400">${k ? m.tKo : m.tEn}</b>
-          <div class="flex gap-1">
+        <div class="flex justify-between items-center gap-2"><b class="text-rose-400">${k ? m.tKo : m.tEn}</b>
+          <div class="flex gap-1 shrink-0">
             <button type="button" onclick="cpMac(${i},'both')" class="px-2 py-0.5 rounded bg-rose-600 text-white font-bold text-[10px] btn-tap">${k ? '통합' : 'Both'}</button>
             <button type="button" onclick="cpMac(${i},'ko')" class="px-2 py-0.5 rounded bg-zinc-900 border border-zinc-700 text-white font-bold text-[10px] btn-tap">한국어만</button>
             <button type="button" onclick="cpMac(${i},'en')" class="px-2 py-0.5 rounded bg-zinc-900 border border-zinc-700 text-white font-bold text-[10px] btn-tap">English</button>
@@ -1135,7 +1148,7 @@ function cpMac(i, m) {
 function renderNotes() {
   const k = lang === 'ko';
   const logs = [
-    { ver: 'v0.5.7 (Current)', date: '2026-11-22', badge: 'Full UI Restoration + Public DB + Queue', ko: ['기존 v0.5.3~v0.5.6의 다크 크림슨·로즈 네온 UI, 상단 통합 검색 캡슐, 퀵 프로필 칩, 하단 5슬롯 고정 도크, 전체메뉴 드로어 100% 복원', 'v0.1.0 초기 알파부터 현재까지 전체 14개 마일스톤 업데이트 히스토리 아카이브 복원', 'Supabase 공용 DB 즉시 조회 및 홈 워커 대기열(lookup_queue) 실시간 연동 통합'], en: ['Restored v0.5.3–v0.5.6 Dark Crimson UI, top search capsule, quick profile chip, 5-slot bottom dock & full v0.1.0–v0.5.7 changelog archive'] },
+    { ver: 'v0.5.7 (Current)', date: '2026-11-22', badge: 'Mobile Layout Fix + Public DB + Queue', ko: ['모바일 상단 헤더 한 줄 정렬 최적화 및 퀵 프로필 전용 슬롯 분리로 여백 개선', 'v0.1.0 초기 알파부터 현재까지 전체 15개 마일스톤 업데이트 히스토리 아카이브 복원', 'Supabase 공용 DB 즉시 조회 및 홈 워커 대기열(lookup_queue) 실시간 연동 통합'], en: ['Fixed mobile top header spacing & restored full v0.1.0–v0.5.7 changelog archive with Public DB + Queue'] },
     { ver: 'v0.5.6', date: '2026-11-22', badge: 'Edge Dual-Proxy Test', ko: ['Cloudflare 인천 엣지 프록시 + Netlify 백업 듀얼 프록시 구조 테스트'], en: ['Cloudflare Edge + Netlify dual-proxy routing test'] },
     { ver: 'v0.5.5', date: '2026-11-21', badge: 'Auto-Lookup & Gift Redeem Engine', ko: ['실시간 플레이어 자동 조회 및 선물 코드 일괄 발송 엔진 구축'], en: ['Built live player auto-lookup & bulk gift redemption engine'] },
     { ver: 'v0.5.4', date: '2026-11-21', badge: 'Global Multi-Server Branding', ko: ['특정 연맹/서버 표기를 제거하고 전 서버 범용 브랜드(KINGSHOT hub)로 통일'], en: ['Removed alliance-specific tags and unified under global KINGSHOT hub'] },
@@ -1185,7 +1198,7 @@ function getAiHtml(isDock) {
     </div>
     <div class="p-2.5 bg-zinc-950 border-t border-zinc-800 flex gap-1.5">
       <input id="${pfx}aiIn" onkeydown="if(event.key==='Enter')askAi(null,'${pfx}')" placeholder="${k ? '전술 질문...' : 'Ask AI...'}" class="flex-1 bg-zinc-900 border border-zinc-700 rounded-xl px-2.5 py-2 text-white"/>
-      <button type="button" onclick="askAi(null,'${pfx}')" class="px-3 py-2 rounded-xl bg-rose-600 text-white font-bold btn-tap">${k ? '질문' : 'Ask'}</button>
+      <button type="button" onclick="askAi(null,'${pfx}')" class="px-3 py-2 rounded-xl bg-rose-600 text-white font-bold whitespace-nowrap btn-tap">${k ? '질문' : 'Ask'}</button>
     </div>
   </div>`;
 }
