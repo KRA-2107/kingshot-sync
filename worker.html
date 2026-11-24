@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>KINGSHOT hub — 24/7 Headless Queue Worker</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/blueimp-md5/2.19.0/js/md5.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+  <style>
+    body {
+      background-color: #070406;
+      color: #f4f4f5;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .pulse-dot {
+      animation: pulse 1.6s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.35; transform: scale(0.85); }
+    }
+  </style>
+</head>
+<body class="min-h-screen p-4 flex flex-col justify-between max-w-xl mx-auto text-xs">
+  <div class="space-y-4">
+    <!-- HEADER -->
+    <div class="p-4 rounded-2xl bg-zinc-950 border border-rose-500/40 flex items-center justify-between gap-2">
+      <div>
+        <div class="text-sm font-extrabold text-white">KINGSHOT <span class="text-rose-500">WORKER</span></div>
+        <div class="text-[11px] text-zinc-400">24/7 iOS Headless Queue Processor</div>
+      </div>
+      <div id="statusBadge" class="px-3 py-1.5 rounded-full bg-emerald-500/15 border border-emerald-500/40 text-emerald-300 font-bold flex items-center gap-1.5">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 pulse-dot"></span>
+        <span>RUNNING</span>
+      </div>
+    </div>
+
+    <!-- STATS -->
+    <div class="grid grid-cols-3 gap-2 text-center">
+      <div class="p-3 rounded-xl bg-zinc-950 border border-zinc-800">
+        <div class="text-[10px] text-zinc-400">POLL CYCLE</div>
+        <div class="text-sm font-bold text-white mt-0.5">3.0 sec</div>
+      </div>
+      <div class="p-3 rounded-xl bg-zinc-950 border border-zinc-800">
+        <div class="text-[10px] text-zinc-400">PROCESSED</div>
+        <div id="statDone" class="text-sm font-bold text-emerald-400 mt-0.5">0</div>
+      </div>
+      <div class="p-3 rounded-xl bg-zinc-950 border border-zinc-800">
+        <div class="text-[10px] text-zinc-400">ERRORS</div>
+        <div id="statErr" class="text-sm font-bold text-rose-400 mt-0.5">0</div>
+      </div>
+    </div>
+
+    <!-- CONTROLS & MANUAL TEST -->
+    <div class="p-3.5 rounded-2xl bg-zinc-950 border border-zinc-800 space-y-2.5">
+      <div class="flex items-center justify-between">
+        <span class="text-zinc-300 font-bold">MANUAL / QUEUE CONTROL</span>
+        <button id="toggleBtn" type="button" onclick="toggleWorker()" class="px-3 py-1 rounded-lg bg-rose-600 text-white font-bold">PAUSE</button>
+      </div>
+      <div class="flex gap-1.5">
+        <input id="testFidIn" type="number" placeholder="Test Player ID (e.g. 328101007)" class="flex-1 bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-rose-500" />
+        <button type="button" onclick="testSingleFid()" class="px-3.5 py-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-rose-300 font-bold">TEST</button>
+      </div>
+    </div>
+
+    <!-- LIVE LOG CONSOLE -->
+    <div class="p-3.5 rounded-2xl bg-zinc-950 border border-zinc-800 space-y-2">
+      <div class="flex items-center justify-between text-[11px] text-zinc-400">
+        <span>LIVE EXECUTION LOG</span>
+        <button type="button" onclick="document.getElementById('logBox').innerHTML=''" class="underline hover:text-white">Clear</button>
+      </div>
+      <div id="logBox" class="h-64 overflow-y-auto space-y-1.5 text-[11px] leading-relaxed"></div>
+    </div>
+  </div>
+
+  <!-- KEEP-AWAKE NOTICE -->
+  <div class="mt-4 p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-[11px] text-amber-200">
+    ⚠️ <b>iOS 무인 가동 필수 설정:</b><br/>
+    1. 설정 → 디스플레이 및 밝기 → 자동 잠금: <b>안 함</b><br/>
+    2. 집 Wi-Fi 연결 및 충전 케이블 상시 연결 유지<br/>
+    3. 이 사파리 탭을 최상단에 띄워두세요 (화면 밝기 최저 권장)
+  </div>
+
+<script>
+const SUPABASE_URL = "https://soyodukrsykhgsufwtth.supabase.co";
+const SUPABASE_KEY = "sb_publishable_mHkDQ668sCfxQSJO61qAGA_vkbw_I94";
+const API_SECRET = "mB8!pL2@xQ9#vK5$";
+const PLAYER_API = "https://kingshot-giftcode.centurygame.com/api/player";
+
+let sb = null;
+try {
+  sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+} catch (e) {
+  addLog("Supabase init failed: " + e.message, "err");
+}
+
+let running = true;
+let busy = false;
+let doneCount = 0;
+let errCount = 0;
+
+function addLog(msg, type = "info") {
+  const box = document.getElementById("logBox");
+  if (!box) return;
+  const t = new Date().toLocaleTimeString("ko-KR", { hour12: false });
+  const color = type === "ok" ? "text-emerald-400" : type === "err" ? "text-rose-400" : type === "warn" ? "text-amber-300" : "text-zinc-300";
+  const line = document.createElement("div");
+  line.className = color;
+  line.textContent = `[${t}] ${msg}`;
+  box.prepend(line);
+  while (box.children.length > 60) {
+    box.removeChild(box.lastChild);
+  }
+}
+
+function toggleWorker() {
+  running = !running;
+  const badge = document.getElementById("statusBadge");
+  const btn = document.getElementById("toggleBtn");
+  if (running) {
+    badge.className = "px-3 py-1.5 rounded-full bg-emerald-500/15 border border-emerald-500/40 text-emerald-300 font-bold flex items-center gap-1.5";
+    badge.innerHTML = '<span class="w-2 h-2 rounded-full bg-emerald-400 pulse-dot"></span><span>RUNNING</span>';
+    btn.textContent = "PAUSE";
+    addLog("Worker resumed.", "ok");
+  } else {
+    badge.className = "px-3 py-1.5 rounded-full bg-amber-500/15 border border-amber-500/40 text-amber-300 font-bold";
+    badge.textContent = "PAUSED";
+    btn.textContent = "RESUME";
+    addLog("Worker paused.", "warn");
+  }
+}
+
+async function fetchPlayerFromCentury(fid) {
+  const time = Date.now();
+  const raw = `fid=${fid}&time=${time}${API_SECRET}`;
+  const sign = md5(raw);
+  const body = new URLSearchParams({ sign, fid: String(fid), time: String(time) }).toString();
+
+  const res = await fetch(PLAYER_API, {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body
+  });
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  const json = await res.json();
+  if (!json || json.code !== 0 || !json.data) {
+    throw new Error(json?.msg || "Player not found / blocked");
+  }
+  return {
+    fid: Number(fid),
+    nickname: json.data.nickname || `Governor_${fid}`,
+    kid: Number(json.data.kid) || null,
+    stove_lv: Number(json.data.stove_lv) || null
+  };
+}
+
+async function processQueueItem(row) {
+  const fid = row.fid;
+  addLog(`Fetching ID ${fid}...`);
+  try {
+    const p = await fetchPlayerFromCentury(fid);
+    const { error: upErr } = await sb.from("players").upsert({
+      fid: p.fid,
+      nickname: p.nickname,
+      kid: p.kid,
+      stove_lv: p.stove_lv,
+      updated_at: new Date().toISOString()
+    }, { onConflict: "fid" });
+    if (upErr) throw upErr;
+
+    await sb.from("lookup_queue").update({
+      status: "done",
+      processed_at: new Date().toISOString()
+    }).eq("id", row.id);
+
+    doneCount++;
+    document.getElementById("statDone").textContent = String(doneCount);
+    addLog(`SAVED: ${p.nickname} (#${p.kid || "?"}, Lv.${p.stove_lv || "?"})`, "ok");
+  } catch (err) {
+    errCount++;
+    document.getElementById("statErr").textContent = String(errCount);
+    addLog(`FAILED ID ${fid}: ${err.message}`, "err");
+    await sb.from("lookup_queue").update({
+      status: "failed",
+      error_msg: String(err.message).slice(0, 180)
+    }).eq("id", row.id);
+  }
+}
+
+async function pollLoop() {
+  if (!running || busy || !sb) return;
+  busy = true;
+  try {
+    const { data, error } = await sb
+      .from("lookup_queue")
+      .select("*")
+      .eq("status", "pending")
+      .order("created_at", { ascending: true })
+      .limit(1);
+
+    if (error) {
+      addLog("Queue read error: " + error.message, "err");
+    } else if (data && data.length > 0) {
+      await processQueueItem(data[0]);
+    }
+  } catch (e) {
+    addLog("Loop error: " + e.message, "err");
+  } finally {
+    busy = false;
+  }
+}
+
+async function testSingleFid() {
+  const fid = Number(document.getElementById("testFidIn").value.trim());
+  if (!fid) return;
+  addLog(`Manual test lookup for ID ${fid}...`, "warn");
+  try {
+    const p = await fetchPlayerFromCentury(fid);
+    await sb.from("players").upsert({
+      fid: p.fid,
+      nickname: p.nickname,
+      kid: p.kid,
+      stove_lv: p.stove_lv,
+      updated_at: new Date().toISOString()
+    }, { onConflict: "fid" });
+    doneCount++;
+    document.getElementById("statDone").textContent = String(doneCount);
+    addLog(`TEST OK: ${p.nickname} (#${p.kid}, Lv.${p.stove_lv})`, "ok");
+  } catch (e) {
+    errCount++;
+    document.getElementById("statErr").textContent = String(errCount);
+    addLog(`TEST FAIL: ${e.message}`, "err");
+  }
+}
+
+addLog("Worker initialized. Polling lookup_queue every 3s...", "ok");
+setInterval(pollLoop, 3000);
+pollLoop();
+</script>
+</body>
+</html>
