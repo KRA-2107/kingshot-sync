@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>KINGSHOT hub v0.6.4 — 2-Column Tactical Grid & Private Search</title>
+  <title>KINGSHOT hub v0.6.5 — 2-Column Tactical Grid & Full Mystic Trial</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -73,17 +73,17 @@
 </head>
 <body class="min-h-screen pb-24 lg:pb-10">
 
-  <!-- TOP COMMAND HEADER (EXPANDED 2-ROW LAYOUT SO KO|EN|TR NEVER CLIPS) -->
+  <!-- TOP COMMAND HEADER -->
   <header class="sticky top-0 z-40 glass border-b border-rose-500/20 px-3 sm:px-6 py-2.5">
     <div class="max-w-7xl mx-auto space-y-2.5">
-      <!-- Row 1: Brand Left + Large Full-Width Language Switcher Right -->
+      <!-- Row 1: Brand Left + Prominent 3-Language Switcher Right -->
       <div class="flex items-center justify-between gap-2">
         <div class="flex items-center gap-2 cursor-pointer shrink-0" onclick="switchTab('home')">
           <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-rose-500 via-red-600 to-rose-900 flex items-center justify-center font-display font-extrabold text-white text-xs crimson-glow">KS</div>
           <div>
             <div class="flex items-center gap-1.5">
               <span class="font-display font-extrabold text-sm sm:text-base tracking-tight text-white">KINGSHOT <span class="text-rose-500">hub</span></span>
-              <span class="px-1.5 py-0.5 rounded-md bg-rose-500/20 border border-rose-500/40 text-rose-300 font-mono-code text-[10px] font-bold">v0.6.4</span>
+              <span class="px-1.5 py-0.5 rounded-md bg-rose-500/20 border border-rose-500/40 text-rose-300 font-mono-code text-[10px] font-bold">v0.6.5</span>
             </div>
           </div>
         </div>
@@ -96,7 +96,7 @@
         </div>
       </div>
 
-      <!-- Row 2: Quick Utility Strip (Player Search Shortcut + Gift Codes + Patch Notes) -->
+      <!-- Row 2: Quick Utility Strip -->
       <div class="grid grid-cols-3 gap-1.5 text-[11px] font-bold">
         <button type="button" onclick="switchTab('search')" id="topUtil_search" class="py-1.5 px-2 rounded-xl bg-zinc-900/95 hover:bg-zinc-800 border border-zinc-800 text-zinc-200 flex items-center justify-center gap-1 btn-tap">
           <span>🔍</span><span id="utLbl_search">플레이어 검색</span>
@@ -105,7 +105,7 @@
           <span>🎁</span><span id="utLbl_gift">선물 코드</span>
         </button>
         <button type="button" onclick="switchTab('notes')" id="topUtil_notes" class="py-1.5 px-2 rounded-xl bg-zinc-900/95 hover:bg-zinc-800 border border-zinc-800 text-rose-300 flex items-center justify-center gap-1 font-mono-code btn-tap">
-          <span>🔔</span><span>v0.6.4</span>
+          <span>🔔</span><span>v0.6.5</span>
         </button>
       </div>
 
@@ -159,7 +159,7 @@
         <div id="drawerMenuList" class="grid grid-cols-1 gap-1.5 text-xs"></div>
       </div>
       <div class="pt-3 border-t border-zinc-800 text-[10px] text-zinc-500 font-mono-code">
-        2-Column Tactical Grid · v0.6.4
+        Full Mystic Trial & Private DB · v0.6.5
       </div>
     </div>
   </div>
@@ -420,10 +420,10 @@ function renderHome() {
     {
       id: 'mys',
       icon: '✨',
-      badge: 'TRIAL',
+      badge: '6 ZONES + RAID',
       glow: 'rgba(139, 92, 246, 0.28)',
       title: k ? '신비한 시련 · 바이킹' : (tr ? 'Sınav & Viking' : 'Mystic & Viking'),
-      sub: k ? '첨탑·결투장 비율 & 20웨이브' : 'Trial Ratios & 20-Wave Rules'
+      sub: k ? '6대 구역·소탕 계산기 & 20웨이브' : '6 Zones, Raid Calc & 20 Waves'
     },
     {
       id: 'mac',
@@ -444,7 +444,7 @@ function renderHome() {
     {
       id: 'notes',
       icon: '📋',
-      badge: 'v0.6.4',
+      badge: 'v0.6.5',
       glow: 'rgba(161, 161, 170, 0.24)',
       title: k ? '개발자 노트' : (tr ? 'Geliştirici Notları' : 'Developer Notes'),
       sub: k ? '업데이트 이력 & 패치 로그' : 'Version History & Patch Log'
@@ -486,7 +486,7 @@ function renderHome() {
   </div>`;
 }
 
-/* ==================== TAB 1: PRIVATE PLAYER & #KINGDOM SEARCH (HIDDEN ROSTER BY DEFAULT) ==================== */
+/* ==================== TAB 1: PRIVATE PLAYER & #KINGDOM SEARCH ==================== */
 function formatStove(lv) {
   if (!lv && lv !== 0) return lang === 'ko' ? '등급 미정' : (lang === 'tr' ? 'Belirsiz' : 'Unset');
   if (typeof lv === 'string') return lv;
@@ -571,7 +571,6 @@ function renderSearch() {
   const k = lang === 'ko';
   document.getElementById('mainApp').innerHTML = `
   <div class="space-y-3.5 text-xs">
-    <!-- One-Stop Search & Queue (Results appear ONLY when searched) -->
     <div class="glass-crimson rounded-2xl p-3.5 sm:p-4 space-y-2.5">
       <div class="flex items-center justify-between gap-2">
         <h2 class="text-sm sm:text-base font-black text-white">${k ? '🔍 플레이어 ID · 닉네임 · #왕국 검색' : (lang === 'tr' ? '🔍 Oyuncu · #Krallık Arama' : '🔍 Player · #Kingdom Search')}</h2>
@@ -585,7 +584,6 @@ function renderSearch() {
         <button type="button" id="clearSearchBtn" onclick="clearSearchResults(true)" class="hidden px-3 py-2 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 text-zinc-300 font-bold text-xs shrink-0 btn-tap">${k ? '닫기' : '✕'}</button>
       </div>
 
-      <!-- 검색했을 때만 동적으로 표시되는 결과 카드 & 왕국 TG 분포 영역 -->
       <div id="searchResultArea" class="hidden space-y-2.5 pt-1"></div>
     </div>
 
@@ -634,7 +632,6 @@ async function runHubSearch() {
   if (clearBtn) clearBtn.classList.remove('hidden');
   area.innerHTML = `<div class="text-zinc-400 py-1">${k ? '공용 DB 조회 중...' : 'Searching DB...'}</div>`;
 
-  // 1) #왕국번호 검색
   if (raw.startsWith('#')) {
     const kid = parseInt(raw.slice(1), 10);
     if (!kid) {
@@ -661,7 +658,6 @@ async function runHubSearch() {
     return;
   }
 
-  // 2) 플레이어 ID 또는 닉네임 검색
   const isNum = /^\d+$/.test(raw);
   let res;
   if (isNum) {
@@ -1105,7 +1101,7 @@ function cpRos(type, mode) {
   copyText(mode === 'ko' ? ko : mode === 'en' ? en : ko + NL + '---' + NL + en);
 }
 
-/* ==================== TAB 7~12: FACILITIES, TRUEGOLD, HEROES, SHOPS, MYSTIC, MACROS ==================== */
+/* ==================== TAB 7~10: FACILITIES, TRUEGOLD, HEROES, SHOPS ==================== */
 function renderFac() {
   const k = lang === 'ko';
   const items = [
@@ -1274,23 +1270,155 @@ function renderShop() {
   </div>`;
 }
 
+/* ==================== TAB 11: FULL MYSTIC TRIAL (ALL 6 ZONES + RAID CALC) & VIKING ==================== */
 function renderMys() {
   const k = lang === 'ko';
+  const zones = [
+    {
+      icon: '🗼',
+      nameKo: '빛나는 첨탑 (Radiant Spire)',
+      nameEn: 'Radiant Spire',
+      reqKo: 'TC 19+ · 본인 실제 보유 병력 티어(TG) 및 모든 스탯 반영',
+      reqEn: 'TC 19+ · Uses own troop tier (TG) & all expedition stats',
+      ratios: [
+        ['1부대 (2번째로 강한 기병)', '50 / 15 / 35'],
+        ['2부대 (1번째로 강한 기병)', '50 / 35 / 15'],
+        ['3부대 (기본 균형)', '50 / 20 / 30']
+      ]
+    },
+    {
+      icon: '⚔️',
+      nameKo: '결투장 (Coliseum)',
+      nameEn: 'Coliseum',
+      reqKo: 'TC 19+ · 영웅 · 영웅 장비 · 전용무기(위젯) 스탯만 반영',
+      reqEn: 'TC 19+ · Heroes, Hero Gear & Exclusive Widgets only',
+      ratios: [
+        ['1부대 (2번째로 강한 기병)', '50 / 10 / 40'],
+        ['2부대 (1번째로 강한 기병)', '40 / 40 / 20'],
+        ['3부대 (기본 균형)', '50 / 20 / 30']
+      ]
+    },
+    {
+      icon: '🌿',
+      nameKo: '생명의 숲 (Forest of Life)',
+      nameEn: 'Forest of Life',
+      reqKo: '왕국 54일차+ · 펫(Pet) 및 펫 전투 스킬 반영 (자동 발동)',
+      reqEn: 'Day 54+ · Pets & Pet Combat Skills (Auto-cast)',
+      ratios: [['추천 비율 (보 / 기 / 궁)', '50 / 15 / 35']]
+    },
+    {
+      icon: '💎',
+      nameKo: '수정 동굴 (Crystal Cave)',
+      nameEn: 'Crystal Cave',
+      reqKo: 'TC 25+ · 영주 보석(Governor Charm) 스탯만 반영',
+      reqEn: 'TC 25+ · Governor Charm stats only',
+      ratios: [['추천 비율 (보 / 기 / 궁)', '60 / 20 / 20']]
+    },
+    {
+      icon: '📚',
+      nameKo: '지식의 연결점 (Knowledge Nexus)',
+      nameEn: 'Knowledge Nexus',
+      reqKo: 'TC 19+ · 아카데미 & 전쟁 아카데미 연구 스탯 반영',
+      reqEn: 'TC 19+ · Academy & War Academy research stats',
+      ratios: [['추천 비율 (보 / 기 / 궁)', '50 / 20 / 30']]
+    },
+    {
+      icon: '🌋',
+      nameKo: '용암 요새 (Molten Fort)',
+      nameEn: 'Molten Fort',
+      reqKo: 'TC 22+ · 영주 장비(Governor Gear) 스탯만 반영',
+      reqEn: 'TC 22+ · Governor Gear stats only',
+      ratios: [['추천 비율 (보 / 기 / 궁)', '60 / 15 / 25']]
+    }
+  ];
+
+  const raidInputs = [
+    ['rd_spire', k ? '🗼 첨탑' : '🗼 Spire', 40],
+    ['rd_coli', k ? '⚔️ 결투장' : '⚔️ Coliseum', 40],
+    ['rd_forest', k ? '🌿 생명의 숲' : '🌿 Forest', 35],
+    ['rd_cave', k ? '💎 수정 동굴' : '💎 Cave', 35],
+    ['rd_nexus', k ? '📚 지식 연결점' : '📚 Nexus', 40],
+    ['rd_fort', k ? '🌋 용암 요새' : '🌋 Fort', 35]
+  ];
+
   document.getElementById('mainApp').innerHTML = `
   <div class="space-y-3.5 text-xs">
-    <div class="glass rounded-2xl p-4 space-y-2.5">
-      <h2 class="text-sm sm:text-base font-black text-white">${k ? '✨ 신비한 시련 (Mystic Trial) 3부대 비율' : '✨ Mystic Trial 3-March Ratios'}</h2>
-      <div class="p-3 rounded-xl bg-zinc-950 border border-zinc-800 space-y-1"><b class="text-rose-400">빛나는 첨탑 (Spire)</b><p class="text-zinc-200">1부대(기병2순위): 50/15/35 · 2부대(기병1순위): 50/35/15 · 3부대: 50/20/30</p></div>
-      <div class="p-3 rounded-xl bg-zinc-950 border border-zinc-800 space-y-1"><b class="text-rose-400">결투장 (Coliseum)</b><p class="text-zinc-200">1부대(기병2순위): 50/10/40 · 2부대(기병1순위): 40/40/20 · 3부대: 50/20/30</p></div>
+    <!-- Section 1: All 6 Mystic Trial Zones -->
+    <div class="glass-crimson rounded-2xl p-4 space-y-3">
+      <div class="flex flex-wrap items-center justify-between gap-2">
+        <h2 class="text-sm sm:text-base font-black text-white">${k ? '✨ 신비한 시련 (Mystic Trial) 6대 구역별 스탯 & 병종 비율' : '✨ Mystic Trial All 6 Zones & Optimal Ratios'}</h2>
+        <span class="px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 font-mono-code text-[10px]">6 ZONES FULL</span>
+      </div>
+
+      <!-- Crucial Pro-Tips Banner -->
+      <div class="p-3 rounded-xl bg-black/60 border border-amber-500/35 text-[11px] text-zinc-200 space-y-1">
+        <div class="font-bold text-amber-300">${k ? '💡 핵심 운영 팁 (도전 횟수 절약 & 영웅 제외)' : '💡 Essential Pro-Tips'}</div>
+        <div>${k ? '• <b>무소모 비율 저장:</b> [편성 수정]에서 비율 변경 후 <b>[출격]을 누르지 않고 뒤로가기</b>를 누르면 일일 도전 횟수 차감 없이 저장됩니다.' : '• Edit Formation & tap Back without Deploying to save ratios with 0 attempt cost.'}</div>
+        <div>${k ? '• <b>채집 영웅 제외:</b> 다이아나·파드는 원정 전투 스킬이 없으므로 편성에서 제외하세요. (패배 시에만 일일 5회 차감)' : '• Exclude Diana & Fahd (no expedition combat skills).'}</div>
+      </div>
+
+      <!-- 6 Zone Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-2.5">
+        ${zones.map(z => `
+          <div class="p-3 rounded-xl bg-zinc-950 border border-zinc-800 space-y-2">
+            <div>
+              <b class="text-rose-400 text-[13px]">${z.icon} ${k ? z.nameKo : z.nameEn}</b>
+              <div class="text-[11px] text-zinc-400 mt-0.5">${k ? z.reqKo : z.reqEn}</div>
+            </div>
+            <div class="space-y-1">
+              ${z.ratios.map(([lbl, rt]) => `
+                <div class="px-2.5 py-1.5 rounded-lg bg-zinc-900/95 border border-zinc-800/90 flex items-center justify-between gap-2">
+                  <span class="text-zinc-300 text-[11px]">${lbl}</span>
+                  <span class="font-mono-code font-black text-amber-300 text-xs shrink-0">${rt}</span>
+                </div>`).join('')}
+            </div>
+          </div>`).join('')}
+      </div>
     </div>
+
+    <!-- Section 2: Weekly Raid Misty Crystal Calculator & Trial Shop -->
+    <div class="glass rounded-2xl p-4 space-y-3">
+      <div class="flex items-center justify-between gap-2">
+        <h3 class="text-sm font-black text-white">${k ? '💎 주간 소탕(Raid) 신비 수정 계산기 & 시련 상점' : '💎 Weekly Raid Misty Crystal Calculator'}</h3>
+        <span class="text-[10px] text-zinc-400 font-mono-code">1 Stage = 10 Crystals</span>
+      </div>
+      <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+        ${raidInputs.map(([id, lbl, def]) => `
+          <div class="p-2 rounded-xl bg-zinc-950 border border-zinc-800">
+            <label class="block text-[11px] text-zinc-300 font-bold mb-1">${lbl}</label>
+            <input id="${id}" type="number" min="0" value="${def}" oninput="calcMysticRaid()" class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-2 py-1 font-mono-code text-base sm:text-xs text-white"/>
+          </div>`).join('')}
+      </div>
+      <div id="mysticRaidOut" class="p-3 rounded-xl bg-zinc-950 border border-rose-500/40 space-y-1.5"></div>
+      <div class="p-2.5 rounded-xl bg-zinc-950 border border-zinc-800 text-[11px] text-zinc-300">
+        <b class="text-emerald-400">${k ? '🛒 시련 상점 구매 우선순위:' : '🛒 Trial Shop Priority:'}</b>
+        ${k ? ' 1순위 주간 미스릴 → 2순위 순금 가루(전쟁 아카데미 이후) → 3순위 영주 부적 · 시련 상자 [지식의 전당] 장식 풀업 시 부대 공격력 +20%' : ' 1st Weekly Mithril → 2nd Truegold Dust → 3rd Charms · Court of Knowledge gives +20% Squad Attack.'}
+      </div>
+    </div>
+
+    <!-- Section 3: Viking Vengeance 20 Waves -->
     <div class="glass rounded-2xl p-4 space-y-2">
       <h2 class="text-sm sm:text-base font-black text-white">${k ? '🛡️ 바이킹의 복수 (20웨이브) 3대 황금률' : '🛡️ Viking Vengeance 3 Golden Rules'}</h2>
-      <div class="p-3 rounded-xl bg-rose-500/15 border border-rose-500/35"><b class="text-rose-300">1. 본인 성 100% 비우기</b><p class="text-zinc-300 mt-0.5">모든 병력을 동료 성에 지원 파병하고 경비소에는 최강 영웅 3명 배치</p></div>
-      <div class="p-3 rounded-xl bg-zinc-950 border border-zinc-800"><b class="text-white">2. 이벤트 중 치료 금지 & 특수 웨이브</b><p class="text-zinc-300 mt-0.5">7·14·17 온라인 지원 집중 / 10·20 연맹 본부(HQ) 방패 보병 수비</p></div>
+      <div class="p-3 rounded-xl bg-rose-500/15 border border-rose-500/35"><b class="text-rose-300">1. 본인 성 100% 비우기</b><p class="text-zinc-300 mt-0.5">모든 병력을 동료 성에 지원 파병하고 경비소에는 최강 영웅 3명 배치 (남는 병력은 킬 기여도가 낮은 궁병만 잔류)</p></div>
+      <div class="p-3 rounded-xl bg-zinc-950 border border-zinc-800"><b class="text-white">2. 이벤트 중 치료 금지 & 화재 진압 금지</b><p class="text-zinc-300 mt-0.5">치료 완료 즉시 병력이 본성에 복귀해 아군 지원 킬 점수를 빼앗습니다. 2회 패배 전까지는 보석으로 불을 끄지 마세요.</p></div>
+      <div class="p-3 rounded-xl bg-zinc-950 border border-zinc-800"><b class="text-amber-300">3. 특수 웨이브 (7·14·17 / 10·20)</b><p class="text-zinc-300 mt-0.5">• 7·14·17 웨이브: 온라인 유저만 공격 → 온라인 지원 집중<br>• 10·20 웨이브: 연맹 본부(HQ) 공격 → 상위 10~15명 방패 보병(보65k/기5k) 집결 수비 후 철수</p></div>
     </div>
   </div>`;
+  calcMysticRaid();
 }
 
+function calcMysticRaid() {
+  const ids = ['rd_spire', 'rd_coli', 'rd_forest', 'rd_cave', 'rd_nexus', 'rd_fort'];
+  let stages = 0;
+  ids.forEach(id => { stages += Math.max(0, parseInt(document.getElementById(id)?.value, 10) || 0); });
+  const crystals = stages * 10;
+  const k = lang === 'ko';
+  document.getElementById('mysticRaidOut').innerHTML = k
+    ? `<div class="flex items-center justify-between"><span class="text-zinc-300 font-bold">총 클리어 층수: <b class="text-white font-mono-code">${stages}층</b></span><span class="font-mono-code font-black text-base text-amber-300">💎 주간 ${crystals.toLocaleString()} 신비 수정</span></div><div class="text-[11px] text-zinc-400">※ 각 구역 10스테이지 최초 클리어 시 주간 초기화 후 [소탕(Raid)] 버튼으로 일괄 수령 가능합니다.</div>`
+    : `<div class="flex items-center justify-between"><span class="text-zinc-300 font-bold">Total Stages: <b class="text-white font-mono-code">${stages}</b></span><span class="font-mono-code font-black text-base text-amber-300">💎 ${crystals.toLocaleString()} Misty Crystals / wk</span></div>`;
+}
+
+/* ==================== TAB 12: MACROS ==================== */
 const macros = [
   { tKo: '🐻 베어 헌트 규칙 공지', tEn: '🐻 Bear Hunt Rules', ko: ['[🐻 베어 헌트 필독]', '1. 참여자 1번 슬롯: 첸코, 연우, 아마데우스, 아마네, 마고, 비비안만 배치! (헬가·하워드·고든 금지)', '2. 병종 비율: 보10% : 기10% : 궁80%', '3. 시작 5분 전 채집 복귀 & 자동 집결 해제!'].join(NL), en: ['[🐻 Bear Hunt Rules]', '1. Slot 1 Joiners ONLY: Chenko, Yeonwoo, Amadeus, Amane, Margot, Vivian', '2. Ratio: 10% Inf / 10% Cav / 80% Archers', '3. Recall gatherers & turn OFF Auto-Join 5m before start!'].join(NL) },
   { tKo: '🛡️ 바이킹의 복수 공지', tEn: '🛡️ Viking Rules', ko: ['[🛡️ 바이킹의 복수]', '1. 본인 성 100% 비우기 (모든 병력 동료 지원 파병)', '2. 이벤트 중 치료 금지', '3. 7·14·17 온라인 집중 지원 / 10·20 연맹 본부 방패보병 수비'].join(NL), en: ['[🛡️ Viking Vengeance]', '1. Empty city 100% (reinforce allies)', '2. No healing during event', '3. Waves 7/14/17 online reinforce / 10/20 HQ Shield Inf garrison'].join(NL) },
@@ -1326,17 +1454,17 @@ function cpMac(i, m) {
 function renderNotes() {
   const k = lang === 'ko';
   const logs = [
-    { ver: 'v0.6.4 (Current)', date: '2026-11-27', badge: 'Full-Width Header + Private Search Tile', ko: ['상단 헤더를 2단 여유 레이아웃으로 확장하여 KO | EN | TR 언어 전환 버튼이 오른쪽 끝에서 잘리지 않고 선명하게 보이도록 개선', '메인 2열 타일 목록 첫 번째 카드 및 하단 2번 슬롯에 플레이어·#왕국 비공개 검색 기능을 배치해 언제든 원터치 검색 가능'], en: ['Expanded header layout so KO | EN | TR language switcher displays cleanly without clipping', 'Placed Private Player & #Kingdom Search as the first 2-column tile and 2nd bottom dock slot'] },
+    { ver: 'v0.6.5 (Current)', date: '2026-11-27', badge: 'Full Mystic Trial 6 Zones & Raid Calc Restored', ko: ['신비한 시련(Mystic Trial) 탭에 생명의 숲(50/15/35)·수정 동굴(60/20/20)·지식의 연결점(50/20/30)·용암 요새(60/15/25) 4개 구역 스탯 및 비율 전체 복원', '도전 횟수 무소모 비율 저장 팁, 주간 소탕(Raid) 신비 수정 계산기, 시련 상점·지식의 전당 공략 및 바이킹 20웨이브 세부 규칙 복원'], en: ['Restored all 6 Mystic Trial zones (Forest of Life, Crystal Cave, Knowledge Nexus, Molten Fort) with stats & ratios', 'Restored Weekly Raid Misty Crystal calculator, Trial Shop guide & full Viking 20-wave rules'] },
+    { ver: 'v0.6.4', date: '2026-11-27', badge: 'Full-Width Header + Private Search Tile', ko: ['상단 헤더를 2단 여유 레이아웃으로 확장하여 KO | EN | TR 언어 전환 버튼이 오른쪽 끝에서 잘리지 않고 선명하게 보이도록 개선', '메인 2열 타일 목록 첫 번째 카드 및 하단 2번 슬롯에 플레이어·#왕국 비공개 검색 기능 배치'], en: ['Expanded header layout so KO | EN | TR language switcher displays cleanly without clipping', 'Placed Private Player & #Kingdom Search as the first 2-column tile and 2nd bottom dock slot'] },
     { ver: 'v0.6.3', date: '2026-11-27', badge: '2-Column Tactical Grid', ko: ['메인 홈 화면을 2열 네온 타일 목록(ㅁ ㅁ / ㅁ ㅁ)으로 개편'], en: ['Redesigned main home screen into a 2-column neon tile grid'] },
     { ver: 'v0.6.1 ~ v0.6.2', date: '2026-11-27', badge: 'Private Roster Search & Mobile Optimization', ko: ['다크 크림슨·로즈 네온 디자인 복원, 기본 화면 명단·TG 분포 비노출 및 iOS 사파리 자동 확대 방지'], en: ['Restored Dark Crimson UI, hidden roster on default view & prevented iOS Safari auto-zoom'] },
-    { ver: 'v0.5.3 ~ v0.6.0', date: '2026-11-21', badge: 'Dark Crimson & TR Localization', ko: ['다크 크림슨·로즈 네온 테마, 튀르키예어(TR) 다국어 지원 및 공용 DB 연동'], en: ['Applied Dark Crimson theme, Turkish localization & Public DB'] },
-    { ver: 'v0.1.0 ~ v0.3.0', date: '2026-11-18', badge: 'Core Calculators & Hero/Shop DB', ko: ['병력 비율, 베어 헌트, KvK 점수·카운터, 성검전·삼대연맹전, 순금·영웅·상점 DB 탑재'], en: ['Built core calculators, KvK/Bear tools, Swordland/Tri-Alliance & Truegold/Hero/Shop DB'] }
+    { ver: 'v0.1.0 ~ v0.6.0', date: '2026-11-18', badge: 'Core Calculators, TR Localization & DB', ko: ['병력 비율, 베어 헌트, KvK 점수·카운터, 성검전·삼대연맹전, 순금·영웅·상점 DB 및 3개국어(KO/EN/TR) 탑재'], en: ['Built core calculators, KvK/Bear tools, Swordland/Tri-Alliance & Truegold/Hero/Shop DB with KO/EN/TR'] }
   ];
   document.getElementById('mainApp').innerHTML = `
   <div class="glass rounded-2xl p-4 space-y-3 text-xs">
     <div class="flex items-center justify-between">
       <h2 class="text-sm sm:text-base font-black text-white">${k ? '📋 개발자 노트 & 업데이트 이력' : '📋 Developer Notes & Changelog'}</h2>
-      <span class="px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 font-mono-code text-[10px]">v0.6.4</span>
+      <span class="px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 font-mono-code text-[10px]">v0.6.5</span>
     </div>
     <div class="space-y-2.5">
       ${logs.map((l, idx) => `
@@ -1355,7 +1483,7 @@ function renderNotes() {
 function getAiHtml(isDock) {
   const k = lang === 'ko';
   const pfx = isDock ? 'dk_' : 'mn_';
-  const chips = k ? ['베어 조이너', '시련 비율', '순금 8강', '장비 순서', '상점 1순위'] : ['Bear Joiners', 'Trial Ratios', 'Truegold Lv8', 'Gear Order', 'Top Shops'];
+  const chips = k ? ['베어 조이너', '시련 6구역 비율', '순금 8강', '장비 순서', '상점 1순위'] : ['Bear Joiners', 'Trial 6 Zones', 'Truegold Lv8', 'Gear Order', 'Top Shops'];
   return `
   <div class="glass rounded-2xl overflow-hidden flex flex-col ${isDock ? 'h-[540px] sticky top-28' : 'h-[430px]'} text-xs">
     <div class="px-3.5 py-2.5 bg-zinc-950 border-b border-zinc-800 flex items-center justify-between">
@@ -1389,7 +1517,7 @@ async function askAi(preset, pfx) {
   const s = q.toLowerCase();
   let ans = k ? '베어, 시련, 순금, 장비, 상점, 시설 키워드로 질문해 주세요!' : 'Ask about Bear, Trial, Truegold, Gear, Shops, or Facilities!';
   if (s.includes('베어') || s.includes('bear')) ans = k ? '🐻 참여자 1번 슬롯: 첸코, 연우, 아마데우스, 아마네, 마고, 비비안! 병종 비율 보10:기10:궁80' : '🐻 Slot 1: Chenko, Yeonwoo, Amadeus, Amane, Margot, Vivian. Ratio 10:10:80.';
-  else if (s.includes('시련') || s.includes('trial')) ans = k ? '✨ 첨탑: 50/15/35, 50/35/15, 50/20/30 | 결투장: 50/10/40, 40/40/20, 50/20/30' : '✨ Spire: 50/15/35, 50/35/15, 50/20/30 | Coliseum: 50/10/40, 40/40/20, 50/20/30';
+  else if (s.includes('시련') || s.includes('trial')) ans = k ? '✨ 신비한 시련 6대 구역 비율:\n• 첨탑: 50/15/35 (2순위기병), 50/35/15 (1순위기병), 50/20/30\n• 결투장: 50/10/40 (2순위기병), 40/40/20 (1순위기병), 50/20/30\n• 생명의 숲(펫): 50/15/35\n• 수정 동굴(보석): 60/20/20\n• 지식 연결점(연구): 50/20/30\n• 용암 요새(영주장비): 60/15/25' : '✨ Mystic Trial 6 Zones:\n• Spire: 50/15/35, 50/35/15, 50/20/30\n• Coliseum: 50/10/40, 40/40/20, 50/20/30\n• Forest: 50/15/35 | Cave: 60/20/20 | Nexus: 50/20/30 | Fort: 60/15/25';
   else if (s.includes('순금') || s.includes('truegold')) ans = k ? '🏗️ 8개 건물 Lv.1~8 총합: 순금 31,422개 + 순정금 908개 (슈퍼 정제 16주 주 34회 플랜 최적)' : '🏗️ All 8 buildings Lv.1–8: 31,422 Truegold + 908 Tempered TG (16-wk refine optimal).';
   else if (s.includes('장비') || s.includes('gear') || s.includes('전용무기')) ans = k ? '🛡️ 공격/살상력(장갑·부츠) Lv.20→60→100 먼저 강화, 방어 갑옷류는 Lv.19·59·79 멈춤! 전용무기 10강 총 275개.' : '🛡️ Upgrade Gloves/Boots to 20→60→100 first; stop Armor at Lv.19/59/79. Exclusive Lv.10 = 275 parts.';
   else if (s.includes('상점') || s.includes('shop')) ans = k ? '🛒 경기장(레전드 상자→미스릴), KvK(순금), 시련(주 1회 미스릴), 다이아(룰렛 16만 보석 유지 후 펫 단련석)' : '🛒 Arena(Legend Chest→Mithril), KvK(Truegold), Trial(Weekly Mithril).';
