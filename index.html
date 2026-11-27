@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>KINGSHOT hub v0.6.1 — Global Tactical & Private Search DB</title>
+  <title>KINGSHOT hub v0.6.2 — Global Tactical & Private Search DB</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -14,6 +14,7 @@
       --crimson: #e11d48;
       --rose: #f43f5e;
     }
+    * { box-sizing: border-box; }
     body {
       background-color: var(--bg-base);
       background-image:
@@ -25,90 +26,90 @@
       color: #f4f4f5;
       font-family: "Pretendard", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       -webkit-tap-highlight-color: transparent;
+      overflow-x: hidden;
     }
     .font-display { font-family: 'Syne', sans-serif; }
     .font-mono-code { font-family: 'JetBrains Mono', monospace; }
     .glass {
-      background: rgba(16, 12, 16, 0.88);
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
+      background: rgba(16, 12, 16, 0.90);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
       border: 1px solid rgba(255, 255, 255, 0.08);
     }
     .glass-crimson {
-      background: linear-gradient(150deg, rgba(32, 12, 20, 0.92), rgba(14, 11, 15, 0.95));
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
+      background: linear-gradient(150deg, rgba(32, 12, 20, 0.94), rgba(14, 11, 15, 0.96));
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
       border: 1px solid rgba(244, 63, 94, 0.36);
     }
-    .crimson-glow { box-shadow: 0 0 22px rgba(225, 29, 72, 0.34); }
-    .btn-tap { transition: transform 0.12s ease, background-color 0.15s ease; }
+    .crimson-glow { box-shadow: 0 0 18px rgba(225, 29, 72, 0.30); }
+    .btn-tap { transition: transform 0.1s ease, background-color 0.12s ease; }
     .btn-tap:active { transform: scale(0.96); }
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
   </style>
 </head>
-<body class="min-h-screen pb-24 lg:pb-12">
+<body class="min-h-screen pb-24 lg:pb-10">
 
-  <!-- TOP COMMAND HEADER (DARK CRIMSON & ROSE NEON EDITION) -->
-  <header class="sticky top-0 z-40 glass border-b border-rose-500/20 px-3 sm:px-6 py-2.5">
-    <div class="max-w-7xl mx-auto space-y-2">
-      <!-- Row 1: Brand + Quick Profile Chip + Gift + Bell + Lang -->
-      <div class="flex items-center justify-between gap-2">
-        <div class="flex items-center gap-2.5 cursor-pointer" onclick="switchTab('search')">
-          <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-rose-500 via-red-600 to-rose-900 flex items-center justify-center font-display font-extrabold text-white text-xs crimson-glow">KS</div>
-          <div>
-            <div class="flex items-center gap-1.5">
-              <span class="font-display font-extrabold text-sm sm:text-base tracking-tight text-white">KINGSHOT <span class="text-rose-500">hub</span></span>
-              <span class="px-1.5 py-0.5 rounded-md bg-rose-500/20 border border-rose-500/40 text-rose-300 font-mono-code text-[10px] font-bold">v0.6.1</span>
-            </div>
+  <!-- TOP COMMAND HEADER (MOBILE-FIRST OPTIMIZED) -->
+  <header class="sticky top-0 z-40 glass border-b border-rose-500/20 px-3 sm:px-6 py-2">
+    <div class="max-w-7xl mx-auto space-y-1.5">
+      <!-- Row 1: Brand + Profile + Actions + Lang -->
+      <div class="flex items-center justify-between gap-1.5">
+        <div class="flex items-center gap-2 cursor-pointer shrink-0" onclick="switchTab('search')">
+          <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-gradient-to-br from-rose-500 via-red-600 to-rose-900 flex items-center justify-center font-display font-extrabold text-white text-[11px] sm:text-xs crimson-glow">KS</div>
+          <div class="flex items-center gap-1.5">
+            <span class="font-display font-extrabold text-sm sm:text-base tracking-tight text-white">KINGSHOT <span class="text-rose-500">hub</span></span>
+            <span class="px-1.5 py-0.5 rounded-md bg-rose-500/20 border border-rose-500/40 text-rose-300 font-mono-code text-[10px] font-bold">v0.6.2</span>
           </div>
         </div>
 
-        <div class="flex items-center gap-1.5">
-          <!-- Quick Profile Chip (Only shown after user searches their own ID) -->
-          <button type="button" id="quickProfileChip" onclick="openQuickProfile()" class="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-zinc-900/90 hover:bg-zinc-800 border border-rose-500/30 text-[11px] text-zinc-200 btn-tap">
-            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-            <span id="qpLabel" class="font-bold">My Profile</span>
+        <div class="flex items-center gap-1 sm:gap-1.5 shrink-0">
+          <!-- Quick Profile Chip (Shown on mobile & desktop once searched) -->
+          <button type="button" id="quickProfileChip" onclick="openQuickProfile()" class="hidden items-center gap-1 px-2 py-1 rounded-full bg-zinc-900/95 hover:bg-zinc-800 border border-rose-500/35 text-[10px] sm:text-[11px] text-zinc-200 max-w-[115px] sm:max-w-[170px] btn-tap">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0"></span>
+            <span id="qpLabel" class="font-bold truncate">My Profile</span>
           </button>
 
-          <!-- Gift Code Quick Button -->
-          <button type="button" onclick="switchTab('search'); setTimeout(()=>document.getElementById('giftSection')?.scrollIntoView({behavior:'smooth'}),80)" title="Gift Codes" class="w-8 h-8 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 flex items-center justify-center text-xs btn-tap">🎁</button>
+          <!-- Gift Code Quick Jump -->
+          <button type="button" onclick="jumpToGift()" title="Gift Codes" class="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 flex items-center justify-center text-xs btn-tap">🎁</button>
 
-          <!-- Changelog Bell Badge (6.1) -->
-          <button type="button" onclick="switchTab('notes')" class="relative px-2 py-1.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 flex items-center gap-1 text-[11px] font-mono-code text-rose-300 btn-tap">
-            <span>🔔</span><span class="font-bold">6.1</span>
+          <!-- Changelog Bell Badge (6.2) -->
+          <button type="button" onclick="switchTab('notes')" class="px-2 py-1 sm:py-1.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 flex items-center gap-1 text-[10px] sm:text-[11px] font-mono-code text-rose-300 btn-tap">
+            <span>🔔</span><span class="font-bold">6.2</span>
           </button>
 
           <!-- 3-Language Toggle (KO | EN | TR) -->
           <div class="flex items-center bg-zinc-900 p-0.5 rounded-xl border border-zinc-800 text-[10px] font-bold">
-            <button type="button" id="btnL_ko" onclick="setLang('ko')" class="px-1.5 py-1 rounded-lg bg-rose-600 text-white btn-tap">KO</button>
-            <button type="button" id="btnL_en" onclick="setLang('en')" class="px-1.5 py-1 rounded-lg text-zinc-400 btn-tap">EN</button>
-            <button type="button" id="btnL_tr" onclick="setLang('tr')" class="px-1.5 py-1 rounded-lg text-zinc-400 btn-tap">TR</button>
+            <button type="button" id="btnL_ko" onclick="setLang('ko')" class="px-1.5 py-0.5 sm:py-1 rounded-lg bg-rose-600 text-white btn-tap">KO</button>
+            <button type="button" id="btnL_en" onclick="setLang('en')" class="px-1.5 py-0.5 sm:py-1 rounded-lg text-zinc-400 btn-tap">EN</button>
+            <button type="button" id="btnL_tr" onclick="setLang('tr')" class="px-1.5 py-0.5 sm:py-1 rounded-lg text-zinc-400 btn-tap">TR</button>
           </div>
         </div>
       </div>
 
-      <!-- Row 2: Top Integrated Search Capsule -->
+      <!-- Row 2: Top Integrated Search Capsule (16px font on mobile prevents iOS Safari auto-zoom) -->
       <div class="flex items-center gap-1.5">
-        <div class="flex-1 flex items-center bg-zinc-950/95 border border-zinc-800 focus-within:border-rose-500 rounded-xl px-3 py-1.5">
-          <span class="text-zinc-400 text-xs mr-2">🔍</span>
-          <input id="topQuickSearch" onkeydown="if(event.key==='Enter')triggerTopSearch()" placeholder="플레이어 ID(숫자), 닉네임, 또는 #왕국번호 검색..." class="w-full bg-transparent text-xs text-white placeholder-zinc-500 focus:outline-none"/>
+        <div class="flex-1 flex items-center bg-zinc-950/95 border border-zinc-800 focus-within:border-rose-500 rounded-xl px-2.5 py-1.5 min-w-0">
+          <span class="text-zinc-400 text-xs mr-1.5 shrink-0">🔍</span>
+          <input id="topQuickSearch" onkeydown="if(event.key==='Enter')triggerTopSearch()" placeholder="ID, 닉네임, #왕국번호..." class="w-full bg-transparent text-base sm:text-xs text-white placeholder-zinc-500 focus:outline-none min-w-0"/>
+          <button type="button" id="topClearBtn" onclick="clearSearchResults(true)" class="hidden text-zinc-400 hover:text-white px-1 text-xs shrink-0">✕</button>
         </div>
-        <button type="button" id="topMoveBtn" onclick="triggerTopSearch()" class="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-rose-500 to-red-600 text-white text-xs font-bold crimson-glow btn-tap">이동</button>
+        <button type="button" id="topMoveBtn" onclick="triggerTopSearch()" class="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-rose-500 to-red-600 text-white text-xs font-bold crimson-glow shrink-0 btn-tap">이동</button>
       </div>
 
-      <!-- Row 3: Slim 1-Line Scrollable Tabs -->
+      <!-- Row 3: Slim 1-Line Scrollable Tabs (Auto-scrolls active tab into center) -->
       <nav id="tabBar" class="flex gap-1.5 overflow-x-auto no-scrollbar pt-0.5 text-[11px]"></nav>
     </div>
   </header>
 
-  <!-- MAIN WORKSPACE (MOBILE SINGLE / PC 3-COLUMN HYBRID) -->
-  <div class="max-w-7xl mx-auto px-3 sm:px-6 pt-4 grid grid-cols-1 lg:grid-cols-12 gap-5">
+  <!-- MAIN WORKSPACE -->
+  <div class="max-w-7xl mx-auto px-3 sm:px-6 pt-3.5 grid grid-cols-1 lg:grid-cols-12 gap-4">
     <!-- PC Left Command Sidebar -->
     <aside id="pcLeftNav" class="hidden lg:block lg:col-span-2"></aside>
 
     <!-- Center Main Content -->
-    <main id="mainApp" class="lg:col-span-7 space-y-4"></main>
+    <main id="mainApp" class="lg:col-span-7 space-y-3.5 min-w-0"></main>
 
     <!-- PC Right Tactical AI Dock -->
     <aside id="pcAiDock" class="hidden lg:block lg:col-span-3"></aside>
@@ -142,24 +143,27 @@
       <div class="space-y-3">
         <div class="flex items-center justify-between border-b border-zinc-800 pb-2.5">
           <span class="font-display font-extrabold text-sm text-white">KINGSHOT <span class="text-rose-500">hub</span></span>
-          <button type="button" onclick="toggleDrawer(false)" class="px-2 py-1 rounded-lg bg-zinc-900 text-zinc-300 text-xs">✕</button>
+          <button type="button" onclick="toggleDrawer(false)" class="px-2.5 py-1 rounded-lg bg-zinc-900 text-zinc-300 text-xs">✕</button>
         </div>
         <div id="drawerMenuList" class="grid grid-cols-1 gap-1.5 text-xs"></div>
       </div>
       <div class="pt-3 border-t border-zinc-800 text-[10px] text-zinc-500 font-mono-code">
-        Private Roster Search Edition · v0.6.1
+        Optimized Private Search Edition · v0.6.2
       </div>
     </div>
   </div>
 
   <!-- TOAST -->
-  <div id="toastBox" class="fixed bottom-16 lg:bottom-6 right-4 z-50 hidden px-4 py-2 rounded-xl bg-rose-600 text-white text-xs font-bold shadow-xl"></div>
+  <div id="toastBox" class="fixed bottom-16 lg:bottom-6 right-4 z-50 hidden px-3.5 py-2 rounded-xl bg-rose-600 text-white text-xs font-bold shadow-xl"></div>
 
 <script>
 const NL = String.fromCharCode(10);
 let lang = localStorage.getItem('ks_lang') || 'ko';
 let curTab = 'search';
 let lastQuickFid = localStorage.getItem('ks_last_fid') || '';
+let cachedKingdoms = null;
+let cachedGiftCodes = null;
+let activePollTimer = null;
 
 const SUPABASE_URL = "https://soyodukrsykhgsufwtth.supabase.co";
 const SUPABASE_KEY = "sb_publishable_mHkDQ668sCfxQSJO61qAGA_vkbw_I94";
@@ -172,52 +176,52 @@ try {
 
 const TABS = {
   ko: [
-    ['search', '🔍 플레이어/왕국 검색'],
-    ['rally', '⚔️ 병력 시뮬레이터'],
+    ['search', '🔍 통합 검색'],
+    ['rally', '⚔️ 병력 비율'],
     ['bear', '🐻 베어 헌트'],
-    ['kvk', '👑 최강 왕국(KvK)'],
-    ['sw', '🗡️ 성검 쟁탈전'],
+    ['kvk', '👑 최강 왕국'],
+    ['sw', '🗡️ 성검전'],
     ['tri', '🚩 삼대연맹전'],
-    ['fac', '🏰 시설·전초기지'],
-    ['tg', '🔥 순금·정제 계산기'],
-    ['hero', '🦸 Gen1~10·장비'],
-    ['shop', '🛒 11대 상점·버프'],
-    ['mys', '✨ 신비한 시련·바이킹'],
-    ['mac', '📢 연맹 공지 3종'],
+    ['fac', '🏰 시설·거점'],
+    ['tg', '🔥 순금·정제'],
+    ['hero', '🦸 영웅·장비'],
+    ['shop', '🛒 상점·버프'],
+    ['mys', '✨ 시련·바이킹'],
+    ['mac', '📢 연맹 공지'],
     ['ai', '🤖 전술 AI'],
-    ['notes', '📋 개발자 노트 (v0.1~0.6.1)']
+    ['notes', '📋 개발자 노트']
   ],
   en: [
-    ['search', '🔍 Player/Kingdom Search'],
-    ['rally', '⚔️ Troop Simulator'],
+    ['search', '🔍 Search'],
+    ['rally', '⚔️ Troops'],
     ['bear', '🐻 Bear Hunt'],
-    ['kvk', '👑 KvK Prep Calc'],
-    ['sw', '🗡️ Swordland 30v30'],
+    ['kvk', '👑 KvK Calc'],
+    ['sw', '🗡️ Swordland'],
     ['tri', '🚩 Tri-Alliance'],
     ['fac', '🏰 Facilities'],
-    ['tg', '🔥 Truegold & Refine'],
-    ['hero', '🦸 Gen1–10 & Gear'],
-    ['shop', '🛒 11 Shops & Buffs'],
-    ['mys', '✨ Mystic & Viking'],
-    ['mac', '📢 Alliance Macros'],
+    ['tg', '🔥 Truegold'],
+    ['hero', '🦸 Heroes/Gear'],
+    ['shop', '🛒 Shops/Buffs'],
+    ['mys', '✨ Mystic/Viking'],
+    ['mac', '📢 Macros'],
     ['ai', '🤖 Tactical AI'],
-    ['notes', '📋 Dev Notes (v0.1–0.6.1)']
+    ['notes', '📋 Dev Notes']
   ],
   tr: [
-    ['search', '🔍 Oyuncu/Krallık Ara'],
-    ['rally', '⚔️ Birlik Simülatörü'],
+    ['search', '🔍 Arama'],
+    ['rally', '⚔️ Birlikler'],
     ['bear', '🐻 Ayı Avı'],
-    ['kvk', '👑 KvK Hazırlık'],
-    ['sw', '🗡️ Kılıç Diyarı 30v30'],
+    ['kvk', '👑 KvK'],
+    ['sw', '🗡️ Kılıç Diyarı'],
     ['tri', '🚩 Üçlü İttifak'],
     ['fac', '🏰 Tesisler'],
-    ['tg', '🔥 Saf Altın Hesaplama'],
-    ['hero', '🦸 Gen1–10 & Ekipman'],
-    ['shop', '🛒 11 Mağaza & Güçlendirme'],
-    ['mys', '✨ Gizemli Sınav & Viking'],
-    ['mac', '📢 İttifak Duyuruları'],
+    ['tg', '🔥 Saf Altın'],
+    ['hero', '🦸 Kahraman'],
+    ['shop', '🛒 Mağaza'],
+    ['mys', '✨ Sınav/Viking'],
+    ['mac', '📢 Duyuru'],
     ['ai', '🤖 Taktik AI'],
-    ['notes', '📋 Geliştirici Notları (v0.6.1)']
+    ['notes', '📋 Notlar']
   ]
 };
 
@@ -227,14 +231,14 @@ function showToast(msg) {
   b.textContent = msg;
   b.classList.remove('hidden');
   clearTimeout(window._toastT);
-  window._toastT = setTimeout(() => b.classList.add('hidden'), 2300);
+  window._toastT = setTimeout(() => b.classList.add('hidden'), 2000);
 }
 
 function copyText(txt) {
   if (navigator.clipboard && navigator.clipboard.writeText) {
     navigator.clipboard.writeText(String(txt));
   }
-  showToast(lang === 'ko' ? '클립보드에 복사되었습니다!' : (lang === 'tr' ? 'Panoya kopyalandı!' : 'Copied to clipboard!'));
+  showToast(lang === 'ko' ? '복사되었습니다!' : (lang === 'tr' ? 'Kopyalandı!' : 'Copied!'));
 }
 
 function toggleDrawer(open) {
@@ -244,20 +248,25 @@ function toggleDrawer(open) {
   else d.classList.add('hidden');
 }
 
+function jumpToGift() {
+  switchTab('search');
+  setTimeout(() => document.getElementById('giftSection')?.scrollIntoView({ behavior: 'smooth' }), 60);
+}
+
 function setLang(l) {
   lang = l;
   localStorage.setItem('ks_lang', l);
   ['ko', 'en', 'tr'].forEach(code => {
     const btn = document.getElementById('btnL_' + code);
     if (btn) btn.className = code === l
-      ? 'px-1.5 py-1 rounded-lg bg-rose-600 text-white btn-tap'
-      : 'px-1.5 py-1 rounded-lg text-zinc-400 btn-tap';
+      ? 'px-1.5 py-0.5 sm:py-1 rounded-lg bg-rose-600 text-white btn-tap'
+      : 'px-1.5 py-0.5 sm:py-1 rounded-lg text-zinc-400 btn-tap';
   });
   const topIn = document.getElementById('topQuickSearch');
   const topBtn = document.getElementById('topMoveBtn');
   if (topIn) {
-    topIn.placeholder = l === 'ko' ? '플레이어 ID(숫자), 닉네임, 또는 #왕국번호 검색...'
-      : (l === 'tr' ? 'Oyuncu ID, Takma Ad veya #Krallık ara...' : 'Search Player ID, Nickname, or #Kingdom...');
+    topIn.placeholder = l === 'ko' ? '플레이어 ID, 닉네임, #왕국번호...'
+      : (l === 'tr' ? 'Oyuncu ID, İsim, #Krallık...' : 'Player ID, Nickname, #Kingdom...');
   }
   if (topBtn) topBtn.textContent = l === 'ko' ? '이동' : (l === 'tr' ? 'Git' : 'Go');
   document.getElementById('dkLbl_home').textContent = l === 'ko' ? '홈·검색' : (l === 'tr' ? 'Ana Sayfa' : 'Home');
@@ -276,12 +285,20 @@ function renderNavs() {
   if (bar) {
     bar.innerHTML = items.map(([id, label]) => {
       const act = curTab === id;
-      return `<button type="button" onclick="switchTab('${id}')" class="px-2.5 py-1 rounded-lg whitespace-nowrap font-bold btn-tap ${act ? 'bg-gradient-to-r from-rose-500 to-red-600 text-white crimson-glow' : 'bg-zinc-900/90 text-zinc-300 border border-zinc-800/90'}">${label}</button>`;
+      return `<button type="button" id="tabBtn_${id}" onclick="switchTab('${id}')" class="px-2.5 py-1 rounded-lg whitespace-nowrap font-bold shrink-0 btn-tap ${act ? 'bg-gradient-to-r from-rose-500 to-red-600 text-white crimson-glow' : 'bg-zinc-900/90 text-zinc-300 border border-zinc-800/90'}">${label}</button>`;
     }).join('');
+    // Scroll active tab smoothly into center on mobile so it's never cut off
+    requestAnimationFrame(() => {
+      const activeEl = document.getElementById('tabBtn_' + curTab);
+      if (activeEl && bar) {
+        const leftPos = activeEl.offsetLeft - (bar.clientWidth / 2) + (activeEl.clientWidth / 2);
+        bar.scrollTo({ left: Math.max(0, leftPos), behavior: 'smooth' });
+      }
+    });
   }
   const left = document.getElementById('pcLeftNav');
   if (left) {
-    left.innerHTML = `<div class="glass rounded-2xl p-2.5 space-y-1 sticky top-28 text-xs">${items.map(([id, label]) => {
+    left.innerHTML = `<div class="glass rounded-2xl p-2 space-y-1 sticky top-28 text-xs">${items.map(([id, label]) => {
       const act = curTab === id;
       return `<button type="button" onclick="switchTab('${id}')" class="w-full text-left px-2.5 py-2 rounded-xl font-bold transition ${act ? 'bg-rose-600 text-white crimson-glow' : 'text-zinc-300 hover:bg-zinc-900'}">${label}</button>`;
     }).join('')}</div>`;
@@ -300,6 +317,7 @@ function renderNavs() {
 }
 
 function switchTab(id) {
+  if (activePollTimer) { clearInterval(activePollTimer); activePollTimer = null; }
   curTab = id;
   renderNavs();
   renderTab();
@@ -308,14 +326,21 @@ function switchTab(id) {
 
 function triggerTopSearch() {
   const val = document.getElementById('topQuickSearch').value.trim();
-  if (!val) return;
-  curTab = 'search';
-  renderNavs();
-  renderSearch();
+  const topClr = document.getElementById('topClearBtn');
+  if (topClr) {
+    if (val) topClr.classList.remove('hidden');
+    else topClr.classList.add('hidden');
+  }
+  if (!val) { clearSearchResults(false); return; }
+  if (curTab !== 'search') {
+    curTab = 'search';
+    renderNavs();
+    renderSearch();
+  }
   setTimeout(() => {
     const inp = document.getElementById('hubSearchIn');
     if (inp) { inp.value = val; runHubSearch(); }
-  }, 30);
+  }, 20);
 }
 
 function openQuickProfile() {
@@ -324,7 +349,20 @@ function openQuickProfile() {
   triggerTopSearch();
 }
 
-/* ==================== TAB 0: PRIVATE SEARCH DB (ROSTER & TG HIDDEN BY DEFAULT) ==================== */
+function hydrateQuickProfileChip() {
+  if (!lastQuickFid) return;
+  const cachedNick = localStorage.getItem('ks_last_nick');
+  const cachedLv = localStorage.getItem('ks_last_lv');
+  const chip = document.getElementById('quickProfileChip');
+  const lbl = document.getElementById('qpLabel');
+  if (chip && lbl) {
+    chip.classList.remove('hidden');
+    chip.classList.add('flex');
+    lbl.textContent = cachedNick ? `${cachedNick}${cachedLv ? ` (${cachedLv})` : ''}` : `ID ${lastQuickFid}`;
+  }
+}
+
+/* ==================== TAB 0: PRIVATE SEARCH DB (OPTIMIZED) ==================== */
 function formatStove(lv) {
   if (!lv && lv !== 0) return lang === 'ko' ? '등급 미정' : (lang === 'tr' ? 'Belirsiz' : 'Unset');
   if (typeof lv === 'string') return lv;
@@ -360,11 +398,14 @@ async function enqueuePlayerLookup(fid) {
 }
 
 function clearSearchResults(resetInput) {
+  if (activePollTimer) { clearInterval(activePollTimer); activePollTimer = null; }
   if (resetInput) {
     const inp = document.getElementById('hubSearchIn');
     const topInp = document.getElementById('topQuickSearch');
+    const topClr = document.getElementById('topClearBtn');
     if (inp) inp.value = '';
     if (topInp) topInp.value = '';
+    if (topClr) topClr.classList.add('hidden');
   }
   const area = document.getElementById('searchResultArea');
   const clearBtn = document.getElementById('clearSearchBtn');
@@ -409,91 +450,95 @@ function buildTgDistributionHtml(players) {
 function renderSearch() {
   const k = lang === 'ko';
   document.getElementById('mainApp').innerHTML = `
-  <div class="space-y-4 text-xs">
-    <!-- Bento KPI Strip (Private Mode: No Total Player Roster Leak) -->
+  <div class="space-y-3.5 text-xs">
+    <!-- Compact Status Strip -->
     <div class="grid grid-cols-3 gap-2">
       <div class="glass rounded-xl p-2.5 border-rose-500/25">
         <div class="text-[10px] text-zinc-400">${k ? '조회 보안 모드' : (lang === 'tr' ? 'Gizlilik Modu' : 'Privacy Mode')}</div>
-        <div class="font-mono-code font-bold text-emerald-400 text-xs mt-0.5">🔒 SEARCH ONLY</div>
+        <div class="font-mono-code font-bold text-emerald-400 text-[11px] sm:text-xs mt-0.5">🔒 SEARCH ONLY</div>
       </div>
       <div class="glass rounded-xl p-2.5">
         <div class="text-[10px] text-zinc-400">${k ? '전체 명단/TG' : (lang === 'tr' ? 'Liste & TG' : 'Roster & TG')}</div>
-        <div class="font-mono-code font-bold text-rose-300 text-xs mt-0.5">${k ? '기본 숨김' : 'HIDDEN'}</div>
+        <div class="font-mono-code font-bold text-rose-300 text-[11px] sm:text-xs mt-0.5">${k ? '기본 숨김' : 'HIDDEN'}</div>
       </div>
       <div class="glass rounded-xl p-2.5">
         <div class="text-[10px] text-zinc-400">${k ? '전술 모듈' : 'Modules'}</div>
-        <div class="font-mono-code font-bold text-rose-400 text-xs mt-0.5">14 ACTIVE</div>
+        <div class="font-mono-code font-bold text-rose-400 text-[11px] sm:text-xs mt-0.5">14 ACTIVE</div>
       </div>
     </div>
 
     <!-- One-Stop Search & Queue (Results appear ONLY when searched) -->
-    <div class="glass-crimson rounded-2xl p-4 space-y-3">
-      <div class="flex flex-wrap items-center justify-between gap-2">
-        <div>
-          <h2 class="text-sm sm:text-base font-black text-white">${k ? '🔍 플레이어 ID · 닉네임 · #왕국 통합 검색' : (lang === 'tr' ? '🔍 Oyuncu ID · Takma Ad · #Krallık Arama' : '🔍 Player ID · Nickname · #Kingdom Search')}</h2>
-          <p class="text-[11px] text-zinc-400 mt-0.5">${k ? '연맹 보안을 위해 전체 플레이어 명단과 TG 분포는 기본 화면에서 숨겨져 있으며, 검색할 때만 결과 카드로 표시됩니다.' : (lang === 'tr' ? 'Gizlilik için oyuncu listesi ve TG dağılımı varsayılan olarak gizlidir; yalnızca arama yapıldığında gösterilir.' : 'Registered player roster & TG distribution are hidden by default and appear only when searched.')}</p>
-        </div>
-        <span class="px-2 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/40 text-emerald-300 font-mono-code text-[10px]">🔒 Private DB</span>
+    <div class="glass-crimson rounded-2xl p-3.5 sm:p-4 space-y-2.5">
+      <div class="flex items-center justify-between gap-2">
+        <h2 class="text-sm sm:text-base font-black text-white">${k ? '🔍 플레이어 · #왕국 통합 검색' : (lang === 'tr' ? '🔍 Oyuncu · #Krallık Arama' : '🔍 Player · #Kingdom Search')}</h2>
+        <span class="px-2 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/40 text-emerald-300 font-mono-code text-[10px] shrink-0">🔒 Private DB</span>
+      </div>
+      <p class="text-[11px] text-zinc-400 leading-relaxed">${k ? '보안을 위해 전체 연맹원 명단과 TG 분포는 기본 화면에서 숨겨져 있으며, 검색할 때만 결과 카드로 표시됩니다.' : 'Roster & TG distribution are hidden by default and appear only when searched.'}</p>
+
+      <div class="flex gap-1.5">
+        <input id="hubSearchIn" onkeydown="if(event.key==='Enter')runHubSearch()" oninput="if(!this.value.trim())clearSearchResults()" placeholder="${k ? 'ID, 닉네임, 또는 #왕국번호' : 'ID, Nickname, or #Kingdom'}" class="flex-1 bg-zinc-950 border border-zinc-700 rounded-xl px-3 py-2 text-base sm:text-xs text-white focus:border-rose-500 focus:outline-none min-w-0"/>
+        <button type="button" onclick="runHubSearch()" class="px-3.5 py-2 rounded-xl bg-gradient-to-r from-rose-500 to-red-600 text-white font-black text-xs crimson-glow shrink-0 btn-tap">${k ? '조회' : 'Search'}</button>
+        <button type="button" id="clearSearchBtn" onclick="clearSearchResults(true)" class="hidden px-3 py-2 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 text-zinc-300 font-bold text-xs shrink-0 btn-tap">${k ? '닫기' : '✕'}</button>
       </div>
 
-      <div class="flex gap-2">
-        <input id="hubSearchIn" onkeydown="if(event.key==='Enter')runHubSearch()" oninput="if(!this.value.trim())clearSearchResults()" placeholder="${k ? '플레이어 ID, 닉네임, 또는 #왕국번호 입력' : (lang === 'tr' ? 'Oyuncu ID, Takma Ad veya #Krallık' : 'Enter Player ID, Nickname, or #Kingdom')}" class="flex-1 bg-zinc-950 border border-zinc-700 rounded-xl px-3 py-2 text-sm text-white focus:border-rose-500 focus:outline-none"/>
-        <button type="button" onclick="runHubSearch()" class="px-4 py-2 rounded-xl bg-gradient-to-r from-rose-500 to-red-600 text-white font-black text-xs crimson-glow btn-tap">${k ? '조회' : (lang === 'tr' ? 'Ara' : 'Search')}</button>
-        <button type="button" id="clearSearchBtn" onclick="clearSearchResults(true)" class="hidden px-3 py-2 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 text-zinc-300 font-bold text-xs btn-tap">${k ? '닫기' : '✕'}</button>
-      </div>
-
-      <!-- 검색했을 때만 동적으로 표시되는 결과 카드 & 왕국 TG 분포 영역 (기본 비노출) -->
+      <!-- 검색했을 때만 동적으로 표시되는 결과 카드 & 왕국 TG 분포 영역 -->
       <div id="searchResultArea" class="hidden space-y-2.5 pt-1"></div>
     </div>
 
-    <!-- Kingdom KvK & Transfer Board (Without Player Roster) -->
-    <div class="glass rounded-2xl p-4 space-y-2.5">
+    <!-- Kingdom KvK & Transfer Board -->
+    <div class="glass rounded-2xl p-3.5 sm:p-4 space-y-2.5">
       <div class="flex items-center justify-between">
-        <h3 class="text-xs font-bold text-white">${k ? '🌐 왕국(서버) KvK & 전송 그룹 보드' : (lang === 'tr' ? '🌐 Krallık KvK & Transfer Panosu' : '🌐 Kingdom KvK & Transfer Board')}</h3>
-        <button type="button" onclick="loadKingdomBoardOnly()" class="px-2 py-1 rounded-lg bg-zinc-900 border border-zinc-700 text-rose-300 font-bold text-[10px] btn-tap">↻ ${k ? '새로고침' : 'Refresh'}</button>
+        <h3 class="text-xs font-bold text-white">${k ? '🌐 왕국(서버) KvK & 전송 그룹 보드' : '🌐 Kingdom KvK & Transfer Board'}</h3>
+        <button type="button" onclick="loadKingdomBoardOnly(true)" class="px-2 py-1 rounded-lg bg-zinc-900 border border-zinc-700 text-rose-300 font-bold text-[10px] btn-tap">↻ ${k ? '새로고침' : 'Refresh'}</button>
       </div>
-      <div class="flex flex-wrap gap-1.5">
-        <input id="kRegId" type="number" placeholder="${k ? '왕국#' : 'King#'}" class="w-24 bg-zinc-950 border border-zinc-700 rounded-lg px-2.5 py-1.5 font-mono-code text-white"/>
-        <input id="kRegRes" placeholder="${k ? '전적 (예: 승)' : 'Result'}" class="flex-1 min-w-[90px] bg-zinc-950 border border-zinc-700 rounded-lg px-2.5 py-1.5 text-white"/>
-        <input id="kRegGrp" type="number" placeholder="${k ? '전송그룹' : 'Group'}" class="w-20 bg-zinc-950 border border-zinc-700 rounded-lg px-2.5 py-1.5 font-mono-code text-white"/>
-        <button type="button" onclick="registerKingdomDb()" class="px-3 py-1.5 rounded-lg bg-rose-600 text-white font-bold btn-tap">${k ? '저장' : 'Save'}</button>
+      <div class="grid grid-cols-12 gap-1.5">
+        <input id="kRegId" type="number" placeholder="${k ? '왕국#' : 'King#'}" class="col-span-3 bg-zinc-950 border border-zinc-700 rounded-lg px-2 py-1.5 font-mono-code text-base sm:text-xs text-white"/>
+        <input id="kRegRes" placeholder="${k ? '전적 (예: 승)' : 'Result'}" class="col-span-4 bg-zinc-950 border border-zinc-700 rounded-lg px-2 py-1.5 text-base sm:text-xs text-white"/>
+        <input id="kRegGrp" type="number" placeholder="${k ? '그룹' : 'Grp'}" class="col-span-3 bg-zinc-950 border border-zinc-700 rounded-lg px-2 py-1.5 font-mono-code text-base sm:text-xs text-white"/>
+        <button type="button" onclick="registerKingdomDb()" class="col-span-2 py-1.5 rounded-lg bg-rose-600 text-white font-bold text-xs btn-tap">${k ? '저장' : 'Save'}</button>
       </div>
       <div id="liveKingdomsBox" class="grid grid-cols-1 sm:grid-cols-2 gap-1.5"></div>
     </div>
 
     <!-- Gift Codes Board -->
-    <div id="giftSection" class="glass rounded-2xl p-4 space-y-2.5">
-      <div class="flex flex-wrap items-center justify-between gap-2">
-        <div>
-          <h3 class="text-xs font-bold text-white">${k ? '🎁 선물 코드 (Gift Code) 실시간 공유' : (lang === 'tr' ? '🎁 Hediye Kodu Panosu' : '🎁 Public Gift Code Board')}</h3>
-          <p class="text-[11px] text-zinc-400">${k ? '코드를 복사한 뒤 공식 교환소에서 플레이어 ID를 입력해 수령하세요.' : 'Copy active gift codes and redeem on the official portal.'}</p>
-        </div>
-        <a href="https://ks-giftcode.centurygame.com/" target="_blank" rel="noopener" class="px-2.5 py-1.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 text-rose-300 font-bold text-[11px]">${k ? '공식 교환소 ↗' : 'Redeem Site ↗'}</a>
+    <div id="giftSection" class="glass rounded-2xl p-3.5 sm:p-4 space-y-2.5">
+      <div class="flex items-center justify-between gap-2">
+        <h3 class="text-xs font-bold text-white">${k ? '🎁 선물 코드 (Gift Code) 공유' : '🎁 Public Gift Code Board'}</h3>
+        <a href="https://ks-giftcode.centurygame.com/" target="_blank" rel="noopener" class="px-2.5 py-1 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 text-rose-300 font-bold text-[10px] shrink-0">${k ? '교환소 ↗' : 'Redeem ↗'}</a>
       </div>
-      <div class="flex flex-wrap gap-1.5">
-        <input id="newCodeIn" placeholder="${k ? '선물 코드 (예: KINGSHOT2026)' : 'Gift Code'}" class="flex-1 min-w-[140px] bg-zinc-950 border border-zinc-700 rounded-xl px-3 py-1.5 font-mono-code uppercase text-white"/>
-        <input id="newCodeNote" placeholder="${k ? '보상 메모' : 'Note'}" class="w-36 bg-zinc-950 border border-zinc-700 rounded-xl px-3 py-1.5 text-white"/>
-        <button type="button" onclick="addGiftCodeDb()" class="px-3.5 py-1.5 rounded-xl bg-rose-600 text-white font-bold btn-tap">${k ? '+ 등록' : '+ Add'}</button>
+      <div class="grid grid-cols-12 gap-1.5">
+        <input id="newCodeIn" placeholder="${k ? '선물 코드' : 'Gift Code'}" class="col-span-5 bg-zinc-950 border border-zinc-700 rounded-xl px-2.5 py-1.5 font-mono-code uppercase text-base sm:text-xs text-white"/>
+        <input id="newCodeNote" placeholder="${k ? '보상 메모' : 'Note'}" class="col-span-4 bg-zinc-950 border border-zinc-700 rounded-xl px-2.5 py-1.5 text-base sm:text-xs text-white"/>
+        <button type="button" onclick="addGiftCodeDb()" class="col-span-3 py-1.5 rounded-xl bg-rose-600 text-white font-bold text-xs btn-tap">${k ? '+ 등록' : '+ Add'}</button>
       </div>
-      <div id="giftCodeBox" class="grid grid-cols-1 sm:grid-cols-2 gap-2"></div>
+      <div id="giftCodeBox" class="grid grid-cols-1 sm:grid-cols-2 gap-1.5"></div>
     </div>
   </div>`;
-  loadKingdomBoardOnly();
-  loadGiftCodesDb();
+  loadKingdomBoardOnly(false);
+  loadGiftCodesDb(false);
 }
 
 async function runHubSearch() {
+  if (activePollTimer) { clearInterval(activePollTimer); activePollTimer = null; }
   const raw = document.getElementById('hubSearchIn').value.trim();
+  const topInp = document.getElementById('topQuickSearch');
+  const topClr = document.getElementById('topClearBtn');
+  if (topInp && topInp.value.trim() !== raw) topInp.value = raw;
+  if (topClr) {
+    if (raw) topClr.classList.remove('hidden');
+    else topClr.classList.add('hidden');
+  }
+
   const area = document.getElementById('searchResultArea');
   const clearBtn = document.getElementById('clearSearchBtn');
   const k = lang === 'ko';
-  if (!raw || !sb) { clearSearchResults(); return; }
+  if (!raw || !sb) { clearSearchResults(false); return; }
 
   area.classList.remove('hidden');
   if (clearBtn) clearBtn.classList.remove('hidden');
   area.innerHTML = `<div class="text-zinc-400 py-1">${k ? '공용 DB 조회 중...' : 'Searching DB...'}</div>`;
 
-  // 1) #왕국번호 검색 시에만 왕국 정보 + TC/TG 분포 + 소속 검색 결과 카드 표시
+  // 1) #왕국번호 검색
   if (raw.startsWith('#')) {
     const kid = parseInt(raw.slice(1), 10);
     if (!kid) {
@@ -507,7 +552,7 @@ async function runHubSearch() {
     const info = kList && kList[0];
     const tgHtml = buildTgDistributionHtml(pList || []);
     area.innerHTML = `
-      <div class="p-3.5 rounded-2xl bg-zinc-950 border border-purple-500/40 space-y-2.5">
+      <div class="p-3 rounded-2xl bg-zinc-950 border border-purple-500/40 space-y-2.5">
         <div class="flex justify-between items-center">
           <b class="text-sm text-purple-300">👑 Kingdom #${kid}</b>
           <span class="text-[10px] text-zinc-400">${info ? timeAgo(info.updated_at) : (k ? '전적 미등록' : 'No KvK log')}</span>
@@ -520,7 +565,7 @@ async function runHubSearch() {
     return;
   }
 
-  // 2) 플레이어 ID(숫자) 또는 닉네임 검색 시에만 결과 카드 출력
+  // 2) 플레이어 ID 또는 닉네임 검색
   const isNum = /^\d+$/.test(raw);
   let res;
   if (isNum) {
@@ -533,14 +578,12 @@ async function runHubSearch() {
   if (list.length > 0) {
     area.innerHTML = list.map(p => renderPlayerCard(p, true)).join('');
     if (isNum) {
+      const p0 = list[0];
       localStorage.setItem('ks_last_fid', raw);
+      if (p0.nickname) localStorage.setItem('ks_last_nick', p0.nickname);
+      if (p0.stove_lv) localStorage.setItem('ks_last_lv', formatStove(p0.stove_lv));
       lastQuickFid = raw;
-      const chip = document.getElementById('quickProfileChip');
-      const lbl = document.getElementById('qpLabel');
-      if (chip && lbl) {
-        chip.classList.remove('hidden');
-        lbl.textContent = `${list[0].nickname || 'Governor'} (${formatStove(list[0].stove_lv)})`;
-      }
+      hydrateQuickProfileChip();
       enqueuePlayerLookup(Number(raw));
     }
     return;
@@ -550,32 +593,34 @@ async function runHubSearch() {
     const fid = Number(raw);
     enqueuePlayerLookup(fid);
     area.innerHTML = `
-      <div class="p-3.5 rounded-2xl bg-zinc-950 border border-amber-500/40 space-y-2.5">
+      <div class="p-3 rounded-2xl bg-zinc-950 border border-amber-500/40 space-y-2.5">
         <div class="flex flex-wrap items-center justify-between gap-2">
-          <b class="text-amber-300">⏳ ${k ? `ID ${fid} — 자동 조회 대기열 등록됨` : `ID ${fid} — Queued for Auto-Lookup`}</b>
-          <span id="queuePulse_${fid}" class="px-2 py-0.5 rounded bg-cyan-500/15 text-cyan-300 font-mono-code text-[10px]">${k ? '워커 응답 대기 중 (6초)...' : 'Waiting for worker (6s)...'}</span>
+          <b class="text-amber-300">⏳ ${k ? `ID ${fid} — 자동 조회 대기열 등록됨` : `ID ${fid} — Queued`}</b>
+          <span id="queuePulse_${fid}" class="px-2 py-0.5 rounded bg-cyan-500/15 text-cyan-300 font-mono-code text-[10px]">${k ? '워커 응답 대기 중...' : 'Waiting...'}</span>
         </div>
-        <p class="text-[11px] text-zinc-300">${k ? '홈 워커가 가동 중이면 2~3초 내 자동 완성되며, 지금 바로 아래에서 직접 저장할 수도 있습니다.' : 'Auto-fills in 2-3s if worker is active, or save manually below:'}</p>
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
-          <input id="qNick_${fid}" placeholder="${k ? '인게임 닉네임' : 'Nickname'}" class="bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-1.5 text-white"/>
-          <input id="qKid_${fid}" type="number" placeholder="${k ? '왕국#' : 'Kingdom#'}" class="bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-1.5 font-mono-code text-white"/>
-          <input id="qLv_${fid}" placeholder="${k ? '등급 (TC30, TG5)' : 'Level (TC30, TG5)'}" class="bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-1.5 font-mono-code text-white"/>
+        <p class="text-[11px] text-zinc-300">${k ? '워커가 가동 중이면 자동 완성되며, 아래에서 직접 저장할 수도 있습니다.' : 'Auto-fills if worker is active, or save manually below:'}</p>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-1.5">
+          <input id="qNick_${fid}" placeholder="${k ? '인게임 닉네임' : 'Nickname'}" class="bg-zinc-900 border border-zinc-700 rounded-xl px-2.5 py-1.5 text-base sm:text-xs text-white"/>
+          <input id="qKid_${fid}" type="number" placeholder="${k ? '왕국#' : 'Kingdom#'}" class="bg-zinc-900 border border-zinc-700 rounded-xl px-2.5 py-1.5 font-mono-code text-base sm:text-xs text-white"/>
+          <input id="qLv_${fid}" placeholder="${k ? '등급 (TC30, TG5)' : 'Level (TC30, TG5)'}" class="bg-zinc-900 border border-zinc-700 rounded-xl px-2.5 py-1.5 font-mono-code text-base sm:text-xs text-white"/>
         </div>
-        <div class="flex flex-wrap items-center justify-between gap-2">
-          <input id="qMemo_${fid}" placeholder="${k ? '전투력/특이사항 메모 (선택)' : 'Power/Notes (opt)'}" class="flex-1 min-w-[140px] bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-1.5 text-white"/>
-          <button type="button" onclick="quickSavePlayer(${fid})" class="px-4 py-1.5 rounded-xl bg-rose-600 text-white font-bold btn-tap">${k ? '저장' : 'Save'}</button>
+        <div class="flex items-center gap-1.5">
+          <input id="qMemo_${fid}" placeholder="${k ? '전투력/특이사항 메모 (선택)' : 'Power/Notes (opt)'}" class="flex-1 bg-zinc-900 border border-zinc-700 rounded-xl px-2.5 py-1.5 text-base sm:text-xs text-white min-w-0"/>
+          <button type="button" onclick="quickSavePlayer(${fid})" class="px-4 py-1.5 rounded-xl bg-rose-600 text-white font-bold shrink-0 btn-tap">${k ? '저장' : 'Save'}</button>
         </div>
       </div>`;
 
     let tries = 0;
-    const timer = setInterval(async () => {
+    activePollTimer = setInterval(async () => {
       tries++;
       const { data: found } = await sb.from('players').select('*').eq('fid', fid);
       if (found && found.length > 0) {
-        clearInterval(timer);
+        clearInterval(activePollTimer);
+        activePollTimer = null;
         area.innerHTML = found.map(p => renderPlayerCard(p, true)).join('');
       } else if (tries >= 3) {
-        clearInterval(timer);
+        clearInterval(activePollTimer);
+        activePollTimer = null;
         const badge = document.getElementById('queuePulse_' + fid);
         if (badge) badge.textContent = k ? '대기열 저장됨 (수동 등록 가능)' : 'Queued (Manual ready)';
       }
@@ -592,25 +637,25 @@ function renderPlayerCard(p, editable) {
   const safeNick = String(p.nickname || ('Governor_' + p.fid)).split('"').join('&quot;');
   const safeMemo = String(p.power_memo || '').split('"').join('&quot;');
   return `
-    <div class="p-3.5 rounded-2xl bg-zinc-950 border border-zinc-800 space-y-2.5">
-      <div class="flex flex-wrap items-center justify-between gap-2">
-        <div class="flex items-center gap-2.5">
-          <div class="px-2.5 py-1.5 rounded-xl bg-rose-500/20 border border-rose-500/40 font-mono-code font-bold text-rose-300">${lvTxt}</div>
-          <div>
-            <div class="font-bold text-sm text-white">${safeNick} <span class="text-[11px] font-mono-code text-zinc-400">(${p.fid})</span></div>
-            <div class="text-[11px] text-zinc-400">Kingdom #${p.kid || '?'} ${safeMemo ? `· <span class="text-amber-300">${safeMemo}</span>` : ''} · <span class="text-emerald-400">${timeAgo(p.updated_at)}</span></div>
+    <div class="p-3 rounded-2xl bg-zinc-950 border border-zinc-800 space-y-2.5">
+      <div class="flex items-center justify-between gap-2">
+        <div class="flex items-center gap-2 min-w-0">
+          <div class="px-2 py-1.5 rounded-xl bg-rose-500/20 border border-rose-500/40 font-mono-code font-bold text-rose-300 shrink-0">${lvTxt}</div>
+          <div class="min-w-0">
+            <div class="font-bold text-sm text-white truncate">${safeNick} <span class="text-[11px] font-mono-code text-zinc-400">(${p.fid})</span></div>
+            <div class="text-[11px] text-zinc-400 truncate">Kingdom #${p.kid || '?'} ${safeMemo ? `· <span class="text-amber-300">${safeMemo}</span>` : ''} · <span class="text-emerald-400">${timeAgo(p.updated_at)}</span></div>
           </div>
         </div>
-        <button type="button" onclick="copyText('${p.fid}')" class="px-2.5 py-1 rounded-lg bg-zinc-900 border border-zinc-700 text-zinc-200 font-mono-code text-[11px] btn-tap">Copy ID</button>
+        <button type="button" onclick="copyText('${p.fid}')" class="px-2.5 py-1 rounded-lg bg-zinc-900 border border-zinc-700 text-zinc-200 font-mono-code text-[11px] shrink-0 btn-tap">Copy ID</button>
       </div>
       ${editable ? `
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-1.5 pt-2 border-t border-zinc-900">
-        <input id="qNick_${p.fid}" value="${safeNick}" placeholder="${k ? '닉네임' : 'Nickname'}" class="bg-zinc-900 border border-zinc-700 rounded-lg px-2 py-1 text-white"/>
-        <input id="qKid_${p.fid}" type="number" value="${p.kid || ''}" placeholder="${k ? '왕국#' : 'King#'}" class="bg-zinc-900 border border-zinc-700 rounded-lg px-2 py-1 font-mono-code text-white"/>
-        <input id="qLv_${p.fid}" value="${p.stove_lv ? lvTxt.replace(' ', '') : ''}" placeholder="TC30/TG5" class="bg-zinc-900 border border-zinc-700 rounded-lg px-2 py-1 font-mono-code text-white"/>
+        <input id="qNick_${p.fid}" value="${safeNick}" placeholder="${k ? '닉네임' : 'Nickname'}" class="bg-zinc-900 border border-zinc-700 rounded-lg px-2 py-1 text-base sm:text-xs text-white"/>
+        <input id="qKid_${p.fid}" type="number" value="${p.kid || ''}" placeholder="${k ? '왕국#' : 'King#'}" class="bg-zinc-900 border border-zinc-700 rounded-lg px-2 py-1 font-mono-code text-base sm:text-xs text-white"/>
+        <input id="qLv_${p.fid}" value="${p.stove_lv ? lvTxt.replace(' ', '') : ''}" placeholder="TC30/TG5" class="bg-zinc-900 border border-zinc-700 rounded-lg px-2 py-1 font-mono-code text-base sm:text-xs text-white"/>
         <div class="flex gap-1">
-          <input id="qMemo_${p.fid}" value="${safeMemo}" placeholder="${k ? '전투력/메모' : 'Memo'}" class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-2 py-1 text-white"/>
-          <button type="button" onclick="quickSavePlayer(${p.fid})" class="px-2.5 py-1 rounded-lg bg-rose-600 text-white font-bold whitespace-nowrap btn-tap">${k ? '갱신' : 'Save'}</button>
+          <input id="qMemo_${p.fid}" value="${safeMemo}" placeholder="${k ? '메모' : 'Memo'}" class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-2 py-1 text-base sm:text-xs text-white min-w-0"/>
+          <button type="button" onclick="quickSavePlayer(${p.fid})" class="px-2.5 py-1 rounded-lg bg-rose-600 text-white font-bold shrink-0 btn-tap">${k ? '갱신' : 'Save'}</button>
         </div>
       </div>` : ''}
     </div>`;
@@ -647,42 +692,60 @@ async function registerKingdomDb() {
     document.getElementById('kRegRes').value = '';
     document.getElementById('kRegGrp').value = '';
     showToast(lang === 'ko' ? '왕국 정보 저장 완료!' : 'Kingdom saved!');
-    loadKingdomBoardOnly();
+    loadKingdomBoardOnly(true);
   }
 }
 
-async function loadKingdomBoardOnly() {
+async function loadKingdomBoardOnly(forceRefresh) {
   const k = lang === 'ko';
   const kBox = document.getElementById('liveKingdomsBox');
   if (!kBox || !sb) return;
 
+  if (!forceRefresh && cachedKingdoms) {
+    renderKingdomCards(kBox, cachedKingdoms);
+    return;
+  }
   const { data: kingdoms } = await sb.from('kingdoms').select('*').order('updated_at', { ascending: false }).limit(10);
-
-  kBox.innerHTML = (kingdoms && kingdoms.length) ? kingdoms.map(x => `
-    <div onclick="document.getElementById('hubSearchIn').value='#${x.kid}'; runHubSearch();" class="p-2.5 rounded-xl bg-zinc-950 hover:bg-zinc-900 cursor-pointer border border-zinc-800 flex items-center justify-between transition">
-      <div>
-        <b class="text-purple-300">Kingdom #${x.kid}</b>
-        <span class="text-[11px] text-zinc-300 ml-1.5">${x.season_result || '-'} ${x.transfer_group ? `(G${x.transfer_group})` : ''}</span>
-      </div>
-      <span class="text-[10px] text-zinc-400 font-mono-code">${timeAgo(x.updated_at)}</span>
-    </div>`).join('') : `<div class="col-span-full p-3 rounded-xl bg-zinc-950 text-zinc-400">${k ? '등록된 왕국 기록이 없습니다.' : 'No kingdom records yet.'}</div>`;
+  cachedKingdoms = kingdoms || [];
+  renderKingdomCards(kBox, cachedKingdoms);
 }
 
-async function loadGiftCodesDb() {
+function renderKingdomCards(kBox, kingdoms) {
+  const k = lang === 'ko';
+  kBox.innerHTML = kingdoms.length ? kingdoms.map(x => `
+    <div onclick="document.getElementById('hubSearchIn').value='#${x.kid}'; runHubSearch();" class="p-2.5 rounded-xl bg-zinc-950 hover:bg-zinc-900 cursor-pointer border border-zinc-800 flex items-center justify-between gap-2 transition">
+      <div class="truncate">
+        <b class="text-purple-300">Kingdom #${x.kid}</b>
+        <span class="text-[11px] text-zinc-300 ml-1">${x.season_result || '-'} ${x.transfer_group ? `(G${x.transfer_group})` : ''}</span>
+      </div>
+      <span class="text-[10px] text-zinc-400 font-mono-code shrink-0">${timeAgo(x.updated_at)}</span>
+    </div>`).join('') : `<div class="col-span-full p-2.5 rounded-xl bg-zinc-950 text-zinc-400">${k ? '등록된 왕국 기록이 없습니다.' : 'No kingdom records yet.'}</div>`;
+}
+
+async function loadGiftCodesDb(forceRefresh) {
   const box = document.getElementById('giftCodeBox');
   if (!box || !sb) return;
+  if (!forceRefresh && cachedGiftCodes) {
+    renderGiftCodeCards(box, cachedGiftCodes);
+    return;
+  }
   const { data } = await sb.from('gift_codes').select('*').order('created_at', { ascending: false }).limit(12);
+  cachedGiftCodes = data || [];
+  renderGiftCodeCards(box, cachedGiftCodes);
+}
+
+function renderGiftCodeCards(box, data) {
   if (!data || data.length === 0) {
-    box.innerHTML = `<div class="p-3 rounded-xl bg-zinc-950 text-zinc-400 col-span-2">${lang === 'ko' ? '등록된 선물 코드가 없습니다.' : 'No gift codes yet.'}</div>`;
+    box.innerHTML = `<div class="p-2.5 rounded-xl bg-zinc-950 text-zinc-400 col-span-2">${lang === 'ko' ? '등록된 선물 코드가 없습니다.' : 'No gift codes yet.'}</div>`;
     return;
   }
   box.innerHTML = data.map(c => `
     <div class="p-2.5 rounded-xl bg-zinc-950 border border-zinc-800 flex items-center justify-between gap-2">
-      <div>
+      <div class="truncate">
         <span class="font-mono-code font-bold text-amber-300">${c.code}</span>
-        ${c.reward ? `<span class="text-[11px] text-zinc-400 ml-2">${c.reward}</span>` : ''}
+        ${c.reward ? `<span class="text-[11px] text-zinc-400 ml-1.5">${c.reward}</span>` : ''}
       </div>
-      <button type="button" onclick="copyText('${c.code}')" class="px-2.5 py-1 rounded-lg bg-rose-600/20 border border-rose-500/40 text-rose-300 font-bold text-[10px] btn-tap">Copy</button>
+      <button type="button" onclick="copyText('${c.code}')" class="px-2.5 py-1 rounded-lg bg-rose-600/20 border border-rose-500/40 text-rose-300 font-bold text-[10px] shrink-0 btn-tap">Copy</button>
     </div>`).join('');
 }
 
@@ -696,7 +759,7 @@ async function addGiftCodeDb() {
   document.getElementById('newCodeIn').value = '';
   document.getElementById('newCodeNote').value = '';
   showToast(lang === 'ko' ? '선물 코드 공유 완료!' : 'Gift code shared!');
-  loadGiftCodesDb();
+  loadGiftCodesDb(true);
 }
 
 /* ==================== TAB 1: TROOP RATIO SIMULATOR ==================== */
@@ -711,19 +774,19 @@ function renderRally() {
     ['tank', k ? '🧱 방패 보병 철벽 (70:15:15)' : '🧱 Heavy Shield (70:15:15)']
   ];
   document.getElementById('mainApp').innerHTML = `
-  <div class="glass rounded-2xl p-4 space-y-4 text-xs">
+  <div class="glass rounded-2xl p-4 space-y-3.5 text-xs">
     <h2 class="text-sm sm:text-base font-black text-white">${k ? '⚔️ 실시간 병종 비율 & 다중 부대 시뮬레이터' : '⚔️ Troop Ratio & Multi-March Simulator'}</h2>
     <div class="flex flex-wrap gap-1.5">
       ${presets.map(([id, lb]) => `<button type="button" onclick="rallyPreset='${id}';calcRally()" class="px-2.5 py-1.5 rounded-xl font-bold btn-tap ${rallyPreset===id?'bg-rose-600 text-white crimson-glow':'bg-zinc-900 border border-zinc-700 text-zinc-300'}">${lb}</button>`).join('')}
     </div>
-    <div class="grid grid-cols-2 gap-3">
+    <div class="grid grid-cols-2 gap-2.5">
       <div>
         <label class="text-zinc-400 block mb-1">${k ? '1부대 출정 정원' : '1 March Capacity'}</label>
-        <input id="simCap" type="number" value="150000" oninput="calcRally()" class="w-full bg-zinc-950 border border-zinc-700 rounded-xl px-3 py-2 font-mono-code text-white"/>
+        <input id="simCap" type="number" value="150000" oninput="calcRally()" class="w-full bg-zinc-950 border border-zinc-700 rounded-xl px-3 py-2 font-mono-code text-base sm:text-xs text-white"/>
       </div>
       <div>
         <label class="text-zinc-400 block mb-1">${k ? '동시 출정 부대 수' : 'March Queues'}</label>
-        <input id="simMarches" type="number" value="5" oninput="calcRally()" class="w-full bg-zinc-950 border border-zinc-700 rounded-xl px-3 py-2 font-mono-code text-white"/>
+        <input id="simMarches" type="number" value="5" oninput="calcRally()" class="w-full bg-zinc-950 border border-zinc-700 rounded-xl px-3 py-2 font-mono-code text-base sm:text-xs text-white"/>
       </div>
     </div>
     <div id="simOut" class="space-y-3"></div>
@@ -740,19 +803,19 @@ function calcRally() {
   const copyStr = `[Kingshot Troop ${ri}:${rc}:${ra}] 1 March (${cap.toLocaleString()}): Inf ${inf.toLocaleString()} / Cav ${cav.toLocaleString()} / Arch ${arch.toLocaleString()} | ${mCnt} Marches Total: Inf ${(inf*mCnt).toLocaleString()} / Cav ${(cav*mCnt).toLocaleString()} / Arch ${(arch*mCnt).toLocaleString()}`;
   document.getElementById('simOut').innerHTML = `
     <div class="grid grid-cols-3 gap-2 text-center">
-      <div class="p-3 rounded-xl bg-zinc-950 border border-zinc-800">
+      <div class="p-2.5 rounded-xl bg-zinc-950 border border-zinc-800">
         <div class="text-zinc-300 font-bold">${k ? '🛡️ 보병' : '🛡️ Inf'} (${ri}%)</div>
-        <div class="font-mono-code font-black text-base text-white mt-0.5">${inf.toLocaleString()}</div>
+        <div class="font-mono-code font-black text-sm sm:text-base text-white mt-0.5">${inf.toLocaleString()}</div>
         <div class="text-[10px] text-zinc-400">${mCnt}부대: ${(inf * mCnt).toLocaleString()}</div>
       </div>
-      <div class="p-3 rounded-xl bg-zinc-950 border border-zinc-800">
+      <div class="p-2.5 rounded-xl bg-zinc-950 border border-zinc-800">
         <div class="text-zinc-300 font-bold">${k ? '🐎 기병' : '🐎 Cav'} (${rc}%)</div>
-        <div class="font-mono-code font-black text-base text-white mt-0.5">${cav.toLocaleString()}</div>
+        <div class="font-mono-code font-black text-sm sm:text-base text-white mt-0.5">${cav.toLocaleString()}</div>
         <div class="text-[10px] text-zinc-400">${mCnt}부대: ${(cav * mCnt).toLocaleString()}</div>
       </div>
-      <div class="p-3 rounded-xl bg-zinc-950 border border-rose-500/50">
+      <div class="p-2.5 rounded-xl bg-zinc-950 border border-rose-500/50">
         <div class="text-rose-400 font-bold">${k ? '🏹 궁병' : '🏹 Arch'} (${ra}%)</div>
-        <div class="font-mono-code font-black text-base text-rose-300 mt-0.5">${arch.toLocaleString()}</div>
+        <div class="font-mono-code font-black text-sm sm:text-base text-rose-300 mt-0.5">${arch.toLocaleString()}</div>
         <div class="text-[10px] text-zinc-400">${mCnt}부대: ${(arch * mCnt).toLocaleString()}</div>
       </div>
     </div>
@@ -763,30 +826,30 @@ function calcRally() {
 function renderBear() {
   const k = lang === 'ko';
   document.getElementById('mainApp').innerHTML = `
-  <div class="glass rounded-2xl p-4 space-y-4 text-xs">
+  <div class="glass rounded-2xl p-4 space-y-3.5 text-xs">
     <h2 class="text-sm sm:text-base font-black text-white">${k ? '🐻 베어 헌트 (Bear Hunt) 집결장·참여자 영웅 & 연속 재탑승 계산기' : '🐻 Bear Hunt Heroes & Rally Re-Join Calculator'}</h2>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-      <div class="p-3.5 rounded-xl bg-zinc-950 border border-rose-500/40 space-y-1">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-2.5">
+      <div class="p-3 rounded-xl bg-zinc-950 border border-rose-500/40 space-y-1">
         <b class="text-rose-400">${k ? '👑 집결장 (Rally Host) 3인 조합' : '👑 Rally Host Top 3 Heroes'}</b>
         <p class="text-zinc-200">${k ? '• 1순위 극딜 조합: 아마데우스(또는 헬가) + 사울(또는 마고/비비안) + 주력 딜러' : '• Best Host: Amadeus (or Helga) + Saul (or Margot/Vivian) + Main DPS'}</p>
         <p class="text-zinc-400">${k ? '• 10:10:80 비율로 5분 집결을 개설합니다.' : '• Open 5-min rally with 10:10:80 ratio.'}</p>
       </div>
-      <div class="p-3.5 rounded-xl bg-zinc-950 border border-emerald-500/40 space-y-1">
+      <div class="p-3 rounded-xl bg-zinc-950 border border-emerald-500/40 space-y-1">
         <b class="text-emerald-400">${k ? '⚔️ 참여자 (Joiner) 1번 슬롯 규칙' : '⚔️ Joiner Slot 1 Rule'}</b>
         <p class="text-zinc-200">${k ? '• 허용: 첸코, 연우, 아마데우스, 아마네, 마고, 비비안' : '• ONLY: Chenko, Yeonwoo, Amadeus, Amane, Margot, Vivian'}</p>
         <p class="text-rose-300">${k ? '• 금지: 헬가, 하워드, 고든, 다이아나 1번 슬롯 배치 금지!' : '• BANNED in Slot 1: Helga, Howard, Gordon, Diana!'}</p>
       </div>
     </div>
-    <div class="p-3.5 rounded-xl bg-zinc-950 border border-zinc-800 space-y-2.5">
+    <div class="p-3 rounded-xl bg-zinc-950 border border-zinc-800 space-y-2.5">
       <b class="text-white block">${k ? '⏱️ 30분 연속 재탑승 타이밍 계산기' : '⏱️ 30-Min Re-Join Cycle Calculator'}</b>
-      <div class="grid grid-cols-2 gap-3">
+      <div class="grid grid-cols-2 gap-2.5">
         <div>
           <label class="text-zinc-400 block mb-1">${k ? '편도 행군 시간 (초)' : 'One-way March (sec)'}</label>
-          <input id="bearSec" type="number" value="10" oninput="calcBear()" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-1.5 font-mono-code text-white"/>
+          <input id="bearSec" type="number" value="10" oninput="calcBear()" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-1.5 font-mono-code text-base sm:text-xs text-white"/>
         </div>
         <div>
           <label class="text-zinc-400 block mb-1">${k ? '운용 부대 수' : 'Marches'}</label>
-          <input id="bearQueues" type="number" value="5" oninput="calcBear()" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-1.5 font-mono-code text-white"/>
+          <input id="bearQueues" type="number" value="5" oninput="calcBear()" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-1.5 font-mono-code text-base sm:text-xs text-white"/>
         </div>
       </div>
       <div id="bearOut" class="p-2.5 rounded-xl bg-rose-500/15 border border-rose-500/35 text-rose-200 font-bold"></div>
@@ -820,25 +883,25 @@ function renderKvk() {
     ['kvkShard', k ? '🧩 신화 조각 (3,040점)' : '🧩 Mythic Shard (3,040)', 2]
   ];
   document.getElementById('mainApp').innerHTML = `
-  <div class="space-y-4 text-xs">
+  <div class="space-y-3.5 text-xs">
     <div class="glass rounded-2xl p-4 space-y-3">
       <h2 class="text-sm sm:text-base font-black text-white">${k ? '👑 최강 왕국 (KvK) 준비 단계 개인 예상 점수 계산기' : '👑 KvK Prep Phase Score Calculator'}</h2>
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
         ${inputs.map(([id, label, day]) => `
           <div class="p-2.5 rounded-xl bg-zinc-950 border border-zinc-800 space-y-1">
             <div class="flex justify-between text-[11px]"><span class="text-zinc-300 font-bold">${label}</span><span class="text-rose-400 font-mono-code">Day ${day}</span></div>
-            <input id="${id}" type="number" value="0" min="0" oninput="calcKvkScore()" class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-2.5 py-1.5 font-mono-code text-white"/>
+            <input id="${id}" type="number" value="0" min="0" oninput="calcKvkScore()" class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-2.5 py-1.5 font-mono-code text-base sm:text-xs text-white"/>
           </div>`).join('')}
       </div>
-      <div id="kvkScoreOut" class="p-3.5 rounded-2xl bg-gradient-to-r from-rose-950/80 to-zinc-950 border border-rose-500/40 space-y-2"></div>
+      <div id="kvkScoreOut" class="p-3 rounded-2xl bg-gradient-to-r from-rose-950/80 to-zinc-950 border border-rose-500/40 space-y-2"></div>
     </div>
 
-    <div class="glass rounded-2xl p-4 space-y-3">
+    <div class="glass rounded-2xl p-4 space-y-2.5">
       <h3 class="text-sm font-bold text-white">${k ? '🎯 3중 카운터 집결 타이머 계산기' : '🎯 Triple Counter-Rally Timer Calculator'}</h3>
       <div class="grid grid-cols-3 gap-2">
-        <div><label class="text-zinc-400 block mb-1">${k ? '1집결 행군(s)' : 'Rally 1 March(s)'}</label><input id="cr1" type="number" value="45" oninput="calcCounterRally()" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-2 py-1.5 font-mono-code text-white"/></div>
-        <div><label class="text-zinc-400 block mb-1">${k ? '2집결 행군(s)' : 'Rally 2 March(s)'}</label><input id="cr2" type="number" value="38" oninput="calcCounterRally()" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-2 py-1.5 font-mono-code text-white"/></div>
-        <div><label class="text-zinc-400 block mb-1">${k ? '3집결 행군(s)' : 'Rally 3 March(s)'}</label><input id="cr3" type="number" value="52" oninput="calcCounterRally()" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-2 py-1.5 font-mono-code text-white"/></div>
+        <div><label class="text-zinc-400 block mb-1">${k ? '1집결(s)' : 'Rally 1(s)'}</label><input id="cr1" type="number" value="45" oninput="calcCounterRally()" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-2 py-1.5 font-mono-code text-base sm:text-xs text-white"/></div>
+        <div><label class="text-zinc-400 block mb-1">${k ? '2집결(s)' : 'Rally 2(s)'}</label><input id="cr2" type="number" value="38" oninput="calcCounterRally()" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-2 py-1.5 font-mono-code text-base sm:text-xs text-white"/></div>
+        <div><label class="text-zinc-400 block mb-1">${k ? '3집결(s)' : 'Rally 3(s)'}</label><input id="cr3" type="number" value="52" oninput="calcCounterRally()" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-2 py-1.5 font-mono-code text-base sm:text-xs text-white"/></div>
       </div>
       <div id="crOut" class="p-3 rounded-xl bg-zinc-950 border border-zinc-800 text-zinc-200 font-mono-code"></div>
     </div>
@@ -858,7 +921,7 @@ function calcKvkScore() {
   document.getElementById('kvkScoreOut').innerHTML = `
     <div class="flex items-center justify-between">
       <span class="font-bold text-zinc-200">${k ? '🏆 5일 준비 단계 총점:' : '🏆 5-Day Total Score:'}</span>
-      <span class="font-mono-code text-lg font-black text-rose-400">${Math.round(total).toLocaleString()} pts</span>
+      <span class="font-mono-code text-base sm:text-lg font-black text-rose-400">${Math.round(total).toLocaleString()} pts</span>
     </div>
     <div class="grid grid-cols-2 sm:grid-cols-4 gap-1.5 pt-2 border-t border-zinc-800 text-[10px] font-mono-code">
       <div class="p-1.5 rounded bg-zinc-900">Day1: <b>${Math.round(d1).toLocaleString()}</b></div>
@@ -886,9 +949,9 @@ let triRos = JSON.parse(localStorage.getItem('ks_triRos') || '[]');
 function renderSw() {
   const k = lang === 'ko';
   document.getElementById('mainApp').innerHTML = `
-  <div class="glass rounded-2xl p-4 space-y-4 text-xs">
+  <div class="glass rounded-2xl p-4 space-y-3.5 text-xs">
     <h2 class="text-sm sm:text-base font-black text-white">${k ? '🗡️ 성검 쟁탈전 (Swordland Showdown) 30vs30 전술 & 로스터' : '🗡️ Swordland Showdown 30v30 Tactics & Roster'}</h2>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-2.5">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
       <div class="p-3 rounded-xl bg-zinc-950 border border-zinc-800"><b class="text-rose-400">왕실 마구간</b><p class="text-zinc-300 mt-1">${k ? '텔레포트 쿨타임 50% 감소 (기동조 필수)' : '-50% Teleport cooldown'}</p></div>
       <div class="p-3 rounded-xl bg-zinc-950 border border-zinc-800"><b class="text-rose-400">종탑 & 교화홀</b><p class="text-zinc-300 mt-1">${k ? '종탑 점령 시간 -50%, 15분 개방 교화홀 공방 +15%' : 'Bell Tower -50% capture; Hall +15% dmg'}</p></div>
       <div class="p-3 rounded-xl bg-zinc-950 border border-zinc-800"><b class="text-rose-400">열세 시 게릴라</b><p class="text-zinc-300 mt-1">${k ? '전장 이탈 12분 쿨타임 활용, 빈 외곽 거점 타격으로 유물 점수 극대화' : 'Use 12m Leave Battlefield CD to snipe outer nodes.'}</p></div>
@@ -900,9 +963,9 @@ function renderSw() {
 function renderTri() {
   const k = lang === 'ko';
   document.getElementById('mainApp').innerHTML = `
-  <div class="glass rounded-2xl p-4 space-y-4 text-xs">
+  <div class="glass rounded-2xl p-4 space-y-3.5 text-xs">
     <h2 class="text-sm sm:text-base font-black text-white">${k ? '🚩 삼대연맹전 (Tri-Alliance Clash) 60분 작전 보드' : '🚩 Tri-Alliance Clash 60-Min Board'}</h2>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-2.5">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
       <div class="p-3 rounded-xl bg-zinc-950 border border-zinc-800"><b class="text-rose-400">3~20분: 환승 센터</b><p class="text-zinc-300 mt-1">${k ? '중앙 이동 경로 확보를 위해 환승 센터 최우선 선점' : 'Rush Transit Centers first'}</p></div>
       <div class="p-3 rounded-xl bg-zinc-950 border border-zinc-800"><b class="text-rose-400">20~40분: 주둔지 장악</b><p class="text-zinc-300 mt-1">${k ? '주둔지 2곳 이상 점령 및 수성 대장 지정' : 'Hold 2+ Garrisons'}</p></div>
       <div class="p-3 rounded-xl bg-zinc-950 border border-rose-500/40"><b class="text-rose-400">40~60분: 해신 신전</b><p class="text-zinc-300 mt-1">${k ? '해신 신전 점령 시 +50,000점 대역전 보너스!' : 'Secure Sea God Temple (+50,000 bonus!)'}</p></div>
@@ -916,8 +979,8 @@ function renderRosterBox(type, list, roles) {
   return `
   <div class="p-3 rounded-xl bg-zinc-950 border border-zinc-800 space-y-2.5">
     <div class="flex flex-wrap gap-1.5">
-      <input id="${type}Name" placeholder="${k ? '연맹원 닉네임' : 'Player Name'}" class="flex-1 bg-zinc-900 border border-zinc-700 rounded-lg px-2.5 py-1.5 text-white"/>
-      <select id="${type}Role" class="bg-zinc-900 border border-zinc-700 rounded-lg px-2 py-1.5 text-white">
+      <input id="${type}Name" placeholder="${k ? '연맹원 닉네임' : 'Player Name'}" class="flex-1 bg-zinc-900 border border-zinc-700 rounded-lg px-2.5 py-1.5 text-base sm:text-xs text-white min-w-[120px]"/>
+      <select id="${type}Role" class="bg-zinc-900 border border-zinc-700 rounded-lg px-2 py-1.5 text-base sm:text-xs text-white">
         ${roles.map(([v, l]) => `<option value="${v}">${l}</option>`).join('')}
       </select>
       <button type="button" onclick="addRos('${type}')" class="px-3 py-1.5 rounded-lg bg-rose-600 text-white font-bold btn-tap">${k ? '추가' : 'Add'}</button>
@@ -997,21 +1060,21 @@ function renderTg() {
     ['26주 장기 (주 20회)', '순금 18,160개', '무·소과금 안정']
   ];
   document.getElementById('mainApp').innerHTML = `
-  <div class="space-y-4 text-xs">
+  <div class="space-y-3.5 text-xs">
     <div class="glass rounded-2xl p-4 space-y-3">
       <h2 class="text-sm sm:text-base font-black text-white">${k ? '🔥 순금(Truegold) & 순정금 건물 계산기' : '🔥 Truegold & Tempered TG Calc'}</h2>
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
-        <select id="tgBld" onchange="calcTg()" class="bg-zinc-950 border border-zinc-700 rounded-xl px-3 py-2 text-white">
+        <select id="tgBld" onchange="calcTg()" class="bg-zinc-950 border border-zinc-700 rounded-xl px-3 py-2 text-base sm:text-xs text-white">
           ${Object.entries(TG_BUILDINGS).map(([id, o]) => `<option value="${id}">${k ? o.ko : o.en}</option>`).join('')}
         </select>
-        <select id="tgFrom" onchange="calcTg()" class="bg-zinc-950 border border-zinc-700 rounded-xl px-3 py-2 font-mono-code text-white">
+        <select id="tgFrom" onchange="calcTg()" class="bg-zinc-950 border border-zinc-700 rounded-xl px-3 py-2 font-mono-code text-base sm:text-xs text-white">
           ${[0,1,2,3,4,5,6,7].map(n => `<option value="${n}">TG ${n}</option>`).join('')}
         </select>
-        <select id="tgTo" onchange="calcTg()" class="bg-zinc-950 border border-zinc-700 rounded-xl px-3 py-2 font-mono-code text-white">
+        <select id="tgTo" onchange="calcTg()" class="bg-zinc-950 border border-zinc-700 rounded-xl px-3 py-2 font-mono-code text-base sm:text-xs text-white">
           ${[1,2,3,4,5,6,7,8].map(n => `<option value="${n}" ${n===8?'selected':''}>TG ${n}</option>`).join('')}
         </select>
       </div>
-      <div id="tgOut" class="p-3.5 rounded-xl bg-zinc-950 border border-rose-500/40"></div>
+      <div id="tgOut" class="p-3 rounded-xl bg-zinc-950 border border-rose-500/40"></div>
     </div>
 
     <div class="glass rounded-2xl p-4 space-y-2.5">
@@ -1032,7 +1095,7 @@ function calcTg() {
   if (t <= f) { document.getElementById('tgOut').innerHTML = `<span class="text-rose-400">${k ? '목표 등급을 높게 선택하세요.' : 'Target must be higher.'}</span>`; return; }
   let sumTg = 0, sumTtg = 0;
   for (let i = f; i < t; i++) { sumTg += b.tg[i]; sumTtg += b.ttg[i]; }
-  document.getElementById('tgOut').innerHTML = `<div class="text-zinc-400">${k ? b.ko : b.en} (TG ${f} → TG ${t})</div><div class="text-base font-black text-white mt-0.5">🔥 순금 <span class="text-amber-300 font-mono-code">${sumTg.toLocaleString()}</span>개 + ✨ 순정금 <span class="text-rose-400 font-mono-code">${sumTtg.toLocaleString()}</span>개</div>`;
+  document.getElementById('tgOut').innerHTML = `<div class="text-zinc-400">${k ? b.ko : b.en} (TG ${f} → TG ${t})</div><div class="text-sm sm:text-base font-black text-white mt-0.5">🔥 순금 <span class="text-amber-300 font-mono-code">${sumTg.toLocaleString()}</span>개 + ✨ 순정금 <span class="text-rose-400 font-mono-code">${sumTtg.toLocaleString()}</span>개</div>`;
 }
 
 function renderHero() {
@@ -1047,7 +1110,7 @@ function renderHero() {
     ['Gen 7~10 (440일+)', '후속 세대 스탯 스케일링', '최대 1110.88% / 277.5%']
   ];
   document.getElementById('mainApp').innerHTML = `
-  <div class="space-y-4 text-xs">
+  <div class="space-y-3.5 text-xs">
     <div class="glass rounded-2xl p-4 space-y-2.5">
       <h2 class="text-sm sm:text-base font-black text-white">${k ? '🛡️ 신화 영웅 장비 부위별 4단계 강화 우선순위' : '🛡️ Mythic Hero Gear Upgrade Priority'}</h2>
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
@@ -1060,15 +1123,15 @@ function renderHero() {
     <div class="glass rounded-2xl p-4 space-y-2.5">
       <h3 class="text-sm font-bold text-white">${k ? '🗡️ 전용무기 부속품 계산기 (10강 총 275개)' : '🗡️ Exclusive Gear Parts Calc'}</h3>
       <div class="flex gap-2">
-        <select id="ewFrom" onchange="calcEw()" class="flex-1 bg-zinc-950 border border-zinc-700 rounded-lg px-2.5 py-1.5 font-mono-code text-white">${[0,1,2,3,4,5,6,7,8,9].map(n => `<option value="${n}">Lv.${n}</option>`).join('')}</select>
-        <select id="ewTo" onchange="calcEw()" class="flex-1 bg-zinc-950 border border-zinc-700 rounded-lg px-2.5 py-1.5 font-mono-code text-white">${[1,2,3,4,5,6,7,8,9,10].map(n => `<option value="${n}" ${n===10?'selected':''}>Lv.${n}</option>`).join('')}</select>
+        <select id="ewFrom" onchange="calcEw()" class="flex-1 bg-zinc-950 border border-zinc-700 rounded-lg px-2.5 py-1.5 font-mono-code text-base sm:text-xs text-white">${[0,1,2,3,4,5,6,7,8,9].map(n => `<option value="${n}">Lv.${n}</option>`).join('')}</select>
+        <select id="ewTo" onchange="calcEw()" class="flex-1 bg-zinc-950 border border-zinc-700 rounded-lg px-2.5 py-1.5 font-mono-code text-base sm:text-xs text-white">${[1,2,3,4,5,6,7,8,9,10].map(n => `<option value="${n}" ${n===10?'selected':''}>Lv.${n}</option>`).join('')}</select>
       </div>
       <div id="ewOut" class="p-2.5 rounded-xl bg-zinc-950 border border-rose-500/40 font-bold text-rose-300"></div>
     </div>
 
     <div class="glass rounded-2xl p-4 space-y-2">
       <h3 class="text-sm font-bold text-white">${k ? '🧬 Gen 1 ~ Gen 10 세대별 출시일 & 스탯' : '🧬 Gen 1–10 Release & Stats'}</h3>
-      ${gens.map(([g, h, st]) => `<div class="p-2.5 rounded-xl bg-zinc-950 border border-zinc-800 flex justify-between items-center"><div><b class="text-rose-400">${g}</b> <span class="text-zinc-200 ml-1">${h}</span></div><span class="font-mono-code text-[10px] text-amber-300">${st}</span></div>`).join('')}
+      ${gens.map(([g, h, st]) => `<div class="p-2.5 rounded-xl bg-zinc-950 border border-zinc-800 flex justify-between items-center gap-2"><div class="truncate"><b class="text-rose-400">${g}</b> <span class="text-zinc-200 ml-1">${h}</span></div><span class="font-mono-code text-[10px] text-amber-300 shrink-0">${st}</span></div>`).join('')}
     </div>
   </div>`;
   calcEw();
@@ -1106,7 +1169,7 @@ function renderShop() {
     ['🚩 삼대연맹전', 'O', 'O', 'O', 'O', 'X', 'X']
   ];
   document.getElementById('mainApp').innerHTML = `
-  <div class="space-y-4 text-xs">
+  <div class="space-y-3.5 text-xs">
     <div class="glass rounded-2xl p-4 space-y-2.5">
       <h2 class="text-sm sm:text-base font-black text-white">${k ? '🛒 무·소과금 11대 상점 구매 효율표' : '🛒 11-Shop Purchase Priority'}</h2>
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -1115,7 +1178,7 @@ function renderShop() {
     </div>
     <div class="glass rounded-2xl p-4 space-y-2 overflow-x-auto">
       <h3 class="text-sm font-bold text-white">${k ? '📊 콘텐츠별 버프 적용 매트릭스' : '📊 Event Buff Matrix'}</h3>
-      <table class="w-full text-left border-collapse min-w-[460px]">
+      <table class="w-full text-left border-collapse min-w-[420px]">
         <thead><tr class="border-b border-zinc-800 text-zinc-400"><th class="py-1.5">콘텐츠</th><th>도시</th><th>수용량</th><th>펫</th><th>섬장식</th><th>왕스킬</th><th>거점</th></tr></thead>
         <tbody class="divide-y divide-zinc-900 font-mono-code">
           ${matrix.map(r => `<tr><td class="py-1.5 font-sans font-bold text-white">${r[0]}</td>${r.slice(1).map(v => `<td class="${v==='O'?'text-emerald-400 font-bold':'text-rose-400'}">${v}</td>`).join('')}</tr>`).join('')}
@@ -1128,7 +1191,7 @@ function renderShop() {
 function renderMys() {
   const k = lang === 'ko';
   document.getElementById('mainApp').innerHTML = `
-  <div class="space-y-4 text-xs">
+  <div class="space-y-3.5 text-xs">
     <div class="glass rounded-2xl p-4 space-y-2.5">
       <h2 class="text-sm sm:text-base font-black text-white">${k ? '✨ 신비한 시련 (Mystic Trial) 3부대 비율' : '✨ Mystic Trial 3-March Ratios'}</h2>
       <div class="p-3 rounded-xl bg-zinc-950 border border-zinc-800 space-y-1"><b class="text-rose-400">빛나는 첨탑 (Spire)</b><p class="text-zinc-200">1부대(기병2순위): 50/15/35 · 2부대(기병1순위): 50/35/15 · 3부대: 50/20/30</p></div>
@@ -1156,8 +1219,8 @@ function renderMac() {
     <h2 class="text-sm font-bold text-white">${k ? '📢 연맹 공지 원클릭 복사 (통합 / 한국어만 / English)' : '📢 Alliance Macros (Both / KO / EN)'}</h2>
     <div class="grid grid-cols-1 gap-3">${macros.map((m, i) => `
       <div class="p-3 rounded-xl bg-zinc-950 border border-zinc-800 space-y-2">
-        <div class="flex justify-between items-center"><b class="text-rose-400">${k ? m.tKo : m.tEn}</b>
-          <div class="flex gap-1">
+        <div class="flex justify-between items-center gap-2"><b class="text-rose-400">${k ? m.tKo : m.tEn}</b>
+          <div class="flex gap-1 shrink-0">
             <button type="button" onclick="cpMac(${i},'both')" class="px-2 py-0.5 rounded bg-rose-600 text-white font-bold text-[10px] btn-tap">${k ? '통합' : 'Both'}</button>
             <button type="button" onclick="cpMac(${i},'ko')" class="px-2 py-0.5 rounded bg-zinc-900 border border-zinc-700 text-white font-bold text-[10px] btn-tap">한국어만</button>
             <button type="button" onclick="cpMac(${i},'en')" class="px-2 py-0.5 rounded bg-zinc-900 border border-zinc-700 text-white font-bold text-[10px] btn-tap">English</button>
@@ -1173,29 +1236,24 @@ function cpMac(i, m) {
   copyText(m === 'ko' ? x.ko : m === 'en' ? x.en : x.ko + NL + '---' + NL + x.en);
 }
 
-/* ==================== TAB 13: FULL DEVELOPER CHANGELOG ARCHIVE (v0.1.0 ~ v0.6.1) ==================== */
+/* ==================== TAB 13: FULL DEVELOPER CHANGELOG ARCHIVE ==================== */
 function renderNotes() {
   const k = lang === 'ko';
   const logs = [
-    { ver: 'v0.6.1 (Current)', date: '2026-11-27', badge: 'Private Roster Search + Dark Crimson UI', ko: ['다크 크림슨·로즈 네온 디자인, KO/EN/TR 3개국어 토글, 상단 통합 검색 캡슐, 하단 5슬롯 도크 UI 완벽 복원', '외부 방문자 보안 강화를 위해 기본 화면에서 등록 플레이어 명단과 TG 분포 차트를 숨기고, 검색했을 때만 결과 카드 및 왕국 TG 분포가 표시되도록 개선'], en: ['Restored Dark Crimson & Rose Neon UI, KO/EN/TR language toggle, top search capsule & 5-slot dock', 'Hidden registered player roster & TG distribution on default view; dynamically shows result cards & kingdom TG chart only when searched'] },
+    { ver: 'v0.6.2 (Current)', date: '2026-11-27', badge: 'Mobile UX & Performance Optimization', ko: ['모바일 입력창 포커스 시 iOS 사파리 강제 확대(Auto-Zoom) 방지 및 12컬럼 콤팩트 폼 레이아웃 적용', '상단 탭 선택 시 활성 탭 중앙 자동 스크롤 정렬, 퀵 프로필 칩 모바일 노출 및 상단 검색 초기화 버튼 추가', '왕국·선물코드 메모리 캐싱 및 폴링 타이머 누수 방지로 탭 전환·조회 반응 속도 최적화'], en: ['Prevented iOS Safari input auto-zoom & applied compact 12-col mobile form grids', 'Added auto-centering active tab scroll, mobile quick profile chip & top search clear button', 'Added memory caching for kingdoms/gift codes & cleaned up polling timers for instant tab switching'] },
+    { ver: 'v0.6.1', date: '2026-11-27', badge: 'Private Roster Search + Dark Crimson UI', ko: ['다크 크림슨·로즈 네온 디자인 복원 및 기본 화면 전체 명단·TG 분포 숨김(검색 전용 노출) 적용'], en: ['Restored Dark Crimson UI and hid registered player roster & TG distribution on default view'] },
     { ver: 'v0.5.9 ~ v0.6.0', date: '2026-11-23', badge: 'Mobile Optimization & Turkish (TR) Support', ko: ['모바일 화면 터치 영역 및 슬라이드 메뉴 최적화, 튀르키예어(TR) 다국어 지원 추가'], en: ['Mobile layout optimization and added Turkish (TR) localization'] },
     { ver: 'v0.5.7', date: '2026-11-22', badge: 'Full UI Restoration + Public DB + Queue', ko: ['다크 크림슨·로즈 네온 UI, 상단 통합 검색 캡슐, 퀵 프로필 칩, 하단 5슬롯 고정 도크 통합'], en: ['Unified Dark Crimson UI, top search capsule, quick profile chip & 5-slot bottom dock'] },
-    { ver: 'v0.5.6', date: '2026-11-22', badge: 'Edge Dual-Proxy Test', ko: ['Cloudflare 인천 엣지 프록시 + Netlify 백업 듀얼 프록시 구조 테스트'], en: ['Cloudflare Edge + Netlify dual-proxy routing test'] },
-    { ver: 'v0.5.5', date: '2026-11-21', badge: 'Auto-Lookup & Gift Redeem Engine', ko: ['실시간 플레이어 자동 조회 및 선물 코드 일괄 발송 엔진 구축'], en: ['Built live player auto-lookup & bulk gift redemption engine'] },
-    { ver: 'v0.5.4', date: '2026-11-21', badge: 'Global Multi-Server Branding', ko: ['특정 연맹/서버 표기를 제거하고 전 서버 범용 브랜드(KINGSHOT hub)로 통일'], en: ['Removed alliance-specific tags and unified under global KINGSHOT hub'] },
     { ver: 'v0.5.3', date: '2026-11-21', badge: 'Dark Crimson & Rose Neon Edition', ko: ['딥 차콜 블랙 배경 + 크림슨 레드·로즈 네온 글로우, 28px 마이크로 그리드 적용'], en: ['Applied Dark Crimson & Rose Neon theme & 28px micro-grid'] },
-    { ver: 'v0.5.0', date: '2026-11-21', badge: 'Gift Code Board & Batch Engine', ko: ['선물 코드(gift_codes) 실시간 공유 게시판 및 일괄 교환 아키텍처 도입'], en: ['Introduced live gift_codes sharing board & batch redeem architecture'] },
     { ver: 'v0.4.5', date: '2026-11-20', badge: 'One-Stop Search-to-Register', ko: ['숫자 ID 검색 시 DB 조회와 미등록 유저 자동 등록·인라인 편집을 하나로 통합'], en: ['Unified Search-to-Register & inline profile editor'] },
-    { ver: 'v0.4.2', date: '2026-11-20', badge: 'PC 3-Column Command Mode & Dev Notes', ko: ['PC 와이드 3단 레이아웃(좌측 사이드바 + 우측 상시 AI 도킹) 및 개발자 노트 탭 신설'], en: ['Added PC 3-column layout with docked AI & Dev Notes tab'] },
     { ver: 'v0.3.0', date: '2026-11-19', badge: 'KvK Prep Calc & Tri-Alliance Clash', ko: ['KvK 준비 단계 예상 점수 계산기, 삼대연맹전 60분 보드, 베어 재탑승 계산기 추가'], en: ['Added KvK Prep Calc, Tri-Alliance board & Bear re-join calc'] },
-    { ver: 'v0.2.0', date: '2026-11-18', badge: 'Truegold, Gen 1~10 & 11-Shop DB', ko: ['순금·슈퍼 정제 계산기, Gen 1~10 영웅 도감·전용무기(275개), 11대 상점 효율표 탑재'], en: ['Added Truegold/Refine calc, Gen 1–10 Hero DB & 11-Shop priority'] },
-    { ver: 'v0.1.0', date: '2026-11-18', badge: 'Alpha Launch (KO/EN & Swordland)', ko: ['초기 알파(v0.0) 기반 한·영 원클릭 전환(KO/EN) 및 성검 쟁탈전 30vs30 역할 배정기 출시'], en: ['Initial release with KO/EN toggle & Swordland 30v30 roster builder'] }
+    { ver: 'v0.1.0 ~ v0.2.0', date: '2026-11-18', badge: 'Alpha Launch & Truegold/Hero DB', ko: ['한·영 원클릭 전환(KO/EN), 성검전 로스터, 순금·정제 계산기, Gen 1~10 영웅 도감 탑재'], en: ['Initial release with KO/EN toggle, Swordland roster, Truegold calc & Gen 1–10 DB'] }
   ];
   document.getElementById('mainApp').innerHTML = `
   <div class="glass rounded-2xl p-4 space-y-3 text-xs">
     <div class="flex items-center justify-between">
-      <h2 class="text-sm sm:text-base font-black text-white">${k ? '📋 개발자 노트 & 전체 업데이트 아카이브' : '📋 Developer Notes & Full Changelog'}</h2>
-      <span class="px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 font-mono-code text-[10px]">v0.6.1</span>
+      <h2 class="text-sm sm:text-base font-black text-white">${k ? '📋 개발자 노트 & 업데이트 이력' : '📋 Developer Notes & Changelog'}</h2>
+      <span class="px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 font-mono-code text-[10px]">v0.6.2</span>
     </div>
     <div class="space-y-2.5">
       ${logs.map((l, idx) => `
@@ -1214,18 +1272,22 @@ function renderNotes() {
 function getAiHtml(isDock) {
   const k = lang === 'ko';
   const pfx = isDock ? 'dk_' : 'mn_';
+  const chips = k ? ['베어 조이너', '시련 비율', '순금 8강', '장비 순서', '상점 1순위'] : ['Bear Joiners', 'Trial Ratios', 'Truegold Lv8', 'Gear Order', 'Top Shops'];
   return `
   <div class="glass rounded-2xl overflow-hidden flex flex-col ${isDock ? 'h-[540px] sticky top-28' : 'h-[430px]'} text-xs">
     <div class="px-3.5 py-2.5 bg-zinc-950 border-b border-zinc-800 flex items-center justify-between">
       <b class="text-rose-400">🤖 ${k ? '킹샷 전술 AI' : 'Tactical AI'}</b>
       <span class="text-[10px] text-emerald-400 font-mono-code">● Instant</span>
     </div>
+    <div class="px-2.5 py-2 bg-zinc-950/60 border-b border-zinc-800 flex flex-wrap gap-1">
+      ${chips.map(c => `<button type="button" onclick="askAi('${c}','${pfx}')" class="px-2 py-0.5 rounded-lg bg-zinc-900 hover:bg-rose-500/20 border border-zinc-700 text-zinc-200 text-[10px] btn-tap">${c}</button>`).join('')}
+    </div>
     <div id="${pfx}aiLog" class="flex-1 p-3 overflow-y-auto space-y-2">
-      <div class="p-2.5 rounded-xl bg-zinc-950 border border-zinc-800 text-zinc-200">${k ? '안녕하세요! 베어, 시련, 순금, 장비, 전용무기, 상점, 시설 키워드로 질문해 주세요.' : 'Hello! Ask about Bear, Trial, Truegold, Gear, Shops, or Facilities.'}</div>
+      <div class="p-2.5 rounded-xl bg-zinc-950 border border-zinc-800 text-zinc-200">${k ? '안녕하세요! 위 추천 버튼을 누르거나 베어, 시련, 순금, 장비, 상점 키워드로 질문해 주세요.' : 'Hello! Tap a quick chip or ask about Bear, Trial, Truegold, Gear, or Shops.'}</div>
     </div>
     <div class="p-2.5 bg-zinc-950 border-t border-zinc-800 flex gap-1.5">
-      <input id="${pfx}aiIn" onkeydown="if(event.key==='Enter')askAi(null,'${pfx}')" placeholder="${k ? '전술 질문...' : 'Ask AI...'}" class="flex-1 bg-zinc-900 border border-zinc-700 rounded-xl px-2.5 py-2 text-white"/>
-      <button type="button" onclick="askAi(null,'${pfx}')" class="px-3 py-2 rounded-xl bg-rose-600 text-white font-bold btn-tap">${k ? '질문' : 'Ask'}</button>
+      <input id="${pfx}aiIn" onkeydown="if(event.key==='Enter')askAi(null,'${pfx}')" placeholder="${k ? '전술 질문...' : 'Ask AI...'}" class="flex-1 bg-zinc-900 border border-zinc-700 rounded-xl px-2.5 py-2 text-base sm:text-xs text-white min-w-0"/>
+      <button type="button" onclick="askAi(null,'${pfx}')" class="px-3 py-2 rounded-xl bg-rose-600 text-white font-bold shrink-0 btn-tap">${k ? '질문' : 'Ask'}</button>
     </div>
   </div>`;
 }
@@ -1263,6 +1325,7 @@ function renderTab() {
   if (routes[curTab]) routes[curTab]();
 }
 
+hydrateQuickProfileChip();
 setLang(lang);
 </script>
 </body>
