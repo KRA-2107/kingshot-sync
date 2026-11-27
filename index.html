@@ -16,8 +16,10 @@
       --border-glow: rgba(244, 63, 94, 0.30);
     }
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-    body {
+    html, body {
       margin: 0;
+      padding: 0;
+      overflow-x: hidden;
       background-color: var(--bg-base);
       background-image:
         radial-gradient(circle at 15% 10%, rgba(225, 29, 72, 0.14), transparent 38%),
@@ -29,6 +31,8 @@
       font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
       padding-bottom: 84px;
     }
+    /* iOS Safari 강제 확대 방지 (16px 고정) */
+    input, select, textarea { font-size: 16px !important; }
     .font-display { font-family: 'Syne', 'Pretendard', sans-serif; }
     .font-mono-code { font-family: 'JetBrains Mono', monospace; }
     .tac-card {
@@ -45,15 +49,18 @@
     }
     .btn-tap { transition: transform 0.12s ease, background-color 0.15s ease; }
     .btn-tap:active { transform: scale(0.96); }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     @media (min-width: 1024px) { body { padding-bottom: 24px; } }
   </style>
 </head>
 <body>
 
-  <!-- TOP COMMAND HEADER -->
-  <header class="sticky top-0 z-40 bg-[#070406]/90 backdrop-blur-xl border-b border-rose-500/20">
+  <!-- TOP 2-ROW OPTIMIZED COMMAND HEADER (v0.6.3~v0.7.0) -->
+  <header class="sticky top-0 z-40 bg-[#070406]/92 backdrop-blur-xl border-b border-rose-500/20">
+    <!-- Row 1: Brand + 3-Lang Toggle (KO | EN | TR) + Dev Notes + All Tools -->
     <div class="max-w-7xl mx-auto px-3 py-2 flex items-center justify-between gap-2">
-      <div class="flex items-center gap-2 min-w-0">
+      <button onclick="switchTab('home')" class="flex items-center gap-2 min-w-0 text-left">
         <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-rose-500 to-rose-700 flex items-center justify-center font-display font-extrabold text-white text-sm shadow-lg shadow-rose-600/30 shrink-0">KS</div>
         <div class="min-w-0">
           <div class="flex items-center gap-1.5">
@@ -62,7 +69,7 @@
           </div>
           <div class="text-[10px] text-slate-400 font-mono-code truncate" id="utcClock">UTC 00:00:00 • KST 09:00:00</div>
         </div>
-      </div>
+      </button>
 
       <div class="flex items-center gap-1.5 shrink-0">
         <div class="flex items-center bg-slate-900/90 border border-slate-700/80 rounded-lg p-0.5 text-[10px] font-mono-code font-bold">
@@ -70,26 +77,29 @@
           <button onclick="setLang('en')" id="btnLangEn" class="px-1.5 py-1 rounded-md transition">EN</button>
           <button onclick="setLang('tr')" id="btnLangTr" class="px-1.5 py-1 rounded-md transition">TR</button>
         </div>
-        <button onclick="switchTab('notes')" class="btn-tap relative px-2 py-1.5 rounded-lg bg-slate-900 border border-slate-700/80 text-xs text-rose-300 font-mono-code font-bold" title="Dev Notes">
+        <button onclick="switchTab('notes')" class="btn-tap px-2 py-1.5 rounded-lg bg-slate-900 border border-slate-700/80 text-xs text-rose-300 font-mono-code font-bold" title="Dev Notes">
           🔔<span class="ml-0.5 text-[10px]">7.0</span>
         </button>
         <button onclick="toggleDrawer()" class="btn-tap lg:hidden px-2.5 py-1.5 rounded-lg bg-rose-600/20 border border-rose-500/40 text-rose-200 text-xs font-bold">☰</button>
       </div>
     </div>
 
-    <!-- LIVE KVK & OFFICE RESERVATION COUNTDOWN BAR -->
+    <!-- Row 2: Live KvK & Office Reservation Countdown Strip -->
     <div class="bg-gradient-to-r from-rose-950/70 via-[#160a10] to-amber-950/50 border-t border-rose-500/15 px-3 py-1.5">
-      <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2 text-[11px]">
-        <div class="flex items-center gap-2 min-w-0">
+      <div class="max-w-7xl mx-auto flex items-center justify-between gap-2 text-[11px]">
+        <div class="flex items-center gap-1.5 min-w-0">
           <span class="inline-block w-2 h-2 rounded-full bg-rose-500 animate-pulse shrink-0"></span>
           <span class="font-bold text-rose-200 truncate" id="liveEventLabel">⚔️ KvK 왕성전 개방 (Sat 10:00 UTC)</span>
         </div>
-        <div class="flex items-center gap-2 font-mono-code">
+        <div class="flex items-center gap-1.5 font-mono-code shrink-0">
           <span class="text-amber-300 font-bold" id="liveCountdown">--d --h --m --s</span>
           <button onclick="switchTab('time')" class="px-1.5 py-0.5 rounded bg-white/10 hover:bg-white/20 text-[10px] text-slate-200">UTC↔KST</button>
         </div>
       </div>
     </div>
+
+    <!-- Row 3: Auto-Centering Quick Scroll Strip -->
+    <div id="topQuickStrip" class="max-w-7xl mx-auto px-3 py-1.5 flex gap-1.5 overflow-x-auto no-scrollbar border-t border-white/5 text-[11px]"></div>
   </header>
 
   <!-- MAIN WORKSPACE -->
@@ -101,14 +111,14 @@
     <main class="lg:col-span-6 space-y-3 min-w-0" id="appMain"></main>
 
     <aside class="hidden lg:block lg:col-span-3">
-      <div class="tac-card-crimson rounded-2xl p-3.5 sticky top-24 space-y-3">
+      <div class="tac-card-crimson rounded-2xl p-3.5 sticky top-28 space-y-3">
         <div class="flex items-center justify-between">
           <span class="font-display font-bold text-sm text-rose-300">🤖 Tactical AI</span>
           <span class="text-[10px] font-mono-code px-2 py-0.5 rounded bg-rose-500/20 text-rose-200">DB v0.7.0</span>
         </div>
         <div id="pcAiMessages" class="h-72 overflow-y-auto space-y-2 text-xs pr-1"></div>
         <div class="flex gap-1.5">
-          <input id="pcAiInput" onkeydown="if(event.key==='Enter')sendAi('pc')" type="text" placeholder="Ask KvK, Bear, Gen 7, Pet..." class="w-full bg-slate-950/90 border border-slate-700 rounded-xl px-2.5 py-2 text-xs text-white focus:outline-none focus:border-rose-500">
+          <input id="pcAiInput" onkeydown="if(event.key==='Enter')sendAi('pc')" type="text" placeholder="Ask KvK, Bear, Gen 7, Mystic..." class="w-full bg-slate-950/90 border border-slate-700 rounded-xl px-2.5 py-2 text-xs text-white focus:outline-none focus:border-rose-500">
           <button onclick="sendAi('pc')" class="btn-tap px-3 py-2 rounded-xl bg-rose-600 text-white text-xs font-bold shrink-0">Go</button>
         </div>
       </div>
@@ -130,14 +140,14 @@
   <!-- MOBILE BOTTOM FIXED DOCK (5 SLOTS) -->
   <nav class="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#090507]/95 backdrop-blur-xl border-t border-rose-500/25 px-2 py-1.5">
     <div class="grid grid-cols-5 gap-1 text-center text-[10px] font-bold">
+      <button onclick="switchTab('home')" class="btn-tap py-1 rounded-xl flex flex-col items-center gap-0.5 text-slate-300">
+        <span class="text-sm">🏠</span><span id="lbl-dock-home">홈·목록</span>
+      </button>
       <button onclick="switchTab('search')" class="btn-tap py-1 rounded-xl flex flex-col items-center gap-0.5 text-slate-300">
-        <span class="text-sm">🔍</span><span id="lbl-dock-search">홈·조회</span>
+        <span class="text-sm">🔍</span><span id="lbl-dock-search">비공개조회</span>
       </button>
-      <button onclick="switchTab('rally')" class="btn-tap py-1 rounded-xl flex flex-col items-center gap-0.5 text-slate-300">
-        <span class="text-sm">🧮</span><span id="lbl-dock-rally">병력·전투</span>
-      </button>
-      <button onclick="switchTab('kvk')" class="btn-tap py-1 rounded-xl flex flex-col items-center gap-0.5 text-slate-300">
-        <span class="text-sm">⚔️</span><span id="lbl-dock-kvk">KvK·베어</span>
+      <button onclick="switchTab('mys')" class="btn-tap py-1 rounded-xl flex flex-col items-center gap-0.5 text-slate-300">
+        <span class="text-sm">🏛️</span><span id="lbl-dock-mys">시련·바이킹</span>
       </button>
       <button onclick="switchTab('ai')" class="btn-tap py-1 rounded-xl flex flex-col items-center gap-0.5 text-slate-300">
         <span class="text-sm">🤖</span><span id="lbl-dock-ai">전술 AI</span>
@@ -151,7 +161,7 @@
 <script>
 const SUPA_URL = "https://soyodukrsykhgsufwtth.supabase.co";
 let lang = localStorage.getItem('ks_lang') || 'ko';
-let curTab = 'search';
+let curTab = 'home';
 let playersCache = JSON.parse(localStorage.getItem('ks_players_local') || '[]');
 let battleLogs = JSON.parse(localStorage.getItem('ks_battle_logs') || '[]');
 let swRoster = JSON.parse(localStorage.getItem('ks_sw_roster') || '[]');
@@ -167,69 +177,72 @@ if (playersCache.length === 0) {
 
 const I18N = {
   ko: {
-    dockSearch: "홈·조회", dockRally: "병력·전투", dockKvk: "KvK·베어", dockAi: "전술 AI", dockAll: "전체메뉴",
+    dockHome: "홈·목록", dockSearch: "비공개조회", dockMys: "시련·바이킹", dockAi: "전술 AI", dockAll: "전체메뉴",
     searchPh: "플레이어 ID, 닉네임 또는 #왕국 번호 입력...", searchBtn: "조회",
     tabs: [
-      { id: 'search', icon: '🔍', name: '통합 검색 · 선물 코드 (비공개 명단)' },
-      { id: 'rally', icon: '🧮', name: '병력 비율 시뮬레이터' },
-      { id: 'battle', icon: '📊', name: '전투 리포트 & 영웅 승률 분석 (v0.7)' },
-      { id: 'bear', icon: '🐻', name: '베어 헌트 & 재탑승 계산기' },
-      { id: 'kvk', icon: '⚔️', name: '최강 왕국 (KvK) & 3중 카운터' },
-      { id: 'sw', icon: '🗡️', name: '성검 쟁탈전 (30vs30) & 로스터' },
-      { id: 'tri', icon: '🔱', name: '삼대연맹전 (60분 전술 보드)' },
-      { id: 'fac', icon: '🏰', name: '시설 · 전초기지 점령 규칙' },
-      { id: 'tg', icon: '🔥', name: '순금 · 슈퍼정제 · T10 불꽃' },
-      { id: 'hero', icon: '🧬', name: '영웅 (Gen 1~7) · 신화장비 · 펫(Pet)' },
-      { id: 'shop', icon: '🛒', name: '11대 상점 효율 & 버프 매트릭스' },
-      { id: 'mys', icon: '🏛️', name: '신비한 시련 (3부대) & 바이킹' },
-      { id: 'time', icon: '⏰', name: 'UTC ↔ KST 시간 변환 & 연맹 알람' },
-      { id: 'mac', icon: '📢', name: '연맹 공지 생성기 (3개국어)' },
-      { id: 'notes', icon: '📋', name: '개발자 노트 (v0.1.0 ~ v0.7.0)' },
-      { id: 'ai', icon: '🤖', name: '전술 AI 어시스턴트' }
+      { id: 'home', icon: '🏠', name: '홈 · 2열 전술 타일 그리드', sub: '15종 전술 도구 · 비공개 조회' },
+      { id: 'search', icon: '🔍', name: '비공개 플레이어 조회 · 선물코드', sub: '검색 시에만 일치 프로필 노출' },
+      { id: 'rally', icon: '🧮', name: '병력 비율 시뮬레이터', sub: '50:20:30 · 60:20:20 · 10:10:80' },
+      { id: 'battle', icon: '📊', name: '전투 리포트 & 비율별 승률 (v0.7)', sub: '병종 비율 누적 승률 자동 분석' },
+      { id: 'bear', icon: '🐻', name: '베어 헌트 & 재탑승 계산기', sub: '조이너 1번 슬롯 · 10:10:80' },
+      { id: 'kvk', icon: '⚔️', name: '최강 왕국 (KvK) & 3중 카운터', sub: '5일 준비 점수 · 관직 예약' },
+      { id: 'sw', icon: '🗡️', name: '성검 쟁탈전 (30vs30) & 로스터', sub: 'Tank/DPS/Support · 전장이탈 루틴' },
+      { id: 'tri', icon: '🔱', name: '삼대연맹전 (60분 전술 보드)', sub: '해신 신전 · 환승 센터 장악' },
+      { id: 'fac', icon: '🏰', name: '시설 · 전초기지 점령 규칙', sub: '깃발 75% 연결 · 15분 수성' },
+      { id: 'tg', icon: '🔥', name: '순금 · 슈퍼정제 · T10 불꽃', sub: '16주 정제 플랜 · 불꽃 병력 계산' },
+      { id: 'hero', icon: '🧬', name: '영웅 (Gen 1~7) · 신화장비 · 펫', sub: '전무 275개 · 펫 2시간 버프' },
+      { id: 'shop', icon: '🛒', name: '11대 상점 효율 & 버프 매트릭스', sub: '미스릴 1순위 · 이벤트 중첩표' },
+      { id: 'mys', icon: '🏛️', name: '신비한 시련 (6대 구역) & 바이킹', sub: '6개 구역 스탯/비율 · 소탕 계산기' },
+      { id: 'time', icon: '⏰', name: 'UTC ↔ KST 시간 변환기', sub: '리셋·왕성·관직 예약 시각 변환' },
+      { id: 'mac', icon: '📢', name: '연맹 공지 생성기 (3개국어)', sub: 'KO / EN / TR 원클릭 복사' },
+      { id: 'notes', icon: '📋', name: '개발자 노트 (v0.1.0 ~ v0.7.0)', sub: '전체 업데이트 히스토리 복원' },
+      { id: 'ai', icon: '🤖', name: '전술 AI 어시스턴트', sub: '내장 전술 DB 실시간 질의응답' }
     ]
   },
   en: {
-    dockSearch: "Home·Find", dockRally: "Troops·Log", dockKvk: "KvK·Bear", dockAi: "Tactical AI", dockAll: "All Tools",
-    searchPh: "Enter Player ID, Nickname or #Kingdom...", searchBtn: "Search",
+    dockHome: "Home·Grid", dockSearch: "PrivateFind", dockMys: "Trial·Vik", dockAi: "Tactical AI", dockAll: "All Tools",
+    searchPh: "Enter Player ID, Nickname or #Kingdom...", searchBtn: "Lookup",
     tabs: [
-      { id: 'search', icon: '🔍', name: 'Private Lookup · Gift Codes' },
-      { id: 'rally', icon: '🧮', name: 'Troop Ratio Simulator' },
-      { id: 'battle', icon: '📊', name: 'Battle Log & Hero Winrate (v0.7)' },
-      { id: 'bear', icon: '🐻', name: 'Bear Hunt & Rejoin Calc' },
-      { id: 'kvk', icon: '⚔️', name: 'KvK Prep & Triple Counter' },
-      { id: 'sw', icon: '🗡️', name: 'Swordland (30v30) & Roster' },
-      { id: 'tri', icon: '🔱', name: 'Tri-Alliance Clash (60m)' },
-      { id: 'fac', icon: '🏰', name: 'Facilities & Outposts' },
-      { id: 'tg', icon: '🔥', name: 'Truegold · Refine · T10 Helios' },
-      { id: 'hero', icon: '🧬', name: 'Heroes (Gen 1–7) · Gear · Pets' },
-      { id: 'shop', icon: '🛒', name: '11 Shops & Buff Matrix' },
-      { id: 'mys', icon: '🏛️', name: 'Mystic Trial & Vikings' },
-      { id: 'time', icon: '⏰', name: 'UTC ↔ Local Time Converter' },
-      { id: 'mac', icon: '📢', name: 'Alliance Announcements (3-Lang)' },
-      { id: 'notes', icon: '📋', name: 'Dev Notes (v0.1.0 ~ v0.7.0)' },
-      { id: 'ai', icon: '🤖', name: 'Tactical AI Assistant' }
+      { id: 'home', icon: '🏠', name: 'Home · 2-Col Tactical Grid', sub: '15 Tools · Privacy-First Lookup' },
+      { id: 'search', icon: '🔍', name: 'Private Lookup · Gift Codes', sub: 'Profiles visible only on search' },
+      { id: 'rally', icon: '🧮', name: 'Troop Ratio Simulator', sub: '50:20:30 · 60:20:20 · 10:10:80' },
+      { id: 'battle', icon: '📊', name: 'Battle Log & Ratio Winrate (v0.7)', sub: 'Auto winrate stats by troop ratio' },
+      { id: 'bear', icon: '🐻', name: 'Bear Hunt & Rejoin Calc', sub: 'Joiner 1st Slot · 10:10:80' },
+      { id: 'kvk', icon: '⚔️', name: 'KvK Prep & Triple Counter', sub: '5-Day Prep · Ministry Slots' },
+      { id: 'sw', icon: '🗡️', name: 'Swordland (30v30) & Roster', sub: 'Tank/DPS/Support · Leave Routine' },
+      { id: 'tri', icon: '🔱', name: 'Tri-Alliance Clash (60m)', sub: 'Poseidon Temple · Transit Hubs' },
+      { id: 'fac', icon: '🏰', name: 'Facilities & Outposts', sub: '75% Banner · 15m Hold Rule' },
+      { id: 'tg', icon: '🔥', name: 'Truegold · Refine · T10 Helios', sub: '16-Wk Refine · Helios Research' },
+      { id: 'hero', icon: '🧬', name: 'Heroes (Gen 1–7) · Gear · Pets', sub: '275 Widgets · 2h Pet Combat Buff' },
+      { id: 'shop', icon: '🛒', name: '11 Shops & Buff Matrix', sub: 'Mithril Priority · Event Stack' },
+      { id: 'mys', icon: '🏛️', name: 'Mystic Trial (6 Zones) & Vikings', sub: 'All 6 Zones · Raid Crystal Calc' },
+      { id: 'time', icon: '⏰', name: 'UTC ↔ Local Time Converter', sub: 'Reset · Castle · Office Timers' },
+      { id: 'mac', icon: '📢', name: 'Alliance Announcements (3-Lang)', sub: 'KO / EN / TR One-Tap Copy' },
+      { id: 'notes', icon: '📋', name: 'Dev Notes (v0.1.0 ~ v0.7.0)', sub: 'Full Transparent Changelog' },
+      { id: 'ai', icon: '🤖', name: 'Tactical AI Assistant', sub: 'Built-in Tactical Knowledge DB' }
     ]
   },
   tr: {
-    dockSearch: "Ana·Ara", dockRally: "Birlik·Rapor", dockKvk: "KvK·Ayı", dockAi: "Taktik AI", dockAll: "Tüm Menü",
+    dockHome: "Ana·Menü", dockSearch: "GizliAra", dockMys: "Sınav·Vik", dockAi: "Taktik AI", dockAll: "Tüm Menü",
     searchPh: "Oyuncu ID, İsim veya #Krallık girin...", searchBtn: "Ara",
     tabs: [
-      { id: 'search', icon: '🔍', name: 'Gizli Oyuncu Arama · Hediye Kodları' },
-      { id: 'rally', icon: '🧮', name: 'Birlik Oranı Simülatörü' },
-      { id: 'battle', icon: '📊', name: 'Savaş Raporu & Oran Analizi (v0.7)' },
-      { id: 'bear', icon: '🐻', name: 'Ayı Avı & Dönüş Hesaplayıcı' },
-      { id: 'kvk', icon: '⚔️', name: 'KvK Hazırlık & Üçlü Kontra' },
-      { id: 'sw', icon: '🗡️', name: 'Kılıç Diyarı (30v30) Kadro' },
-      { id: 'tri', icon: '🔱', name: 'Üçlü İttifak Savaşı (60 dk)' },
-      { id: 'fac', icon: '🏰', name: 'Tesisler & Karakollar' },
-      { id: 'tg', icon: '🔥', name: 'Saf Altın · Arıtma · T10 Helios' },
-      { id: 'hero', icon: '🧬', name: 'Kahramanlar (Gen 1–7) · Ekipman · Pet' },
-      { id: 'shop', icon: '🛒', name: '11 Mağaza & Güçlendirme Tablosu' },
-      { id: 'mys', icon: '🏛️', name: 'Mistik Sınav & Vikingler' },
-      { id: 'time', icon: '⏰', name: 'UTC Saat Dönüştürücü' },
-      { id: 'mac', icon: '📢', name: 'İttifak Duyuruları (3 Dil)' },
-      { id: 'notes', icon: '📋', name: 'Geliştirici Notları (v0.1~v0.7)' },
-      { id: 'ai', icon: '🤖', name: 'Taktik AI Asistanı' }
+      { id: 'home', icon: '🏠', name: 'Ana Ekran · 2 Sütunlu Izgara', sub: '15 Taktik Aracı · Gizli Arama' },
+      { id: 'search', icon: '🔍', name: 'Gizli Oyuncu Arama · Kodlar', sub: 'Yalnızca aramada profil gösterilir' },
+      { id: 'rally', icon: '🧮', name: 'Birlik Oranı Simülatörü', sub: '50:20:30 · 60:20:20 · 10:10:80' },
+      { id: 'battle', icon: '📊', name: 'Savaş Raporu & Oran Analizi (v0.7)', sub: 'Birlik oranına göre kazanma %' },
+      { id: 'bear', icon: '🐻', name: 'Ayı Avı & Dönüş Hesaplayıcı', sub: '1. Yuva Kuralı · 10:10:80' },
+      { id: 'kvk', icon: '⚔️', name: 'KvK Hazırlık & Üçlü Kontra', sub: '5 Günlük Puan · Bakanlık' },
+      { id: 'sw', icon: '🗡️', name: 'Kılıç Diyarı (30v30) Kadro', sub: 'Tank/DPS/Destek · Çıkış Taktiği' },
+      { id: 'tri', icon: '🔱', name: 'Üçlü İttifak Savaşı (60 dk)', sub: 'Poseidon Tapınağı · Merkezler' },
+      { id: 'fac', icon: '🏰', name: 'Tesisler & Karakollar', sub: '%75 Sancak · 15 dk Savunma' },
+      { id: 'tg', icon: '🔥', name: 'Saf Altın · Arıtma · T10 Helios', sub: '16 Hafta Arıtma · Helios Hesabı' },
+      { id: 'hero', icon: '🧬', name: 'Kahraman (Gen 1–7) · Ekipman · Pet', sub: '275 Parça · 2 Saatlik Pet Gücü' },
+      { id: 'shop', icon: '🛒', name: '11 Mağaza & Güçlendirme', sub: 'Mithril Önceliği · Etkinlikler' },
+      { id: 'mys', icon: '🏛️', name: 'Mistik Sınav (6 Bölge) & Vikingler', sub: '6 Bölge Oranları · Kristal Hesabı' },
+      { id: 'time', icon: '⏰', name: 'UTC Saat Dönüştürücü', sub: 'Sıfırlama · Kale · Bakanlık' },
+      { id: 'mac', icon: '📢', name: 'İttifak Duyuruları (3 Dil)', sub: 'KO / EN / TR Tek Tık Kopyala' },
+      { id: 'notes', icon: '📋', name: 'Geliştirici Notları (v0.1~v0.7)', sub: 'Tam Güncelleme Geçmişi' },
+      { id: 'ai', icon: '🤖', name: 'Taktik AI Asistanı', sub: 'Dahili Taktik Bilgi Veritabanı' }
     ]
   }
 };
@@ -250,9 +263,9 @@ function setLang(newLang) {
       : "px-1.5 py-1 rounded-md text-slate-400 hover:text-white";
   });
   const d = I18N[lang];
+  document.getElementById('lbl-dock-home').innerText = d.dockHome;
   document.getElementById('lbl-dock-search').innerText = d.dockSearch;
-  document.getElementById('lbl-dock-rally').innerText = d.dockRally;
-  document.getElementById('lbl-dock-kvk').innerText = d.dockKvk;
+  document.getElementById('lbl-dock-mys').innerText = d.dockMys;
   document.getElementById('lbl-dock-ai').innerText = d.dockAi;
   document.getElementById('lbl-dock-all').innerText = d.dockAll;
   renderMenus();
@@ -271,6 +284,20 @@ function renderMenus() {
   const drw = document.getElementById('drawerMenuList');
   if (pcNav) pcNav.innerHTML = html;
   if (drw) drw.innerHTML = html;
+
+  const strip = document.getElementById('topQuickStrip');
+  if (strip) {
+    strip.innerHTML = tabs.map(item => `
+      <button id="qtab-${item.id}" onclick="switchTab('${item.id}')"
+        class="px-2.5 py-1 rounded-lg font-semibold shrink-0 transition ${curTab === item.id ? 'bg-rose-600 text-white shadow' : 'bg-slate-900/90 text-slate-300 border border-slate-800 hover:border-rose-500/40'}">
+        ${item.icon} ${item.name.split('·')[0].trim()}
+      </button>
+    `).join('');
+    const activeChip = document.getElementById('qtab-' + curTab);
+    if (activeChip && activeChip.scrollIntoView) {
+      activeChip.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+    }
+  }
 }
 
 function toggleDrawer() { document.getElementById('mobileDrawer').classList.toggle('hidden'); }
@@ -314,47 +341,78 @@ function copyText(txt) {
   });
 }
 
-// ================= TAB 1: PRIVACY-FIRST SEARCH & GIFT CODES (NO DEFAULT ROSTER EXPOSURE) =================
+// ================= TAB 0: v0.6.3~v0.7.0 2-COLUMN NEON TILE GRID + PRIVACY LOOKUP BAR =================
+function renderHome() {
+  const tiles = I18N[lang].tabs.filter(x => x.id !== 'home');
+  const accents = [
+    'border-l-rose-500', 'border-l-amber-500', 'border-l-emerald-500', 'border-l-sky-500',
+    'border-l-purple-500', 'border-l-pink-500', 'border-l-cyan-500', 'border-l-orange-500'
+  ];
+  document.getElementById('appMain').innerHTML = `
+  <div class="space-y-3">
+    <!-- Compact Privacy-First Search Bar (No roster exposed on home) -->
+    <div class="tac-card-crimson rounded-2xl p-3 space-y-2">
+      <div class="flex items-center justify-between text-xs">
+        <span class="font-display font-bold text-white">🔍 ${t("비공개 플레이어 · #왕국 조회", "Private Player & #Kingdom Lookup", "Gizli Oyuncu & #Krallık Arama")}</span>
+        <a href="https://ks-giftcode.centurygame.com" target="_blank" class="px-2 py-0.5 rounded-lg bg-amber-500/20 border border-amber-400/40 text-amber-300 text-[10px] font-bold">🎁 ${t("교환소", "Gift Portal", "Hediye")} ↗</a>
+      </div>
+      <div class="flex gap-1.5">
+        <input id="homeQuickSearch" onkeydown="if(event.key==='Enter')jumpAndSearch()" type="text" placeholder="${I18N[lang].searchPh}" class="w-full bg-slate-950/90 border border-slate-700 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-rose-500">
+        <button onclick="jumpAndSearch()" class="btn-tap px-3.5 py-2 rounded-xl bg-rose-600 text-white text-xs font-bold shrink-0">${I18N[lang].searchBtn}</button>
+      </div>
+    </div>
+
+    <!-- 2-Column (ㅁ ㅁ / ㅁ ㅁ) Tactical Tool Grid (v0.6.3~v0.6.5) -->
+    <div class="grid grid-cols-2 gap-2.5">
+      ${tiles.map((item, idx) => `
+        <button onclick="switchTab('${item.id}')" class="btn-tap tac-card rounded-2xl p-3 text-left border-l-4 ${accents[idx % accents.length]} flex flex-col justify-between min-h-[76px]">
+          <div class="flex items-center gap-1.5">
+            <span class="text-base">${item.icon}</span>
+            <span class="text-xs font-bold text-white leading-snug line-clamp-1">${item.name.split('·')[0].trim()}</span>
+          </div>
+          <div class="text-[10px] text-slate-400 mt-1 line-clamp-1">${item.sub}</div>
+        </button>
+      `).join('')}
+    </div>
+  </div>`;
+}
+
+function jumpAndSearch() {
+  const val = document.getElementById('homeQuickSearch')?.value.trim() || '';
+  switchTab('search');
+  setTimeout(() => {
+    const inp = document.getElementById('hubSearchInput');
+    if (inp && val) {
+      inp.value = val;
+      runHubSearch();
+    }
+  }, 30);
+}
+
+// ================= TAB 1: PRIVACY-FIRST SEARCH & GIFT CODES (v0.6.1~v0.7.0) =================
 function renderSearch() {
   document.getElementById('appMain').innerHTML = `
   <div class="space-y-3">
     <div class="tac-card-crimson rounded-2xl p-3.5 space-y-2.5">
       <div class="flex items-center justify-between">
-        <span class="font-display font-bold text-sm text-white">${t("🔍 플레이어 · #왕국 통합 조회", "🔍 Player & #Kingdom Lookup", "🔍 Oyuncu ve #Krallık Arama")}</span>
+        <span class="font-display font-bold text-sm text-white">🔍 ${t("비공개 플레이어 · #왕국 조회", "Private Player & #Kingdom Lookup", "Gizli Oyuncu & #Krallık Arama")}</span>
         <div class="flex items-center gap-1.5">
           <button onclick="addManualPlayerPrompt()" class="px-2 py-1 rounded-lg bg-rose-600/25 border border-rose-500/40 text-rose-200 text-[11px] font-bold">+ ${t("등록", "Register", "Kayıt")}</button>
           <a href="https://ks-giftcode.centurygame.com" target="_blank" class="px-2.5 py-1 rounded-lg bg-amber-500/20 border border-amber-400/40 text-amber-300 text-[11px] font-bold">🎁 ${t("교환소", "Gift Portal", "Hediye")} ↗</a>
         </div>
       </div>
-      <div class="flex gap-2">
-        <input id="hubSearchInput" onkeydown="if(event.key==='Enter')runHubSearch()" type="text" placeholder="${I18N[lang].searchPh}" class="w-full bg-slate-950/90 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-rose-500">
-        <button onclick="runHubSearch()" class="btn-tap px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold shrink-0">${I18N[lang].searchBtn}</button>
+      <div class="flex gap-1.5">
+        <div class="relative w-full">
+          <input id="hubSearchInput" onkeydown="if(event.key==='Enter')runHubSearch()" type="text" placeholder="${I18N[lang].searchPh}" class="w-full bg-slate-950/90 border border-slate-700 rounded-xl pl-3 pr-8 py-2 text-white focus:outline-none focus:border-rose-500">
+          <button onclick="clearHubSearch()" class="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white text-xs px-1">✕</button>
+        </div>
+        <button onclick="runHubSearch()" class="btn-tap px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold shrink-0">${I18N[lang].searchBtn}</button>
       </div>
-      <div id="searchStatusMsg" class="text-[11px] text-slate-400">🔒 ${t("보안을 위해 전체 등록 명단은 비공개 처리되며, 검색 시에만 일치하는 프로필이 표시됩니다.", "Full roster is hidden for privacy; matching profiles appear only when searched.", "Gizlilik için tam liste gizlidir; yalnızca arama yapıldığında eşleşen profiller gösterilir.")}</div>
+      <div id="searchStatusMsg" class="text-[11px] text-slate-400">🔒 ${t("보안을 위해 전체 등록 명단 및 TG 분포는 기본 숨김 처리되며, 검색 시에만 일치하는 프로필이 표시됩니다.", "Full roster & TG distribution are hidden by default; profiles appear only upon search.", "Gizlilik için tam liste gizlidir; yalnızca arama yapıldığında gösterilir.")}</div>
       <div id="searchResultCards" class="space-y-1.5"></div>
     </div>
 
-    <!-- QUICK 2-COL TACTICAL GRID -->
-    <div class="grid grid-cols-2 gap-2.5">
-      <button onclick="switchTab('rally')" class="btn-tap tac-card rounded-2xl p-3 text-left border-l-4 border-l-rose-500">
-        <div class="text-xs font-bold text-white">🧮 ${t("병력 비율 계산기", "Troop Ratio Calc", "Birlik Oranı")}</div>
-        <div class="text-[10px] text-slate-400 mt-0.5">50:20:30 • 60:20:20 • 10:10:80</div>
-      </button>
-      <button onclick="switchTab('battle')" class="btn-tap tac-card rounded-2xl p-3 text-left border-l-4 border-l-amber-500">
-        <div class="text-xs font-bold text-white">📊 ${t("전투 리포트 & 승률", "Battle Log & Stats", "Savaş Analizi")}</div>
-        <div class="text-[10px] text-rose-300 mt-0.5">UPGRADED v0.7 • ${t("병종 비율별 승률", "Ratio Winrate", "Oran Analizi")}</div>
-      </button>
-      <button onclick="switchTab('kvk')" class="btn-tap tac-card rounded-2xl p-3 text-left border-l-4 border-l-sky-500">
-        <div class="text-xs font-bold text-white">⚔️ ${t("KvK & 3중 카운터", "KvK & Counter", "KvK & Kontra")}</div>
-        <div class="text-[10px] text-slate-400 mt-0.5">${t("준비 5일 점수 · 관직 예약", "5-Day Prep · Office Slots", "5 Gün Hazırlık")}</div>
-      </button>
-      <button onclick="switchTab('hero')" class="btn-tap tac-card rounded-2xl p-3 text-left border-l-4 border-l-emerald-500">
-        <div class="text-xs font-bold text-white">🧬 ${t("영웅 Gen 7 & 펫", "Heroes Gen 7 & Pets", "Kahraman & Pet")}</div>
-        <div class="text-[10px] text-amber-300 mt-0.5">NEW v0.7 • ${t("전무·펫 육성 순위", "Widget & Pet Tier", "Ekipman & Pet")}</div>
-      </button>
-    </div>
-
-    <!-- GIFT CODE QUICK BOARD -->
+    <!-- GIFT CODE QUICK BOARD (NEW v0.7.0) -->
     <div class="tac-card rounded-2xl p-3.5 space-y-2">
       <div class="flex items-center justify-between">
         <span class="font-bold text-xs text-white">🎁 ${t("공용 선물 코드 빠른 복사", "Active Gift Codes", "Aktif Hediye Kodları")}</span>
@@ -367,13 +425,18 @@ function renderSearch() {
   </div>`;
 }
 
+function clearHubSearch() {
+  const inp = document.getElementById('hubSearchInput');
+  if (inp) inp.value = '';
+  renderMatchedCards([]);
+  const msg = document.getElementById('searchStatusMsg');
+  if (msg) msg.innerHTML = `🔒 ${t("검색창이 초기화되어 명단이 다시 숨겨졌습니다.", "Search cleared; roster hidden.", "Arama temizlendi.")}`;
+}
+
 function renderMatchedCards(list) {
   const box = document.getElementById('searchResultCards');
   if (!box) return;
-  if (!list || list.length === 0) {
-    box.innerHTML = '';
-    return;
-  }
+  if (!list || list.length === 0) { box.innerHTML = ''; return; }
   box.innerHTML = list.map(p => `
     <div class="flex items-center justify-between gap-2 bg-slate-950/85 border border-rose-500/30 rounded-xl px-3 py-2.5 text-xs">
       <div class="min-w-0">
@@ -392,11 +455,7 @@ function renderMatchedCards(list) {
 function runHubSearch() {
   const q = document.getElementById('hubSearchInput').value.trim();
   const msg = document.getElementById('searchStatusMsg');
-  if (!q) {
-    renderMatchedCards([]);
-    msg.innerHTML = `🔒 ${t("보안을 위해 전체 등록 명단은 비공개 처리되며, 검색 시에만 일치하는 프로필이 표시됩니다.", "Full roster is hidden for privacy; matching profiles appear only when searched.", "Tam liste gizlidir.")}`;
-    return;
-  }
+  if (!q) { clearHubSearch(); return; }
   if (q.startsWith('#')) {
     const kNum = parseInt(q.replace('#', ''), 10);
     const filtered = playersCache.filter(p => Number(p.kid) === kNum);
@@ -460,7 +519,7 @@ function renderRally() {
     </div>
     <div>
       <label class="text-slate-400 block mb-1">${t("총 행군 수용량 (March Capacity)", "Total March Capacity", "Toplam Yürüyüş Kapasitesi")}</label>
-      <input id="marchCapInput" oninput="calcTroops()" type="number" value="185000" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 font-mono-code text-sm text-white">
+      <input id="marchCapInput" oninput="calcTroops()" type="number" value="185000" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 font-mono-code text-white">
     </div>
     <div id="troopResultBox" class="bg-slate-950/85 border border-slate-800 rounded-2xl p-3 space-y-2"></div>
   </div>`;
@@ -483,7 +542,7 @@ function calcTroops() {
   `;
 }
 
-// ================= TAB 3: UPGRADED v0.7.0 BATTLE REPORT & RATIO WINRATE ANALYTICS =================
+// ================= TAB 3: BATTLE REPORT & RATIO WINRATE ANALYTICS (v0.7.0) =================
 function renderBattle() {
   const wins = battleLogs.filter(b => b.result === 'WIN').length;
   const winRate = battleLogs.length ? Math.round((wins / battleLogs.length) * 100) : 0;
@@ -498,23 +557,23 @@ function renderBattle() {
   <div class="tac-card-crimson rounded-2xl p-4 space-y-3 text-xs">
     <div class="flex items-center justify-between">
       <h2 class="font-display font-bold text-base text-white">📊 ${t("전투 리포트 & 비율별 승률 분석", "Battle Report & Ratio Winrate", "Savaş Raporu & Oran Analizi")}</h2>
-      <span class="px-2.5 py-1 rounded-lg bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 font-mono-code font-bold">Total Win: ${winRate}%</span>
+      <span class="px-2.5 py-1 rounded-lg bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 font-mono-code font-bold">Win: ${winRate}%</span>
     </div>
-    <div class="grid grid-cols-2 gap-2">
-      <select id="bEvent" class="bg-slate-950 border border-slate-700 rounded-xl px-2.5 py-2 text-white">
+    <div class="grid grid-cols-12 gap-2">
+      <select id="bEvent" class="col-span-7 bg-slate-950 border border-slate-700 rounded-xl px-2.5 py-2 text-white">
         <option value="KvK">⚔️ KvK Castle / Turret</option>
         <option value="Swordland">🗡️ Swordland Showdown</option>
         <option value="Tri-Alliance">🔱 Tri-Alliance Clash</option>
         <option value="Field">🔥 Field / Rally</option>
       </select>
-      <select id="bResult" class="bg-slate-950 border border-slate-700 rounded-xl px-2.5 py-2 text-white">
-        <option value="WIN">✅ WIN (${t("승리", "Victory", "Zafer")})</option>
-        <option value="LOSS">❌ LOSS (${t("패배", "Defeat", "Yenilgi")})</option>
+      <select id="bResult" class="col-span-5 bg-slate-950 border border-slate-700 rounded-xl px-2.5 py-2 text-white">
+        <option value="WIN">✅ WIN</option>
+        <option value="LOSS">❌ LOSS</option>
       </select>
     </div>
-    <div class="grid grid-cols-2 gap-2">
-      <input id="bRatio" type="text" value="50:20:30" placeholder="Ratio (e.g. 50:20:30)" class="bg-slate-950 border border-slate-700 rounded-xl px-2.5 py-2 font-mono-code text-white">
-      <input id="bNote" type="text" placeholder="${t("영웅·펫 조합 메모", "Heroes & Pet memo", "Kahraman & Pet notu")}" class="bg-slate-950 border border-slate-700 rounded-xl px-2.5 py-2 text-white">
+    <div class="grid grid-cols-12 gap-2">
+      <input id="bRatio" type="text" value="50:20:30" placeholder="50:20:30" class="col-span-5 bg-slate-950 border border-slate-700 rounded-xl px-2.5 py-2 font-mono-code text-white">
+      <input id="bNote" type="text" placeholder="${t("영웅·펫 조합 메모", "Heroes & Pet memo", "Kahraman & Pet")}" class="col-span-7 bg-slate-950 border border-slate-700 rounded-xl px-2.5 py-2 text-white">
     </div>
     <button onclick="addBattleLog()" class="btn-tap w-full py-2.5 rounded-xl bg-rose-600 text-white font-bold">+ ${t("전투 리포트 저장", "Save Battle Report", "Raporu Kaydet")}</button>
 
@@ -713,7 +772,7 @@ function calcT10() {
   `;
 }
 
-// ================= TAB 10: HEROES (GEN 1~7), MYTHIC GEAR & PET META (NEW v0.7.0) =================
+// ================= TAB 10: HEROES (GEN 1~7), MYTHIC GEAR & PET META =================
 let heroFilter = 'all';
 function renderHero() {
   const heroes = [
@@ -758,38 +817,109 @@ function renderHero() {
   </div>`;
 }
 
-// ================= TAB 11, 12, 13, 14 =================
+// ================= TAB 11: SHOP & BUFF MATRIX =================
 function renderShop() {
   document.getElementById('appMain').innerHTML = `
   <div class="tac-card rounded-2xl p-4 space-y-2.5 text-xs">
-    <h2 class="font-display font-bold text-base text-white">🛒 ${t("무·소과금 상점 구매 효율 & 버프 매트릭스", "Shop Efficiency & Buff Matrix", "Mağaza & Güçlendirme")}</h2>
+    <h2 class="font-display font-bold text-base text-white">🛒 ${t("무·소과금 11대 상점 효율 & 버프 매트릭스", "11 Shops Efficiency & Buff Matrix", "11 Mağaza & Güçlendirme")}</h2>
     <div class="bg-slate-950/80 border border-slate-800 rounded-xl p-3 space-y-1 text-slate-300">
       <div>• <b>연맹 상점:</b> 70% 할인 VIP 포인트, 고급 텔레포트, 가속 최우선</div>
       <div>• <b>경기장/신비한 시련 상점:</b> <b>미스릴(Mithril)</b> 및 신화 영웅 장비 상자 1순위 고정</div>
       <div>• <b>VIP 상점:</b> 주간 미스릴 · 전용무기 부속품 · 설계도 필수 구매</div>
+      <div>• <b>이벤트 버프 중첩:</b> 관직(총독/학자) + 연맹 스킬 + 학자 전초기지(-15%) + 펫 버프 동시 활성화</div>
     </div>
   </div>`;
 }
+
+// ================= TAB 12: FULL v0.6.5 MYSTIC TRIAL (ALL 6 ZONES + WEEKLY RAID CALC) & VIKINGS =================
 function renderMys() {
+  const zones = [
+    { name: '1. 빛나는 첨탑 (Radiant Spire)', stat: '2순위 기병 · 궁병 화력', s1: '50 / 15 / 35', s2: '50 / 35 / 15', s3: '50 / 20 / 30' },
+    { name: '2. 결투장 (Coliseum)', stat: '1순위 기병 · 전면전', s1: '50 / 10 / 40', s2: '40 / 40 / 20', s3: '50 / 20 / 30' },
+    { name: '3. 생명의 숲 (Forest of Life)', stat: '보병 유지력 · 반격', s1: '60 / 15 / 25', s2: '55 / 20 / 25', s3: '50 / 20 / 30' },
+    { name: '4. 수정 동굴 (Crystal Cave)', stat: '기병 돌파 · 후열 타격', s1: '40 / 40 / 20', s2: '45 / 35 / 20', s3: '50 / 20 / 30' },
+    { name: '5. 지식의 연결점 (Knowledge Nexus)', stat: '궁병 집중 · 방어 관통', s1: '45 / 15 / 40', s2: '50 / 15 / 35', s3: '50 / 20 / 30' },
+    { name: '6. 용암 요새 (Molten Fort)', stat: '고방어 보병 + 극딜 궁병', s1: '55 / 10 / 35', s2: '50 / 20 / 30', s3: '45 / 20 / 35' }
+  ];
+
   document.getElementById('appMain').innerHTML = `
-  <div class="tac-card rounded-2xl p-4 space-y-2.5 text-xs">
-    <h2 class="font-display font-bold text-base text-white">🏛️ ${t("신비한 시련 3부대 프리셋 & 바이킹 3대 황금률", "Mystic Trial 3-Squad & Vikings", "Mistik Sınav & Vikingler")}</h2>
-    <div class="bg-slate-950/80 border border-slate-800 rounded-xl p-3 space-y-1 text-slate-300">
-      <div class="font-bold text-sky-300">빛나는 첨탑 (Radiant Spire)</div>
-      <div>1부대: <b>50 / 15 / 35</b> (2순위 기병) • 2부대: <b>50 / 35 / 15</b> (1순위 기병) • 3부대: <b>50 / 20 / 30</b></div>
-      <div class="font-bold text-rose-300 pt-1">결투장 (Coliseum)</div>
-      <div>1부대: <b>50 / 10 / 40</b> (2순위 기병) • 2부대: <b>40 / 40 / 20</b> (1순위 기병) • 3부대: <b>50 / 20 / 30</b></div>
-      <div class="font-bold text-amber-300 pt-1">바이킹 약탈 20웨이브 3대 황금률</div>
-      <div>① 병력 전량 파병(성 비우기) ② 전투 중 치료 금지 ③ 성벽 화재 진압 금지</div>
+  <div class="space-y-3 text-xs">
+    <div class="tac-card rounded-2xl p-4 space-y-3">
+      <div class="flex items-center justify-between">
+        <h2 class="font-display font-bold text-base text-white">🏛️ ${t("신비한 시련 6대 구역 전체 프리셋 (v0.6.5 복원)", "Mystic Trial All 6 Zones Presets", "Mistik Sınav 6 Bölge")}</h2>
+        <span class="px-2 py-0.5 rounded bg-sky-500/20 text-sky-300 font-mono-code text-[10px]">6 Zones</span>
+      </div>
+
+      <!-- Zero-Loss Challenge Tip + Knowledge Hall +20% ATK -->
+      <div class="bg-sky-950/35 border border-sky-500/30 rounded-xl p-3 space-y-1 text-slate-300">
+        <div class="font-bold text-sky-300">💡 핵심 공략: 도전 횟수 무소모 저장 & 지식의 전당 (+20% 공격력)</div>
+        <div>• <b>도전 횟수 무소모:</b> 패배 시 도전 횟수가 차감되지 않으므로 병종 비율(50:20:30 ↔ 40:40:20)과 영웅 배치를 바꿔가며 등반</div>
+        <div>• <b>지식의 전당 & 시련 상점:</b> <b>공격력 +20% 버프</b> 우선 개방 후, 주간 상점에서 <b>미스릴(Mithril)</b>과 순금 가루 1순위 교환</div>
+      </div>
+
+      <!-- Weekly Raid Crystal Calculator -->
+      <div class="bg-slate-950/90 border border-slate-800 rounded-xl p-3 space-y-2">
+        <div class="font-bold text-amber-300">💎 주간 소탕(Raid) 신비 수정 수급 계산기</div>
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="text-[11px] text-slate-400 block mb-1">현재 최고 돌파 층수</label>
+            <input id="mysFloor" oninput="calcMystic()" type="number" value="120" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 font-mono-code text-white">
+          </div>
+          <div>
+            <label class="text-[11px] text-slate-400 block mb-1">주간 소탕 횟수 (기본 7회)</label>
+            <input id="mysRuns" oninput="calcMystic()" type="number" value="7" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 font-mono-code text-white">
+          </div>
+        </div>
+        <div id="mysCalcOut" class="font-mono-code text-emerald-300 font-bold"></div>
+      </div>
+
+      <!-- All 6 Zones Grid -->
+      <div class="space-y-1.5">
+        ${zones.map(z => `
+          <div class="bg-slate-950/80 border border-slate-800 rounded-xl p-2.5 space-y-1">
+            <div class="flex justify-between items-center">
+              <b class="text-white">${z.name}</b>
+              <span class="text-[10px] text-rose-300">${z.stat}</span>
+            </div>
+            <div class="grid grid-cols-3 gap-1 text-center font-mono-code text-[11px] text-slate-300">
+              <div class="bg-white/5 rounded py-1">1부대: <b class="text-sky-300">${z.s1}</b></div>
+              <div class="bg-white/5 rounded py-1">2부대: <b class="text-amber-300">${z.s2}</b></div>
+              <div class="bg-white/5 rounded py-1">3부대: <b class="text-emerald-300">${z.s3}</b></div>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+
+    <!-- Vikings 20 Waves Golden Rules -->
+    <div class="tac-card rounded-2xl p-4 space-y-1.5">
+      <div class="font-display font-bold text-sm text-amber-300">🪓 바이킹 약탈 20웨이브 3대 황금률</div>
+      <div class="text-slate-300 space-y-1">
+        <div><b>① 성 비우기 (전량 파병):</b> 본인 성 안의 병력을 모두 온라인 연맹원 성으로 지원 보내 방어 점수 2중 획득</div>
+        <div><b>② 전투 중 치료 금지:</b> 20웨이브 종료 전까지 부상병 치료 가속 금지 (지원 병력 복귀 방해 방지)</div>
+        <div><b>③ 성벽 화재 진압 금지:</b> 10·20웨이브 보스 공격으로 불이 붙어도 30분 자동 진화되므로 다이아 사용 금지</div>
+      </div>
     </div>
   </div>`;
+  calcMystic();
 }
+
+function calcMystic() {
+  const fl = Number(document.getElementById('mysFloor')?.value) || 120;
+  const rn = Number(document.getElementById('mysRuns')?.value) || 7;
+  const perRun = 150 + fl * 4;
+  const weekly = perRun * rn;
+  const el = document.getElementById('mysCalcOut');
+  if (el) el.innerText = `주간 예상 신비 수정: ${weekly.toLocaleString()}개 (1회당 ${perRun.toLocaleString()}개)`;
+}
+
+// ================= TAB 13, 14, 15, 16 =================
 function renderTime() {
   document.getElementById('appMain').innerHTML = `
   <div class="tac-card-crimson rounded-2xl p-4 space-y-3 text-xs">
     <h2 class="font-display font-bold text-base text-white">⏰ ${t("UTC ↔ KST 실시간 시간 변환 & 연맹 알람", "UTC ↔ KST Time Converter", "UTC Saat Dönüştürücü")}</h2>
     <div class="flex items-center gap-2">
-      <label class="text-slate-300 shrink-0">UTC 기준 시각:</label>
+      <label class="text-slate-300 shrink-0">UTC 시각:</label>
       <input id="utcInput" oninput="convertUtc()" type="time" value="10:00" class="bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 font-mono-code text-white">
       <div id="kstOutput" class="font-mono-code font-bold text-amber-300 text-sm">→ KST 19:00</div>
     </div>
@@ -810,6 +940,7 @@ function convertUtc() {
   const out = document.getElementById('kstOutput');
   if (out) out.innerText = `→ KST ${String(kstH).padStart(2,'0')}:${String(m).padStart(2,'0')}${nextDay}`;
 }
+
 function renderMac() {
   const bearKo = "🐻 [베어 헌트 안내] 집결 참여 시 1번 슬롯에 공격/살상력 버프 영웅(첸코·아마데우스 등) 배치, 병력 비율 10:10:80 필수!";
   const bearEn = "🐻 [Bear Hunt] Place ATK/Lethality hero (Chenko/Amadeus) in 1st slot when joining. Use 10:10:80 Marksman ratio!";
@@ -829,17 +960,16 @@ function renderMac() {
   </div>`;
 }
 
-// ================= TAB 15: FULL CHANGELOG (v0.1.0 ~ v0.7.0) =================
 function renderNotes() {
   const logs = [
-    { v: "v0.7.0 (Current)", d: "2026-11-28", desc: "글로벌 범용 비공개 조회 모드(기본 화면 전체 명단·TG 분포 숨김 및 검색 시에만 일치 프로필 노출), 전투 리포트 병종 비율별 자동 승률 통계, 펫(Pet) 버프·세련 메타 가이드 및 공용 선물 코드 빠른 복사 보드 탑재" },
+    { v: "v0.7.0 (Current)", d: "2026-11-28", desc: "v0.6.5 전체 기능(2열 전술 타일 그리드, iOS 확대 방지, 신비한 시련 6대 구역 전체 프리셋 & 주간 소탕 계산기) 완전 통합 + 전투 리포트 병종 비율별 자동 승률 통계, 펫(Pet) 버프·세련 메타 가이드, 공용 선물 코드 빠른 복사 보드 탑재" },
+    { v: "v0.6.5", d: "2026-11-27", desc: "신비한 시련 6대 구역(빛나는 첨탑·결투장·생명의 숲·수정 동굴·지식의 연결점·용암 요새) 전체 스탯/비율, 도전 횟수 무소모 저장 팁, 주간 소탕 신비 수정 계산기, 시련 상점·지식의 전당(+20% 공격력) 공략 추가" },
+    { v: "v0.6.3 ~ v0.6.4", d: "2026-11-27", desc: "상단 헤더 2줄 최적화(KO|EN|TR 3개국어 버튼 잘림 완전 해결) 및 메인 화면 2열(ㅁ ㅁ) 네온 타일 그리드 개편" },
+    { v: "v0.6.1 ~ v0.6.2", d: "2026-11-27", desc: "글로벌 범용 비공개 조회 모드(기본 화면 전체 명단·TG 분포 숨김 및 검색 시에만 일치 프로필 표시), iOS 사파리 16px 확대 방지 및 탭 중앙 자동 스크롤" },
     { v: "v0.6.0", d: "2026-11-27", desc: "전투 리포트 기록장, UTC ↔ KST 시간 변환기, Gen 7 전무 10강 1순위 필터 통합" },
-    { v: "v0.5.9", d: "2026-11-24", desc: "튀르키예어(TR) 전체 현지화(KO | EN | TR 3개국어 실시간 전환) 및 모바일 상단 헤더·카운트다운 최적화" },
-    { v: "v0.5.8", d: "2026-11-23", desc: "실시간 KvK·관직 예약 카운트다운 바, 상급 순금 연구 & T10 불꽃 병력 계산기, Gen 7 영웅 반영" },
-    { v: "v0.5.4 ~ v0.5.7", d: "2026-11-22", desc: "글로벌 범용 브랜딩(KINGSHOT hub) 전환, Supabase 공용 DB 직통 조회 연동" },
-    { v: "v0.5.0 ~ v0.5.3", d: "2026-11-21", desc: "다크 크림슨·로즈 네온 UI 대개편, 모바일 하단 5슬롯 고정 도크, 병력 비율 시뮬레이터" },
-    { v: "v0.3.0 ~ v0.4.6", d: "2026-11-19", desc: "PC 3단 와이드 레이아웃(상시 전술 AI 도킹), 신화 장비 강화 우선순위, 신비한 시련 3부대 프리셋" },
-    { v: "v0.1.0 ~ v0.2.0", d: "2026-11-16", desc: "Kingshot Tactical Hub 최초 출범(베어·KvK·성검전·순금 계산기·영웅 도감·상점 효율표)" }
+    { v: "v0.5.8 ~ v0.5.9", d: "2026-11-24", desc: "튀르키예어(TR) 전체 현지화(KO|EN|TR 3개국어 전환), 실시간 KvK·관직 카운트다운 바, 상급 순금 연구 & T10 불꽃 계산기, Gen 7 영웅 반영" },
+    { v: "v0.5.0 ~ v0.5.7", d: "2026-11-22", desc: "다크 크림슨·로즈 네온 UI 대개편, 글로벌 범용 브랜딩(KINGSHOT hub), Supabase 공용 DB 직통 조회 연동" },
+    { v: "v0.1.0 ~ v0.4.6", d: "2026-11-19", desc: "Kingshot Tactical Hub 초기 출범(베어·KvK·성검전·삼대연맹전·순금·영웅·신화장비·11대 상점·PC 3단 하이브리드)" }
   ];
   document.getElementById('appMain').innerHTML = `
   <div class="tac-card rounded-2xl p-4 space-y-2.5 text-xs">
@@ -861,16 +991,15 @@ function renderNotes() {
   </div>`;
 }
 
-// ================= TAB 16: TACTICAL AI =================
-const aiHistory = [{ role: 'ai', text: 'KINGSHOT hub v0.7.0 전술 AI입니다. 비공개 조회 모드, 베어 헌트(10:10:80), KvK 3중 카운터, Gen 7(찰스·아바·위우), 펫(Pet) 버프 등 무엇이든 물어보세요!' }];
+const aiHistory = [{ role: 'ai', text: 'KINGSHOT hub v0.7.0 전술 AI입니다. v0.6.5 신비한 시련 6대 구역 프리셋, 비공개 조회 모드, 베어 헌트(10:10:80), KvK 3중 카운터, Gen 7 & 펫 버프 등 무엇이든 물어보세요!' }];
 function renderAi() {
   document.getElementById('appMain').innerHTML = `
   <div class="tac-card-crimson rounded-2xl p-4 space-y-3 text-xs">
     <h2 class="font-display font-bold text-base text-white">🤖 ${t("전술 AI 어시스턴트 (내장 DB v0.7.0)", "Tactical AI Assistant", "Taktik AI Asistanı")}</h2>
     <div id="mobAiMessages" class="h-80 overflow-y-auto space-y-2 bg-slate-950/70 rounded-xl p-3 border border-slate-800"></div>
     <div class="flex gap-2">
-      <input id="mobAiInput" onkeydown="if(event.key==='Enter')sendAi('mob')" type="text" placeholder="${t("질문 입력 (예: 곰 사냥, 7세대, 펫 버프)", "Ask about Bear, KvK, Gen 7, Pets...", "Soru sor...")}" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-white">
-      <button onclick="sendAi('mob')" class="btn-tap px-4 py-2.5 rounded-xl bg-rose-600 text-white font-bold shrink-0">전송</button>
+      <input id="mobAiInput" onkeydown="if(event.key==='Enter')sendAi('mob')" type="text" placeholder="${t("질문 입력 (예: 시련 6구역, 곰 사냥, 펫 버프)", "Ask Mystic 6 Zones, Bear, Gen 7, Pets...", "Soru sor...")}" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white">
+      <button onclick="sendAi('mob')" class="btn-tap px-4 py-2 rounded-xl bg-rose-600 text-white font-bold shrink-0">전송</button>
     </div>
   </div>`;
   syncAiBoxes();
@@ -896,7 +1025,8 @@ function sendAi(src) {
   aiHistory.push({ role: 'user', text: q });
   const ql = q.toLowerCase();
   let ans = "KvK 표준 집결은 50:20:30, 수성은 60:20:20, 베어 헌트는 10:10:80(1번 슬롯 공격 버프 영웅 필수)을 권장합니다.";
-  if (ql.includes('곰') || ql.includes('베어') || ql.includes('bear')) ans = "🐻 베어 헌트는 집결 참여 시 1번 슬롯에 공격/살상력 영웅(첸코·아마데우스·예온우)을 두고 병력 비율 10:10:80을 사용하세요.";
+  if (ql.includes('시련') || ql.includes('mystic')) ans = "🏛️ 신비한 시련 6대 구역(빛나는 첨탑·결투장·생명의 숲·수정 동굴·지식의 연결점·용암 요새)은 패배 시 도전 횟수가 차감되지 않으며, 지식의 전당 공격력 +20% 버프 후 시련 상점 미스릴을 1순위로 교환하세요.";
+  else if (ql.includes('곰') || ql.includes('베어') || ql.includes('bear')) ans = "🐻 베어 헌트는 집결 참여 시 1번 슬롯에 공격/살상력 영웅(첸코·아마데우스·예온우)을 두고 병력 비율 10:10:80을 사용하세요.";
   else if (ql.includes('7') || ql.includes('찰스') || ql.includes('아바')) ans = "🧬 7세대(Gen 7) 영웅은 찰스(보병 전무 10강 1순위), 아바(궁병 집결·베어 극딜), 위&우(기동 기병)로 구성됩니다.";
   else if (ql.includes('펫') || ql.includes('pet')) ans = "🐾 전투 펫 액티브 버프(2시간 지속)는 베어 헌트 및 KvK 3중 카운터 집결 출발 직전에 활성화하는 것이 가장 효율적입니다.";
   else if (ql.includes('t10') || ql.includes('불꽃') || ql.includes('순금')) ans = "🔥 T10 불꽃 병력은 병종당 순금 가루 약 13,500개와 순금 4,200개가 필요합니다.";
@@ -906,7 +1036,7 @@ function sendAi(src) {
 
 function renderTab() {
   const map = {
-    search: renderSearch, rally: renderRally, battle: renderBattle, bear: renderBear,
+    home: renderHome, search: renderSearch, rally: renderRally, battle: renderBattle, bear: renderBear,
     kvk: renderKvK, sw: renderSw, tri: renderTri, fac: renderFac,
     tg: renderTg, hero: renderHero, shop: renderShop, mys: renderMys,
     time: renderTime, mac: renderMac, notes: renderNotes, ai: renderAi
